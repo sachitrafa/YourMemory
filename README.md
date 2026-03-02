@@ -130,13 +130,19 @@ uvicorn src.app:app --reload  # start the API
 
 ### Step 3 — Connect to Claude Code
 
-Add to `~/.claude/settings.json`:
+First get the absolute path to your install:
+```bash
+cd yourmemory && pwd
+# e.g. /Users/yourname/Desktop/yourmemory
+```
+
+Add to `~/.claude/settings.json` (replace `INSTALL_PATH` with the output above):
 ```json
 {
   "mcpServers": {
     "yourmemory": {
-      "command": "/path/to/yourmemory/venv311/bin/python3.11",
-      "args": ["/path/to/yourmemory/memory_mcp.py"]
+      "command": "INSTALL_PATH/venv311/bin/python3.11",
+      "args": ["INSTALL_PATH/memory_mcp.py"]
     }
   }
 }
