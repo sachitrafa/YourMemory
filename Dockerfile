@@ -1,5 +1,7 @@
 FROM python:3.11-slim
 
+LABEL io.modelcontextprotocol.server.name="io.github.sachitrafa/yourmemory"
+
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
