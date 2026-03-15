@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=70", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "cognitive-ai-memory"
+version = "1.0.1"
+description = "Persistent memory for Claude using the Ebbinghaus Forgetting Curve"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+keywords = ["mcp", "claude", "memory", "ebbinghaus", "ai"]
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "psycopg2-binary",
+    "pgvector",
+    "python-dotenv",
+    "httpx",
+    "apscheduler",
+    "mcp",
+    "spacy>=3.7,<4.0",
+    "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
+]
+
+[project.scripts]
+yourmemory = "memory_mcp:run"
+
+[project.urls]
+Homepage = "https://github.com/sachitrafa/cognitive-ai-memory"
+Repository = "https://github.com/sachitrafa/cognitive-ai-memory"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.sql"]

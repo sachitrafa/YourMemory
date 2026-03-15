@@ -2,9 +2,11 @@
 
 ![YourMemory Demo](demo.gif)
 
-Persistent, decaying memory for AI agents — backed by PostgreSQL + pgvector.
+Persistent, decaying memory for Claude — backed by PostgreSQL + pgvector.
 
 Memories fade like real ones do. Frequently recalled memories stay strong. Forgotten ones are pruned automatically. Claude decides what to remember and how important it is.
+
+> Still early — ideating on where to take this next. Feedback welcome.
 
 ---
 
@@ -17,7 +19,7 @@ effective_λ = 0.16 × (1 - importance × 0.8)
 strength    = importance × e^(-effective_λ × days) × (1 + recall_count × 0.2)
 ```
 
-Importance controls both the starting value **and** how fast a memory decays:
+Importance controls both the starting value and how fast a memory decays:
 
 | importance | effective λ | survives (never recalled) |
 |------------|-------------|--------------------------|
@@ -26,7 +28,7 @@ Importance controls both the starting value **and** how fast a memory decays:
 | 0.5        | 0.096       | ~24 days                 |
 | 0.2        | 0.134       | ~10 days                 |
 
-Memories recalled frequently gain `recall_count` boosts that counteract decay. A memory recalled 5 times decays at 2× the base rate but starts 2× stronger.
+Memories recalled frequently gain `recall_count` boosts that counteract decay.
 
 ### Retrieval scoring
 
@@ -34,38 +36,65 @@ Memories recalled frequently gain `recall_count` boosts that counteract decay. A
 score = cosine_similarity × Ebbinghaus_strength
 ```
 
-Results rank by how *relevant* and how *fresh* a memory is — not just one or the other.
+Results rank by how relevant and how fresh a memory is — not just one or the other.
 
 ---
 
-## MCP Integration (Claude Code)
+## Setup
 
-YourMemory ships as an MCP server. Claude gets three tools:
+**Prerequisites:**
+- [Docker](https://docs.docker.com/get-docker/) — runs Postgres
+- [Ollama](https://ollama.com) — runs local embeddings
+
+**Install and start:**
+
+```bash
+git clone https://github.com/sachitrafa/cognitive-ai-memory
+cd cognitive-ai-memory
+./setup.sh
+```
+
+The script pulls the embedding model, installs the Python package, creates your `.env`, and starts Postgres. DB migration and the decay scheduler run automatically on first boot.
+
+**Start the MCP server:**
+
+```bash
+yourmemory
+```
+
+**Wire into Claude (`~/.claude/settings.json`):**
+
+```json
+{
+  "mcpServers": {
+    "yourmemory": {
+      "command": "yourmemory"
+    }
+  }
+}
+```
+
+Reload Claude Code (`Cmd+Shift+P` → `Developer: Reload Window`).
+
+**Add memory instructions to your project:**
+
+Copy `sample_CLAUDE.md` into your project root as `CLAUDE.md` and replace the two placeholders:
+- `YOUR_NAME` — your name (e.g. `Alice`)
+- `YOUR_USER_ID` — used to namespace memories (e.g. `alice`)
+
+Claude will now follow the recall → store → update workflow automatically on every task.
+
+---
+
+## MCP Tools
+
+Claude gets three tools:
 
 | Tool | When to call |
 |------|-------------|
 | `recall_memory` | Start of every task — surface relevant context |
 | `store_memory` | After learning a new preference, fact, or instruction |
 | `update_memory` | When a recalled memory is outdated or needs merging |
-
-### Setup
-
-1. Make sure Ollama is running: `ollama serve` and `ollama pull llama3.2:3b`
-
-2. Add to `~/.claude/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "yourmemory": {
-      "command": "/path/to/yourmemory/venv311/bin/python3.11",
-      "args": ["/path/to/yourmemory/memory_mcp.py"]
-    }
-  }
-}
-```
-
-3. Reload Claude Code. The tools appear automatically.
 
 ### Example session
 
@@ -74,7 +103,6 @@ User: "I prefer tabs over spaces in all my Python projects"
 
 Claude:
   → recall_memory("tabs spaces Python preferences")   # nothing found
-  → [answers the question]
   → store_memory("Sachit prefers tabs over spaces in Python", importance=0.9)
 
 Next session:
@@ -85,96 +113,9 @@ Next session:
 
 ---
 
-## Quick Start
+## Decay Job
 
-### Step 1 — Install prerequisites
-
-**Ollama** (local LLM + embeddings):
-```bash
-# Mac
-brew install ollama
-ollama serve   # start the server
-
-# Pull required models
-ollama pull nomic-embed-text   # embeddings
-ollama pull llama3.2:3b        # classification
-```
-
-**PostgreSQL with pgvector:**
-```bash
-# Mac
-brew install postgresql@16
-brew install pgvector
-brew services start postgresql@16
-
-# Create the database
-createdb yourmemory
-```
-
-### Step 2 — Clone and run
-
-```bash
-git clone https://github.com/sachitrafa/cognitive-ai-memory
-cd cognitive-ai-memory
-
-python3.11 -m venv venv311
-source venv311/bin/activate
-pip install -r requirements.txt
-python -m spacy download en_core_web_sm
-
-cp .env.example .env          # DATABASE_URL is pre-filled for local Postgres
-
-python -m src.db.migrate      # create tables (run once)
-uvicorn src.app:app --reload  # start the API
-```
-
-### Step 3 — Connect to Claude Code
-
-First get the absolute path to your install:
-```bash
-cd yourmemory && pwd
-# e.g. /Users/yourname/Desktop/yourmemory
-```
-
-Add to `~/.claude/settings.json` (replace `INSTALL_PATH` with the output above):
-```json
-{
-  "mcpServers": {
-    "yourmemory": {
-      "command": "INSTALL_PATH/venv311/bin/python3.11",
-      "args": ["INSTALL_PATH/memory_mcp.py"]
-    }
-  }
-}
-```
-
-Reload Claude Code (`Cmd+Shift+P` → `Developer: Reload Window`).
-
-### Step 4 — Add memory instructions to your project
-
-Copy `sample_CLAUDE.md` into your project root as `CLAUDE.md`, then fill in your details:
-
-```bash
-cp sample_CLAUDE.md /path/to/your/project/CLAUDE.md
-```
-
-Open it and replace the two placeholders:
-- `YOUR_NAME` → your name (e.g. `Alice`)
-- `YOUR_USER_ID` → your user ID (e.g. `alice`) — used to namespace memories
-
-Claude will now follow the recall → store → update workflow automatically on every task in that project.
-
-### Option: Docker (skip Steps 1 & 2)
-
-If you have Docker, this replaces Steps 1 and 2 entirely:
-```bash
-git clone https://github.com/sachitrafa/cognitive-ai-memory
-cd cognitive-ai-memory
-docker compose up
-python -m src.db.migrate
-```
-
-> Note: Ollama still needs to run on your host machine for embeddings.
+The decay job runs automatically every 24 hours on startup — no cron needed. Memories that decay below strength `0.05` are pruned automatically.
 
 ---
 
@@ -188,10 +129,6 @@ curl -X POST http://localhost:8000/memories \
   -d '{"userId":"u1","content":"Prefers dark mode","importance":0.8}'
 ```
 
-```json
-{"stored": 1, "id": 42, "content": "Prefers dark mode", "category": "fact"}
-```
-
 ### `POST /retrieve` — semantic search
 
 ```bash
@@ -200,25 +137,11 @@ curl -X POST http://localhost:8000/retrieve \
   -d '{"userId":"u1","query":"UI preferences"}'
 ```
 
-```json
-{
-  "memoriesFound": 1,
-  "context": "[Facts]\nPrefers dark mode",
-  "memories": [
-    {"id": 42, "content": "Prefers dark mode", "importance": 0.8,
-     "strength": 0.74, "similarity": 0.91, "score": 0.67}
-  ]
-}
-```
-
-### `GET /memories` — inspect all memories
+### `GET /memories` — list all memories
 
 ```bash
-curl "http://localhost:8000/memories?userId=u1&limit=20"
-curl "http://localhost:8000/memories?userId=u1&category=fact"
+curl "http://localhost:8000/memories?userId=u1"
 ```
-
-Returns all memories with live-computed strength. Useful for building a memory management UI.
 
 ### `PUT /memories/{id}` — update a memory
 
@@ -236,28 +159,14 @@ curl -X DELETE http://localhost:8000/memories/42
 
 ---
 
-## Decay Job
-
-Run daily to prune memories that have decayed below the threshold (strength < 0.05):
-
-```bash
-python -m src.jobs.decay_job
-```
-
-Via cron (runs at 2am):
-```
-0 2 * * * /path/to/venv311/bin/python -m src.jobs.decay_job
-```
-
----
-
 ## Stack
 
 - **PostgreSQL + pgvector** — vector similarity search + relational in one DB
 - **Ollama** — local embeddings (`nomic-embed-text`, 768 dims) + classification (`llama3.2:3b`)
 - **spaCy** — question detection, fact/assumption categorization
 - **FastAPI** — REST server
-- **MCP** — Claude Code integration via Model Context Protocol
+- **APScheduler** — automatic decay job (runs every 24h on startup)
+- **MCP** — Claude integration via Model Context Protocol
 
 ---
 
