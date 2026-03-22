@@ -33,11 +33,17 @@ def _load_services():
     from src.services.retrieve import retrieve as _retrieve
     from src.services.embed import embed
     from src.services.extract import is_question, categorize
-    _services["psycopg2"]    = psycopg2
-    _services["retrieve"]    = _retrieve
-    _services["embed"]       = embed
-    _services["is_question"] = is_question
-    _services["categorize"]  = categorize
+    from src.services.agent_registry import load_registry, is_registered, can_write_visibility, default_visibility, can_read_from
+    _services["psycopg2"]            = psycopg2
+    _services["retrieve"]            = _retrieve
+    _services["embed"]               = embed
+    _services["is_question"]         = is_question
+    _services["categorize"]          = categorize
+    _services["is_registered"]       = is_registered
+    _services["can_write_visibility"] = can_write_visibility
+    _services["default_visibility"]  = default_visibility
+    _services["can_read_from"]       = can_read_from
+    load_registry()
 
 DEFAULT_USER = "sachit"
 DEFAULT_IMPORTANCE = 0.5
@@ -176,25 +182,56 @@ async def list_tools() -> list[types.Tool]:
 @server.call_tool()
 async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
     _load_services()
-    retrieve    = _services["retrieve"]
-    embed       = _services["embed"]
-    is_question = _services["is_question"]
-    categorize  = _services["categorize"]
+    retrieve             = _services["retrieve"]
+    embed                = _services["embed"]
+    is_question          = _services["is_question"]
+    categorize           = _services["categorize"]
+    is_registered        = _services["is_registered"]
+    can_write_visibility = _services["can_write_visibility"]
+    default_visibility   = _services["default_visibility"]
+    can_read_from        = _services["can_read_from"]
 
     if name == "recall_memory":
         user_id  = arguments.get("user_id", DEFAULT_USER)
         query    = arguments["query"]
         top_k    = arguments.get("top_k", 5)
         agent_id = arguments.get("agent_id", None)
-        result   = retrieve(user_id, query, top_k=top_k, agent_id=agent_id)
+
+        # Validate agent if provided
+        if agent_id and not is_registered(agent_id):
+            return [types.TextContent(type="text", text=json.dumps(
+                {"error": f"Unknown agent '{agent_id}'. Register it in agents/{agent_id}.md first."}))]
+
+        result = retrieve(user_id, query, top_k=top_k, agent_id=agent_id)
+
+        # Filter by can_read if agent is registered
+        if agent_id:
+            result["memories"] = [
+                m for m in result["memories"]
+                if can_read_from(agent_id, m["agent_id"])
+            ]
+            result["memoriesFound"] = len(result["memories"])
+
         return [types.TextContent(type="text", text=json.dumps(result, default=str))]
 
     elif name == "store_memory":
-        user_id    = arguments.get("user_id", DEFAULT_USER)
-        agent_id   = arguments.get("agent_id", "user")
-        visibility = arguments.get("visibility", "shared")
+        user_id  = arguments.get("user_id", DEFAULT_USER)
+        agent_id = arguments.get("agent_id", "user")
+
+        # Validate agent
+        if not is_registered(agent_id):
+            return [types.TextContent(type="text", text=json.dumps(
+                {"error": f"Unknown agent '{agent_id}'. Register it in agents/{agent_id}.md first."}))]
+
+        visibility = arguments.get("visibility", default_visibility(agent_id))
         if visibility not in ("shared", "private"):
-            visibility = "shared"
+            visibility = default_visibility(agent_id)
+
+        # Check agent is allowed to write this visibility level
+        if not can_write_visibility(agent_id, visibility):
+            return [types.TextContent(type="text", text=json.dumps(
+                {"error": f"Agent '{agent_id}' is not allowed to write '{visibility}' memories."}))]
+
         content = arguments["content"]
 
         if is_question(content):
