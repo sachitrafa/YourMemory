@@ -85,15 +85,15 @@ async def list_tools() -> list[types.Tool]:
             name="store_memory",
             description=(
                 "Store a new memory about the user. "
-                "Use when you learn a new fact, preference, or instruction that doesn't "
-                "conflict with any memory returned by recall_memory."
+                "Use when you learn a new fact, preference, instruction, past failure, or successful strategy. "
+                "Does not conflict with any memory returned by recall_memory."
             ),
             inputSchema={
                 "type": "object",
                 "properties": {
                     "content": {
                         "type": "string",
-                        "description": "The fact or preference to remember.",
+                        "description": "The fact, preference, failure, or strategy to remember.",
                     },
                     "importance": {
                         "type": "number",
@@ -103,6 +103,18 @@ async def list_tools() -> list[types.Tool]:
                             "0.7–0.8 — strong preferences, recurring patterns\n"
                             "0.5     — regular facts, project decisions\n"
                             "0.2–0.3 — transient context, one-off notes from this session"
+                        ),
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": (
+                            "Memory category — controls decay rate:\n"
+                            "  'fact'       — user preferences, identity, stable knowledge (default, ~24 day survival)\n"
+                            "  'assumption' — inferred beliefs, uncertain context (~19 days)\n"
+                            "  'failure'    — what went wrong in a past task, environment-specific errors (~11 days, decays fast)\n"
+                            "  'strategy'   — what worked well in a past task, approach patterns (~38 days, decays slow)\n"
+                            "Use 'failure' when storing e.g. 'OAuth failed for client X due to wrong redirect URI'.\n"
+                            "Use 'strategy' when storing e.g. 'Using pagination fixed the timeout on large DB queries'."
                         ),
                     },
                     "user_id": {
@@ -176,7 +188,9 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                 {"error": "importance is required (0.0–1.0). Decide based on how permanent this memory should be."}))]
         importance    = float(arguments["importance"])
         importance    = max(0.0, min(1.0, importance))  # clamp to [0, 1]
-        category      = categorize(content)
+        valid_categories = {"fact", "assumption", "failure", "strategy"}
+        raw_category  = arguments.get("category", "").strip().lower()
+        category      = raw_category if raw_category in valid_categories else categorize(content)
         embedding     = embed(content)
         embedding_str = f"[{','.join(str(x) for x in embedding)}]"
 

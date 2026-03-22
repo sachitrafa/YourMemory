@@ -147,6 +147,7 @@ def list_memories(
             last_accessed_at=m["last_accessed_at"],
             recall_count=m["recall_count"],
             importance=m["importance"],
+            category=m["category"],
         )
         memories.append({
             "id":              m["id"],

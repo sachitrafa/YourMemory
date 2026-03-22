@@ -61,6 +61,7 @@ def retrieve(user_id: str, query: str, top_k: int = 5) -> dict:
             last_accessed_at=m["last_accessed_at"],
             recall_count=m["recall_count"],
             importance=m["importance"],
+            category=m["category"],
         )
         scored.append({**m, "strength": strength, "score": m["similarity"] * strength})
 
