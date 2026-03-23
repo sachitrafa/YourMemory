@@ -6,11 +6,11 @@
     "url": "https://github.com/sachitrafa/cognitive-ai-memory",
     "source": "github"
   },
-  "version": "1.0.2",
+  "version": "1.0.3",
   "packages": [
     {
       "registryType": "oci",
-      "identifier": "ghcr.io/your-memory/cognitive-ai-memory:1.0.2",
+      "identifier": "ghcr.io/your-memory/cognitive-ai-memory:1.0.3",
       "transport": {
         "type": "stdio"
       },

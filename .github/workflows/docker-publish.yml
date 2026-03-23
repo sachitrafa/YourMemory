@@ -29,4 +29,4 @@ jobs:
           push: true
           tags: |
             ghcr.io/your-memory/cognitive-ai-memory:latest
-            ghcr.io/your-memory/cognitive-ai-memory:1.0.2
+            ghcr.io/your-memory/cognitive-ai-memory:1.0.3
