@@ -1,0 +1,24 @@
+services:
+  zep:
+    image: ghcr.io/getzep/zep:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - ZEP_STORE_TYPE=postgres
+      - ZEP_STORE_POSTGRES_DSN=postgres://zep:zep@zep-db:5432/zep
+      - ZEP_AUTH_REQUIRED=false
+    depends_on:
+      zep-db:
+        condition: service_healthy
+
+  zep-db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: zep
+      POSTGRES_PASSWORD: zep
+      POSTGRES_DB: zep
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zep"]
+      interval: 5s
+      timeout: 5s
+      retries: 10

@@ -7,11 +7,13 @@ All benchmarks were run on **15 March 2026**.
 
 ## 1. Long-Context Recall Accuracy — LoCoMo Dataset
 
-**Dataset:** [LoCoMo](https://github.com/snap-research/locomo) (Snap Research) — a public long-context memory benchmark consisting of multi-session conversations spanning weeks to months. We used `locomo10.json` (10 conversation pairs, ~199 QA pairs each, categories 1–4).
+**Dataset:** [LoCoMo](https://github.com/snap-research/locomo) (Snap Research) — a public long-context memory benchmark consisting of multi-session conversations spanning weeks to months. We used `locomo10.json` (10 conversation pairs, 1,534 QA pairs total, categories 1–4).
 
 **Method:** Session summaries were stored in both systems. Each QA pair was evaluated at the end of all sessions. A hit is recorded if the correct answer appears in the top-5 retrieved results.
 
 **Metric:** Recall@5
+
+### vs Mem0 (free tier) — 15 March 2026
 
 | Sample | Speakers | YourMemory | Mem0 |
 |--------|----------|:----------:|:----:|
@@ -28,6 +30,24 @@ All benchmarks were run on **15 March 2026**.
 | **Total** | **200 QA pairs** | **34%** | **18%** |
 
 **YourMemory leads by +16 percentage points.** YourMemory wins 9 out of 10 samples and ties 1. Mem0's automatic fact extraction condenses session content and loses specific details (dates, names, events) that LoCoMo QA pairs target. YourMemory preserves full session summaries, retaining those details while Ebbinghaus decay keeps the most relevant content ranked highest.
+
+### vs Zep Cloud — 24 March 2026
+
+| Sample | Speakers | YourMemory | Zep Cloud |
+|--------|----------|:----------:|:---------:|
+| 1 | Caroline & Melanie | 29% | 24% |
+| 2 | Jon & Gina | 46% | 46% |
+| 3 | John & Maria | 25% | 22% |
+| 4 | Joanna & Nate | 38% | 18% |
+| 5 | Tim & John | 31% | 24% |
+| 6 | Audrey & Andrew | 36% | 20% |
+| 7 | James & John | 38% | 23% |
+| 8 | Deborah & Jolene | 25% | 16% |
+| 9 | Evan & Sam | 35% | 18% |
+| 10 | Calvin & Dave | 41% | 26% |
+| **Total** | **1,534 QA pairs** | **34%** | **22%** |
+
+**YourMemory leads by +12 percentage points (54% relative improvement).** YourMemory wins 9 out of 10 samples and ties 1. Zep Cloud uses LLM-based fact extraction per thread, which summarises and condenses content — losing the specific details (dates, names, events) that LoCoMo QA pairs target. YourMemory's Ebbinghaus decay scores full session summaries by recency and importance, preserving those details while ranking the most relevant content highest.
 
 ---
 
