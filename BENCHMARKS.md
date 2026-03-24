@@ -1,7 +1,6 @@
 # YourMemory Benchmarks
 
-Evaluation of YourMemory against Mem0 (free tier) across three metrics.
-All benchmarks were run on **15 March 2026**.
+Evaluation of YourMemory against Mem0 and Zep Cloud across three metrics.
 
 ---
 
@@ -51,26 +50,7 @@ All benchmarks were run on **15 March 2026**.
 
 ---
 
-## 2. Stale Memory Precision
-
-**Method:** 5 contradiction pairs were constructed where an outdated fact and a newer replacement fact both exist in the memory store (e.g. "Sachit prefers React" stored 45 days ago vs "Sachit switched to Vue.js" stored 3 days ago). Both facts have equal importance scores. The system is queried and scored on whether it returns the current fact ranked above the stale one.
-
-**Metric:** Precision — does the current fact rank above the stale one?
-
-| Scenario | YourMemory | Mem0 |
-|----------|:----------:|:----:|
-| Framework preference (React → Vue) | ✓ Correct | ✗ Tie |
-| Job title change | ✓ Correct | ✗ Tie |
-| Database migration (MongoDB → PostgreSQL) | ✓ Correct | ✗ Tie |
-| Location change | ✓ Correct | ✗ Tie |
-| Project rename | ✓ Correct | ✗ Tie |
-| **Precision** | **5/5 (100%)** | **0/5 (0%)** |
-
-**YourMemory leads by +100 percentage points.** Ebbinghaus decay automatically demotes stale memories without any manual deletion or reranking. Mem0 has no temporal decay signal — when two facts share the same importance score, it cannot distinguish old from new.
-
----
-
-## 3. Token Efficiency
+## 2. Token Efficiency
 
 **Method:** A synthetic set of 15 memories spanning 0–60 days was evaluated. Memories with Ebbinghaus strength below the prune threshold (0.05) are excluded from retrieval entirely. Token counts are based on the top-5 memories injected into context.
 
