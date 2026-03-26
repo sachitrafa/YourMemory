@@ -9,6 +9,7 @@ from typing import Optional
 from src.services.extract import is_question, categorize
 from src.services.embed import embed
 from src.services.decay import compute_strength
+from src.services.resolve import resolve
 
 load_dotenv()
 
@@ -44,16 +45,51 @@ def add_memory(req: MemoryRequest):
     conn = get_conn()
     cur = conn.cursor()
 
-    cur.execute("""
-        INSERT INTO memories (user_id, content, category, importance, embedding)
-        VALUES (%s, %s, %s, %s, %s::vector)
-        ON CONFLICT (user_id, content) DO UPDATE
-            SET recall_count     = memories.recall_count + 1,
-                last_accessed_at = NOW()
-        RETURNING id
-    """, (req.userId, req.content, category, req.importance, embedding_str))
+    resolution    = resolve(req.userId, req.content, embedding, conn)
+    action        = resolution["action"]
+    final_content = resolution["content"]
+    existing      = resolution["existing"]
 
-    memory_id = cur.fetchone()[0]
+    if action == "reinforce":
+        cur.execute("""
+            UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = NOW()
+            WHERE id = %s RETURNING id
+        """, (existing["id"],))
+        memory_id = existing["id"]
+        category  = existing["category"]
+
+    elif action in ("replace", "merge"):
+        new_embedding = embed(final_content)
+        new_emb_str   = f"[{','.join(str(x) for x in new_embedding)}]"
+        new_category  = categorize(final_content)
+        try:
+            cur.execute("""
+                UPDATE memories
+                SET content = %s, embedding = %s::vector, category = %s,
+                    recall_count = recall_count + 1, last_accessed_at = NOW()
+                WHERE id = %s RETURNING id
+            """, (final_content, new_emb_str, new_category, existing["id"]))
+            memory_id = existing["id"]
+            category  = new_category
+        except Exception:
+            conn.rollback()
+            cur.execute("""
+                UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = NOW()
+                WHERE user_id = %s AND content = %s RETURNING id
+            """, (req.userId, final_content))
+            memory_id = existing["id"]
+            category  = existing["category"]
+
+    else:  # "new"
+        cur.execute("""
+            INSERT INTO memories (user_id, content, category, importance, embedding)
+            VALUES (%s, %s, %s, %s, %s::vector)
+            ON CONFLICT (user_id, content) DO UPDATE
+                SET recall_count = memories.recall_count + 1, last_accessed_at = NOW()
+            RETURNING id
+        """, (req.userId, final_content, category, req.importance, embedding_str))
+        memory_id = cur.fetchone()[0]
+
     conn.commit()
     cur.close()
     conn.close()
@@ -61,8 +97,9 @@ def add_memory(req: MemoryRequest):
     return {
         "stored": 1,
         "id": memory_id,
-        "content": req.content,
+        "content": final_content,
         "category": category,
+        "action": action,
     }
 
 
