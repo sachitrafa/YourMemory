@@ -5,30 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cognitive AI Memory | Ebbinghaus-based persistent memory for AI agents</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0a0a0f;
-            color: #e2e8f0;
+            font-family: 'DM Sans', sans-serif;
+            background-color: #ffffff;
+            color: #1a1a2e;
         }
+        h1, h2, h3 { font-family: 'Lora', serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
 
         .subtle-grid {
-            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
+            background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.04) 1px, transparent 0);
             background-size: 32px 32px;
         }
         .subtle-glow {
-            background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(99,102,241,0.07) 0%, transparent 70%);
+            background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(99,102,241,0.05) 0%, transparent 70%);
         }
         .card {
-            background: rgba(15, 15, 25, 0.8);
-            border: 1px solid rgba(255,255,255,0.06);
+            background: #ffffff;
+            border: 1px solid #e8e8f0;
             border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
         .card:hover {
-            border-color: rgba(99,102,241,0.2);
-            transition: border-color 0.2s ease;
+            border-color: #c7c7e8;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+            transition: all 0.2s ease;
         }
         .pill {
             display: inline-flex;
@@ -36,9 +39,9 @@
             gap: 6px;
             padding: 4px 12px;
             border-radius: 999px;
-            background: rgba(99,102,241,0.08);
-            border: 1px solid rgba(99,102,241,0.15);
-            color: #a5b4fc;
+            background: #f0f0fa;
+            border: 1px solid #dcdcf5;
+            color: #5b5bd6;
             font-size: 11px;
             font-weight: 600;
             letter-spacing: 0.08em;
@@ -59,65 +62,65 @@
         .btn-primary:hover { background: #4338ca; }
 
         .btn-ghost {
-            color: #94a3b8;
+            color: #64748b;
             padding: 12px 28px;
             border-radius: 8px;
             font-weight: 500;
             font-size: 15px;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid #e2e8f0;
             transition: all 0.15s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
-        .btn-ghost:hover { background: rgba(255,255,255,0.04); color: #e2e8f0; }
+        .btn-ghost:hover { background: #f8f8ff; color: #1a1a2e; }
 
         .benchmark-table th {
-            background: rgba(99,102,241,0.06);
-            color: #94a3b8;
+            background: #f8f8ff;
+            color: #64748b;
             font-size: 11px;
             font-weight: 600;
             letter-spacing: 0.06em;
             text-transform: uppercase;
             padding: 10px 16px;
             text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid #e8e8f0;
         }
         .benchmark-table td {
             padding: 12px 16px;
             font-size: 13px;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            color: #cbd5e1;
+            border-bottom: 1px solid #f1f1f7;
+            color: #374151;
         }
         .benchmark-table tr:last-child td { border-bottom: none; }
-        .benchmark-table tr:hover td { background: rgba(255,255,255,0.02); }
-        .winner { color: #818cf8; font-weight: 600; }
-        .loser { color: #64748b; }
+        .benchmark-table tr:hover td { background: #fafafe; }
+        .winner { color: #4f46e5; font-weight: 600; }
+        .loser { color: #94a3b8; }
 
         .formula-box {
-            background: rgba(99,102,241,0.05);
-            border: 1px solid rgba(99,102,241,0.12);
+            background: #f8f8ff;
+            border: 1px solid #dcdcf5;
             border-radius: 8px;
             padding: 20px 24px;
             font-family: 'JetBrains Mono', monospace;
             font-size: 13px;
-            color: #a5b4fc;
+            color: #4f46e5;
             line-height: 1.8;
         }
 
         .tag-green {
-            background: rgba(34,197,94,0.08);
-            border: 1px solid rgba(34,197,94,0.15);
-            color: #86efac;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
             font-size: 11px;
             padding: 2px 8px;
             border-radius: 4px;
             font-weight: 500;
         }
         .tag-red {
-            background: rgba(239,68,68,0.08);
-            border: 1px solid rgba(239,68,68,0.15);
-            color: #fca5a5;
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            color: #dc2626;
             font-size: 11px;
             padding: 2px 8px;
             border-radius: 4px;
@@ -127,11 +130,11 @@
         code {
             font-family: 'JetBrains Mono', monospace;
             font-size: 12px;
-            background: rgba(99,102,241,0.08);
-            border: 1px solid rgba(99,102,241,0.12);
+            background: #f0f0fa;
+            border: 1px solid #dcdcf5;
             padding: 2px 6px;
             border-radius: 4px;
-            color: #a5b4fc;
+            color: #4f46e5;
         }
 
         .section-label {
@@ -143,24 +146,26 @@
             margin-bottom: 12px;
         }
 
-        .divider { border-color: rgba(255,255,255,0.05); }
+        nav { background: rgba(255,255,255,0.92); border-bottom: 1px solid #e8e8f0; }
+        footer { border-top: 1px solid #e8e8f0; }
+        section { border-top: 1px solid #f0f0f5; }
     </style>
 </head>
-<body class="subtle-grid">
+<body class="subtle-grid bg-white">
 
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 border-b border-white/5 bg-[#0a0a0f]/90 backdrop-blur-md">
+    <nav class="fixed w-full z-50 backdrop-blur-md">
         <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded-lg bg-indigo-600/80 flex items-center justify-center">
+                <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
                 </div>
-                <span class="font-semibold text-sm text-white">Cognitive AI Memory</span>
+                <span class="font-semibold text-sm text-slate-800">Cognitive AI Memory</span>
             </div>
-            <div class="hidden md:flex items-center gap-6 text-sm text-slate-400">
-                <a href="#features" class="hover:text-white transition-colors">Features</a>
-                <a href="#benchmarks" class="hover:text-white transition-colors">Benchmarks</a>
-                <a href="#setup" class="hover:text-white transition-colors">Setup</a>
+            <div class="hidden md:flex items-center gap-6 text-sm text-slate-500">
+                <a href="#features" class="hover:text-slate-900 transition-colors">Features</a>
+                <a href="#benchmarks" class="hover:text-slate-900 transition-colors">Benchmarks</a>
+                <a href="#setup" class="hover:text-slate-900 transition-colors">Setup</a>
             </div>
             <a href="https://github.com/sachitrafa/cognitive-ai-memory" target="_blank" class="btn-ghost text-sm py-2 px-4">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
@@ -178,12 +183,12 @@
                 Open Source · MCP Compatible
             </div>
 
-            <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-5 tracking-tight">
+            <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-5 tracking-tight text-slate-900">
                 Persistent memory for AI agents<br/>
-                <span class="text-indigo-400">modelled on how humans forget.</span>
+                <span class="text-indigo-500 italic">modelled on how humans forget.</span>
             </h1>
 
-            <p class="text-base text-slate-400 max-w-xl mx-auto mb-8 leading-relaxed">
+            <p class="text-base text-slate-500 max-w-xl mx-auto mb-8 leading-relaxed">
                 Cognitive AI Memory uses the Ebbinghaus forgetting curve to score, decay, and reinforce memories over time — so your AI always surfaces what matters most, not just what was stored last.
             </p>
 
@@ -202,28 +207,28 @@
 
             <!-- Terminal preview -->
             <div class="mt-14 mx-auto max-w-2xl card overflow-hidden text-left">
-                <div class="flex items-center gap-1.5 px-4 py-2.5 border-b border-white/5 bg-white/[0.02]">
-                    <div class="w-2.5 h-2.5 rounded-full bg-white/10"></div>
-                    <div class="w-2.5 h-2.5 rounded-full bg-white/10"></div>
-                    <div class="w-2.5 h-2.5 rounded-full bg-white/10"></div>
-                    <span class="ml-3 text-xs text-slate-500 font-mono">memory-server</span>
+                <div class="flex items-center gap-1.5 px-4 py-2.5 border-b border-slate-100 bg-slate-50">
+                    <div class="w-2.5 h-2.5 rounded-full bg-slate-200"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-slate-200"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-slate-200"></div>
+                    <span class="ml-3 text-xs text-slate-400 font-mono">memory-server</span>
                 </div>
                 <div class="p-5 font-mono text-sm space-y-3">
-                    <div class="text-slate-500 text-xs"># storing a new memory</div>
-                    <div class="text-indigo-300">store_memory("Sachit is switching from React to Vue.js")</div>
-                    <div class="text-slate-500 text-xs mt-3"># 45 days later — query fires</div>
-                    <div class="text-slate-300">recall_memory("what frontend framework does Sachit use?")</div>
+                    <div class="text-slate-400 text-xs"># storing a new memory</div>
+                    <div class="text-indigo-600">store_memory("Sachit is switching from React to Vue.js")</div>
+                    <div class="text-slate-400 text-xs mt-3"># 45 days later — query fires</div>
+                    <div class="text-slate-700">recall_memory("what frontend framework does Sachit use?")</div>
                     <div class="mt-2 space-y-1.5">
-                        <div class="flex items-center gap-3 p-2.5 rounded bg-white/[0.03] border border-white/5">
+                        <div class="flex items-center gap-3 p-2.5 rounded bg-green-50 border border-green-100">
                             <span class="tag-green">score 0.87</span>
-                            <span class="text-slate-300 text-xs">Sachit is switching from React to Vue.js</span>
+                            <span class="text-slate-700 text-xs">Sachit is switching from React to Vue.js</span>
                         </div>
-                        <div class="flex items-center gap-3 p-2.5 rounded bg-white/[0.02] border border-white/[0.03]">
+                        <div class="flex items-center gap-3 p-2.5 rounded bg-slate-50 border border-slate-100">
                             <span class="tag-red">score 0.04</span>
-                            <span class="text-slate-500 text-xs line-through">Sachit uses React for frontend</span>
+                            <span class="text-slate-400 text-xs line-through">Sachit uses React for frontend</span>
                         </div>
                     </div>
-                    <div class="text-slate-500 text-xs pt-1">decay pruned 1 stale memory · 2 results returned</div>
+                    <div class="text-slate-400 text-xs pt-1">decay pruned 1 stale memory · 2 results returned</div>
                 </div>
             </div>
         </div>
@@ -234,8 +239,8 @@
         <div class="max-w-5xl mx-auto">
             <div class="text-center mb-12">
                 <div class="section-label">How it works</div>
-                <h2 class="text-2xl font-bold mb-3">Memory that ages gracefully</h2>
-                <p class="text-slate-400 text-sm max-w-lg mx-auto">Not a vector database. Not a chat log. A cognitive memory layer that knows what to keep and what to let go.</p>
+                <h2 class="text-2xl font-bold mb-3 text-slate-900">Memory that ages gracefully</h2>
+                <p class="text-slate-500 text-sm max-w-lg mx-auto">Not a vector database. Not a chat log. A cognitive memory layer that knows what to keep and what to let go.</p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-5">
@@ -269,8 +274,8 @@
         <div class="max-w-5xl mx-auto">
             <div class="text-center mb-12">
                 <div class="section-label">Benchmarks</div>
-                <h2 class="text-2xl font-bold mb-3">Evaluated on LoCoMo</h2>
-                <p class="text-slate-400 text-sm max-w-xl mx-auto">
+                <h2 class="text-2xl font-bold mb-3 text-slate-900">Evaluated on LoCoMo</h2>
+                <p class="text-slate-500 text-sm max-w-xl mx-auto">
                     LoCoMo is a public benchmark by Snap Research — 10 real multi-session conversations spanning weeks to months, 272 sessions, 1,534 QA pairs. Metric: <strong class="text-slate-300">Recall@5</strong> — does the correct answer appear in the top 5 retrieved results?
                 </p>
             </div>
@@ -278,16 +283,16 @@
             <!-- Summary stats -->
             <div class="grid md:grid-cols-3 gap-4 mb-8">
                 <div class="card p-5 text-center">
-                    <div class="text-3xl font-bold text-indigo-400 mb-1">34%</div>
-                    <div class="text-xs text-slate-400">Cognitive AI — Recall@5</div>
+                    <div class="text-3xl font-bold text-indigo-600 mb-1">34%</div>
+                    <div class="text-xs text-slate-500">Cognitive AI — Recall@5</div>
                 </div>
                 <div class="card p-5 text-center">
-                    <div class="text-3xl font-bold text-slate-500 mb-1">22%</div>
-                    <div class="text-xs text-slate-400">Zep Cloud — Recall@5</div>
+                    <div class="text-3xl font-bold text-slate-400 mb-1">22%</div>
+                    <div class="text-xs text-slate-500">Zep Cloud — Recall@5</div>
                 </div>
                 <div class="card p-5 text-center">
-                    <div class="text-3xl font-bold text-slate-500 mb-1">18%</div>
-                    <div class="text-xs text-slate-400">Mem0 — Recall@5</div>
+                    <div class="text-3xl font-bold text-slate-400 mb-1">18%</div>
+                    <div class="text-xs text-slate-500">Mem0 — Recall@5</div>
                 </div>
             </div>
 
@@ -366,19 +371,19 @@
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div>
                     <div class="section-label">Scoring formula</div>
-                    <h2 class="text-2xl font-bold mb-4">Relevance × recency</h2>
-                    <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-slate-900">Relevance × recency</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">
                         Every retrieval combines semantic similarity with a biological memory model. Memories that haven't been accessed in a long time receive a lower strength score — and are pruned entirely once they fall below the threshold.
                     </p>
-                    <ul class="space-y-2 text-sm text-slate-400">
-                        <li class="flex gap-2"><span class="text-indigo-400 mt-0.5">→</span> <span><strong class="text-slate-300">importance</strong> — set at store time (0–1)</span></li>
-                        <li class="flex gap-2"><span class="text-indigo-400 mt-0.5">→</span> <span><strong class="text-slate-300">λ_eff</strong> — decay rate, modulated by importance</span></li>
-                        <li class="flex gap-2"><span class="text-indigo-400 mt-0.5">→</span> <span><strong class="text-slate-300">recall_count</strong> — reinforced on every access</span></li>
-                        <li class="flex gap-2"><span class="text-indigo-400 mt-0.5">→</span> <span>memories below strength <code>0.05</code> are pruned</span></li>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li class="flex gap-2"><span class="text-indigo-500 mt-0.5">→</span> <span><strong class="text-slate-700">importance</strong> — set at store time (0–1)</span></li>
+                        <li class="flex gap-2"><span class="text-indigo-500 mt-0.5">→</span> <span><strong class="text-slate-700">λ_eff</strong> — decay rate, modulated by importance</span></li>
+                        <li class="flex gap-2"><span class="text-indigo-500 mt-0.5">→</span> <span><strong class="text-slate-700">recall_count</strong> — reinforced on every access</span></li>
+                        <li class="flex gap-2"><span class="text-indigo-500 mt-0.5">→</span> <span>memories below strength <code>0.05</code> are pruned</span></li>
                     </ul>
                 </div>
                 <div class="formula-box">
-                    <div class="text-slate-500 text-xs mb-3"># retrieval score</div>
+                    <div class="text-slate-400 text-xs mb-3"># retrieval score</div>
                     score = cosine_sim × strength<br/><br/>
                     <div class="text-slate-500 text-xs mb-3"># ebbinghaus strength</div>
                     strength = importance<br/>
@@ -396,8 +401,8 @@
         <div class="max-w-2xl mx-auto">
             <div class="text-center mb-10">
                 <div class="section-label">Setup</div>
-                <h2 class="text-2xl font-bold mb-3">Up and running in two steps</h2>
-                <p class="text-slate-400 text-sm">Requires Docker and Ollama with <code>nomic-embed-text</code> pulled.</p>
+                <h2 class="text-2xl font-bold mb-3 text-slate-900">Up and running in two steps</h2>
+                <p class="text-slate-500 text-sm">Requires Docker and Ollama with <code>nomic-embed-text</code> pulled.</p>
             </div>
 
             <div class="space-y-4">
@@ -436,16 +441,16 @@
 
     <!-- Footer -->
     <footer class="py-10 border-t border-white/5 px-6">
-        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
-            <span class="font-semibold text-slate-400">Cognitive AI Memory</span>
-            <p>Built by <a href="https://github.com/sachitrafa" class="hover:text-white transition-colors">sachitrafa</a> · Open source under MIT</p>
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">
+            <span class="font-semibold text-slate-600">Cognitive AI Memory</span>
+            <p>Built by <a href="https://github.com/sachitrafa" class="hover:text-slate-900 transition-colors">sachitrafa</a> · Open source under MIT</p>
             <a href="https://github.com/sachitrafa/cognitive-ai-memory" class="hover:text-white transition-colors">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
             </a>
         </div>
     </footer>
 
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-indigo-600 rounded-lg text-sm font-medium shadow-xl transition-all duration-200 translate-y-12 opacity-0 pointer-events-none">
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium shadow-xl transition-all duration-200 translate-y-12 opacity-0 pointer-events-none">
         Copied
     </div>
 
