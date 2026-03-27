@@ -34,12 +34,14 @@ def _load_services():
     from src.services.embed import embed
     from src.services.extract import is_question, categorize
     from src.services.api_keys import validate_api_key
+    from src.services.resolve import resolve
     _services["psycopg2"]          = psycopg2
     _services["retrieve"]          = _retrieve
     _services["embed"]             = embed
     _services["is_question"]       = is_question
     _services["categorize"]        = categorize
     _services["validate_api_key"]  = validate_api_key
+    _services["resolve"]           = resolve
 
 DEFAULT_USER = "sachit"
 DEFAULT_IMPORTANCE = 0.5
@@ -244,32 +246,69 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         if "importance" not in arguments:
             return [types.TextContent(type="text", text=json.dumps(
                 {"error": "importance is required (0.0–1.0). Decide based on how permanent this memory should be."}))]
-        importance    = float(arguments["importance"])
-        importance    = max(0.0, min(1.0, importance))
+        importance = max(0.0, min(1.0, float(arguments["importance"])))
         valid_categories = {"fact", "assumption", "failure", "strategy"}
-        raw_category  = arguments.get("category", "").strip().lower()
-        category      = raw_category if raw_category in valid_categories else categorize(content)
-        embedding     = embed(content)
-        embedding_str = f"[{','.join(str(x) for x in embedding)}]"
+        raw_category = arguments.get("category", "").strip().lower()
+        category     = raw_category if raw_category in valid_categories else categorize(content)
+        embedding    = embed(content)
 
         conn = _get_conn()
         cur  = conn.cursor()
-        cur.execute("""
-            INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility)
-            VALUES (%s, %s, %s, %s, %s::vector, %s, %s)
-            ON CONFLICT (user_id, content) DO UPDATE
-                SET recall_count     = memories.recall_count + 1,
-                    last_accessed_at = NOW()
-            RETURNING id
-        """, (user_id, content, category, importance, embedding_str, agent_id, visibility))
-        memory_id = cur.fetchone()[0]
+
+        resolution    = _services["resolve"](user_id, content, embedding, conn)
+        action        = resolution["action"]
+        final_content = resolution["content"]
+        existing      = resolution["existing"]
+
+        if action == "reinforce":
+            cur.execute("""
+                UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = NOW()
+                WHERE id = %s RETURNING id
+            """, (existing["id"],))
+            memory_id = existing["id"]
+            category  = existing["category"]
+
+        elif action in ("replace", "merge"):
+            new_embedding = embed(final_content)
+            new_emb_str   = f"[{','.join(str(x) for x in new_embedding)}]"
+            new_category  = categorize(final_content)
+            try:
+                cur.execute("""
+                    UPDATE memories
+                    SET content = %s, embedding = %s::vector, category = %s,
+                        recall_count = recall_count + 1, last_accessed_at = NOW()
+                    WHERE id = %s RETURNING id
+                """, (final_content, new_emb_str, new_category, existing["id"]))
+                memory_id = existing["id"]
+                category  = new_category
+            except Exception:
+                conn.rollback()
+                cur.execute("""
+                    UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = NOW()
+                    WHERE user_id = %s AND content = %s RETURNING id
+                """, (user_id, final_content))
+                memory_id = existing["id"]
+                category  = existing["category"]
+
+        else:  # "new"
+            embedding_str = f"[{','.join(str(x) for x in embedding)}]"
+            cur.execute("""
+                INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility)
+                VALUES (%s, %s, %s, %s, %s::vector, %s, %s)
+                ON CONFLICT (user_id, content) DO UPDATE
+                    SET recall_count = memories.recall_count + 1, last_accessed_at = NOW()
+                RETURNING id
+            """, (user_id, final_content, category, importance, embedding_str, agent_id, visibility))
+            memory_id = cur.fetchone()[0]
+
         conn.commit()
         cur.close()
         conn.close()
 
         return [types.TextContent(type="text", text=json.dumps(
-            {"stored": 1, "id": memory_id, "content": content, "category": category,
-             "importance": importance, "agent_id": agent_id, "visibility": visibility}))]
+            {"stored": 1, "id": memory_id, "content": final_content, "category": category,
+             "importance": importance, "agent_id": agent_id, "visibility": visibility,
+             "action": action}))]
 
     elif name == "update_memory":
         memory_id   = arguments["memory_id"]
