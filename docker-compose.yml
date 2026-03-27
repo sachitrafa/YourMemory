@@ -23,13 +23,9 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/yourmemory
-      OLLAMA_URL: ${OLLAMA_URL:-http://host.docker.internal:11434}
-      EXTRACT_MODEL: ${EXTRACT_MODEL:-llama3.2:3b}
     depends_on:
       db:
         condition: service_healthy
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
 volumes:
   pgdata:

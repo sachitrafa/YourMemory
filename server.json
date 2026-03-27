@@ -21,20 +21,6 @@
           "isRequired": true,
           "format": "string",
           "isSecret": false
-        },
-        {
-          "name": "OLLAMA_URL",
-          "description": "Ollama server URL for local embeddings (nomic-embed-text) and classification (llama3.2:3b). Default: http://localhost:11434",
-          "isRequired": false,
-          "format": "string",
-          "isSecret": false
-        },
-        {
-          "name": "EXTRACT_MODEL",
-          "description": "Ollama model used for fact/assumption classification. Default: llama3.2:3b",
-          "isRequired": false,
-          "format": "string",
-          "isSecret": false
         }
       ]
     }

@@ -51,7 +51,6 @@ Importance additionally modulates the decay rate within each category. Memories 
 
 **Prerequisites:**
 - [Docker](https://docs.docker.com/get-docker/) — runs Postgres
-- [Ollama](https://ollama.com) — runs local embeddings
 
 **Install and start:**
 
@@ -172,7 +171,7 @@ curl -X DELETE http://localhost:8000/memories/42
 ## Stack
 
 - **PostgreSQL + pgvector** — vector similarity search
-- **Ollama** — local embeddings (`nomic-embed-text`, 768 dims)
+- **sentence-transformers** — local embeddings (`all-mpnet-base-v2`, 768 dims, no external service needed)
 - **FastAPI** — REST server
 - **APScheduler** — automatic 24h decay job
 - **MCP** — Claude integration via Model Context Protocol
