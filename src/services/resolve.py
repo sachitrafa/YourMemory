@@ -82,13 +82,17 @@ def merge_entities(existing_text: str, incoming_text: str) -> str:
     """
     existing_lower = existing_text.lower()
 
-    existing_doc = _nlp(existing_text)
     incoming_doc = _nlp(incoming_text)
 
-    # Collect named entities first, then noun chunks as fallback
+    # Layer 1: named entities
     candidates = [ent.text for ent in incoming_doc.ents]
-    if not candidates:
-        candidates = [chunk.text for chunk in incoming_doc.noun_chunks]
+    # Layer 2: noun chunks
+    candidates += [chunk.text for chunk in incoming_doc.noun_chunks]
+    # Layer 3: capitalised tokens (catches tech names like MongoDB, Spring, Vue)
+    candidates += [
+        tok.text for tok in incoming_doc
+        if tok.text[0].isupper() and not tok.is_stop and len(tok.text) > 2
+    ]
 
     new_terms = [
         t for t in candidates
