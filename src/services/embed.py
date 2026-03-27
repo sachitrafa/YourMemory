@@ -1,18 +1,7 @@
-import os
-import httpx
-from dotenv import load_dotenv
+from sentence_transformers import SentenceTransformer
 
-load_dotenv()
-
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
-EMBED_MODEL = "nomic-embed-text"
+_model = SentenceTransformer("all-mpnet-base-v2")
 
 
 def embed(text: str) -> list[float]:
-    response = httpx.post(
-        f"{OLLAMA_URL}/api/embeddings",
-        json={"model": EMBED_MODEL, "prompt": text},
-        timeout=30,
-    )
-    response.raise_for_status()
-    return response.json()["embedding"]
+    return _model.encode(text).tolist()
