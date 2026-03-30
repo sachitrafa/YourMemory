@@ -83,19 +83,14 @@ Reload Claude Code (`Cmd+Shift+P` → `Developer: Reload Window`).
 
 1. Open VS Code → Cline extension → click **MCP Servers** icon
 2. Click **"Edit MCP Settings"**
-3. Find the full path to the installed command:
-```bash
-which yourmemory
-# e.g. /usr/local/bin/yourmemory or /Users/you/.local/bin/yourmemory
-```
-4. Add using the **full path** (Cline doesn't inherit shell PATH):
+3. Add the following (uses `python3` directly — no PATH issues):
 
 ```json
 {
   "mcpServers": {
     "yourmemory": {
-      "command": "/usr/local/bin/yourmemory",
-      "args": []
+      "command": "python3",
+      "args": ["-m", "memory_mcp"]
     }
   }
 }
