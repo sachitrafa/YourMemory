@@ -10,6 +10,8 @@ load_dotenv()
 
 # Memories below this similarity are excluded from results
 SIMILARITY_THRESHOLD = 0.50
+SIMILARITY_THRESHOLD_SHORT = 0.50   # same as default — no special handling for short queries
+SIMILARITY_THRESHOLD_FALLBACK = 0.20 # used when nothing found above threshold
 # Memories above this similarity get recall_count reinforced
 REINFORCE_THRESHOLD  = 0.75
 
@@ -38,18 +40,22 @@ def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None) -> 
     """
     1. Embed the query.
     2. Find candidates by cosine similarity above threshold.
+       - DuckDB:   native array_cosine_similarity (default)
        - Postgres: pgvector operator
-       - SQLite: Python cosine similarity over all user memories
+       - SQLite:   Python numpy cosine (legacy)
     3. Score each: similarity × Ebbinghaus strength.
     4. Reinforce high-scoring memories (bump recall_count).
     5. Return context string + structured list.
     """
     query_embedding = embed(query)
     backend = get_backend()
+    is_short = len(query.split()) <= 3
 
     if backend == "postgres":
         return _retrieve_postgres(user_id, query_embedding, top_k, agent_id)
-    return _retrieve_sqlite(user_id, query_embedding, top_k, agent_id)
+    if backend == "duckdb":
+        return _retrieve_duckdb(user_id, query_embedding, top_k, agent_id, is_short=is_short)
+    return _retrieve_sqlite(user_id, query_embedding, top_k, agent_id, is_short=is_short)
 
 
 # ── Postgres path ─────────────────────────────────────────────────────────────
@@ -91,9 +97,135 @@ def _retrieve_postgres(user_id, query_embedding, top_k, agent_id):
     return _score_and_return(candidates, top_k, cur, conn, backend="postgres")
 
 
+# ── DuckDB path ───────────────────────────────────────────────────────────────
+
+def _retrieve_duckdb(user_id, query_embedding, top_k, agent_id, is_short=False):
+    from src.db.connection import duckdb_rows
+    threshold = SIMILARITY_THRESHOLD_SHORT if is_short else SIMILARITY_THRESHOLD
+    conn = get_conn()
+
+    if agent_id:
+        cur = conn.execute("""
+            SELECT id, content, category, importance, recall_count, last_accessed_at,
+                   agent_id, visibility,
+                   array_cosine_similarity(embedding, ?::FLOAT[768]) AS similarity
+            FROM memories
+            WHERE user_id = ?
+              AND (visibility = 'shared' OR (visibility = 'private' AND agent_id = ?))
+              AND array_cosine_similarity(embedding, ?::FLOAT[768]) >= ?
+            ORDER BY similarity DESC
+            LIMIT ?
+        """, [query_embedding, user_id, agent_id, query_embedding, threshold, top_k * 2])
+    else:
+        cur = conn.execute("""
+            SELECT id, content, category, importance, recall_count, last_accessed_at,
+                   agent_id, visibility,
+                   array_cosine_similarity(embedding, ?::FLOAT[768]) AS similarity
+            FROM memories
+            WHERE user_id = ?
+              AND visibility = 'shared'
+              AND array_cosine_similarity(embedding, ?::FLOAT[768]) >= ?
+            ORDER BY similarity DESC
+            LIMIT ?
+        """, [query_embedding, user_id, query_embedding, threshold, top_k * 2])
+
+    candidates = duckdb_rows(cur)
+
+    # Fallback to lower threshold if nothing found
+    if not candidates:
+        if agent_id:
+            cur = conn.execute("""
+                SELECT id, content, category, importance, recall_count, last_accessed_at,
+                       agent_id, visibility,
+                       array_cosine_similarity(embedding, ?::FLOAT[768]) AS similarity
+                FROM memories
+                WHERE user_id = ?
+                  AND (visibility = 'shared' OR (visibility = 'private' AND agent_id = ?))
+                  AND array_cosine_similarity(embedding, ?::FLOAT[768]) >= ?
+                ORDER BY similarity DESC LIMIT ?
+            """, [query_embedding, user_id, agent_id, query_embedding, SIMILARITY_THRESHOLD_FALLBACK, top_k * 2])
+        else:
+            cur = conn.execute("""
+                SELECT id, content, category, importance, recall_count, last_accessed_at,
+                       agent_id, visibility,
+                       array_cosine_similarity(embedding, ?::FLOAT[768]) AS similarity
+                FROM memories
+                WHERE user_id = ?
+                  AND visibility = 'shared'
+                  AND array_cosine_similarity(embedding, ?::FLOAT[768]) >= ?
+                ORDER BY similarity DESC LIMIT ?
+            """, [query_embedding, user_id, query_embedding, SIMILARITY_THRESHOLD_FALLBACK, top_k * 2])
+        candidates = duckdb_rows(cur)
+
+    return _score_and_return_duckdb(candidates, top_k, conn)
+
+
+def _score_and_return_duckdb(candidates, top_k, conn):
+    if not candidates:
+        conn.close()
+        return {"memoriesFound": 0, "context": "", "memories": []}
+
+    scored = []
+    for m in candidates:
+        strength = compute_strength(
+            last_accessed_at=_parse_dt(m["last_accessed_at"]),
+            recall_count=m["recall_count"],
+            importance=m["importance"],
+            category=m["category"],
+        )
+        scored.append({**m, "strength": strength, "score": m["similarity"] * strength})
+
+    scored.sort(key=lambda x: x["score"], reverse=True)
+    top = scored[:top_k]
+
+    relevant_ids = [m["id"] for m in top if m["similarity"] >= REINFORCE_THRESHOLD]
+    if relevant_ids:
+        for mid in relevant_ids:
+            conn.execute("""
+                UPDATE memories
+                SET recall_count = recall_count + 1, last_accessed_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            """, [mid])
+
+    facts       = [m for m in top if m["category"] == "fact"]
+    assumptions = [m for m in top if m["category"] == "assumption"]
+    strategies  = [m for m in top if m["category"] == "strategy"]
+    failures    = [m for m in top if m["category"] == "failure"]
+
+    context_parts = []
+    if facts:
+        context_parts.append("[Facts]\n" + "\n".join(m["content"] for m in facts))
+    if assumptions:
+        context_parts.append("[Assumptions]\n" + "\n".join(m["content"] for m in assumptions))
+    if strategies:
+        context_parts.append("[Strategies]\n" + "\n".join(m["content"] for m in strategies))
+    if failures:
+        context_parts.append("[Failures]\n" + "\n".join(m["content"] for m in failures))
+
+    conn.close()
+    return {
+        "memoriesFound": len(top),
+        "context": "\n\n".join(context_parts),
+        "memories": [
+            {
+                "id":         m["id"],
+                "content":    m["content"],
+                "category":   m["category"],
+                "agent_id":   m.get("agent_id"),
+                "visibility": m.get("visibility"),
+                "importance": round(m["importance"], 4),
+                "strength":   round(m["strength"], 4),
+                "similarity": round(m["similarity"], 4),
+                "score":      round(m["score"], 4),
+            }
+            for m in top
+        ],
+    }
+
+
 # ── SQLite path ───────────────────────────────────────────────────────────────
 
-def _retrieve_sqlite(user_id, query_embedding, top_k, agent_id):
+def _retrieve_sqlite(user_id, query_embedding, top_k, agent_id, is_short=False):
     conn = get_conn()
     cur  = conn.cursor()
 
@@ -113,16 +245,27 @@ def _retrieve_sqlite(user_id, query_embedding, top_k, agent_id):
             WHERE user_id = ? AND visibility = 'shared'
         """, (user_id,))
 
-    candidates = []
-    for row in cur.fetchall():
-        raw_emb = row["embedding"]
-        if raw_emb is None:
-            continue
-        sim = _cosine(query_embedding, json.loads(raw_emb))
-        if sim >= SIMILARITY_THRESHOLD:
-            d = dict(row)
-            d["similarity"] = sim
-            candidates.append(d)
+    rows = cur.fetchall()
+    threshold = SIMILARITY_THRESHOLD_SHORT if is_short else SIMILARITY_THRESHOLD
+
+    def _filter(rows, threshold):
+        candidates = []
+        for row in rows:
+            raw_emb = row["embedding"]
+            if raw_emb is None:
+                continue
+            sim = _cosine(query_embedding, json.loads(raw_emb))
+            if sim >= threshold:
+                d = dict(row)
+                d["similarity"] = sim
+                candidates.append(d)
+        return candidates
+
+    candidates = _filter(rows, threshold)
+
+    # Fallback: lower threshold if nothing found
+    if not candidates:
+        candidates = _filter(rows, SIMILARITY_THRESHOLD_FALLBACK)
 
     return _score_and_return(candidates, top_k, cur, conn, backend="sqlite")
 
@@ -172,12 +315,18 @@ def _score_and_return(candidates, top_k, cur, conn, backend):
 
     facts       = [m for m in top if m["category"] == "fact"]
     assumptions = [m for m in top if m["category"] == "assumption"]
+    strategies  = [m for m in top if m["category"] == "strategy"]
+    failures    = [m for m in top if m["category"] == "failure"]
 
     context_parts = []
     if facts:
         context_parts.append("[Facts]\n" + "\n".join(m["content"] for m in facts))
     if assumptions:
         context_parts.append("[Assumptions]\n" + "\n".join(m["content"] for m in assumptions))
+    if strategies:
+        context_parts.append("[Strategies]\n" + "\n".join(m["content"] for m in strategies))
+    if failures:
+        context_parts.append("[Failures]\n" + "\n".join(m["content"] for m in failures))
     context = "\n\n".join(context_parts)
 
     cur.close()

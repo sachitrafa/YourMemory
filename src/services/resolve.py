@@ -55,47 +55,50 @@ def find_near_duplicate(user_id: str, embedding: list, conn) -> dict | None:
         """, (embedding_str, user_id, embedding_str))
         row = cur.fetchone()
         cur.close()
-
         if row is None:
             return None
         sim = row[5]
+        if sim < DEDUP_THRESHOLD:
+            return None
+        return {"id": row[0], "content": row[1], "category": row[2],
+                "importance": row[3], "recall_count": row[4], "similarity": sim}
 
-    else:
-        # SQLite: compute cosine similarity in Python over all user memories
-        cur = conn.cursor()
-        cur.execute("""
-            SELECT id, content, category, importance, recall_count, embedding
+    if backend == "duckdb":
+        from src.db.connection import duckdb_row
+        cur = conn.execute("""
+            SELECT id, content, category, importance, recall_count,
+                   array_cosine_similarity(embedding, ?::FLOAT[768]) AS similarity
             FROM memories
             WHERE user_id = ?
-        """, (user_id,))
-        rows = cur.fetchall()
-        cur.close()
-
-        best, sim = None, -1.0
-        for row in rows:
-            raw = row[5] if isinstance(row, tuple) else row["embedding"]
-            if raw is None:
-                continue
-            s = _cosine(embedding, json.loads(raw))
-            if s > sim:
-                sim, best = s, row
-        if best is None:
+            ORDER BY similarity DESC
+            LIMIT 1
+        """, [embedding, user_id])
+        row = duckdb_row(cur)
+        if row is None or row["similarity"] < DEDUP_THRESHOLD:
             return None
-        row = best  # use below
+        return row
 
-    if sim < DEDUP_THRESHOLD:
+    # SQLite: numpy cosine over all user memories
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT id, content, category, importance, recall_count, embedding
+        FROM memories WHERE user_id = ?
+    """, (user_id,))
+    rows = cur.fetchall()
+    cur.close()
+
+    best, sim = None, -1.0
+    for row in rows:
+        raw = row[5] if isinstance(row, tuple) else row["embedding"]
+        if raw is None:
+            continue
+        s = _cosine(embedding, json.loads(raw))
+        if s > sim:
+            sim, best = s, row
+    if best is None or sim < DEDUP_THRESHOLD:
         return None
-
-    if backend == "postgres":
-        return {
-            "id": row[0], "content": row[1], "category": row[2],
-            "importance": row[3], "recall_count": row[4], "similarity": sim,
-        }
-    # SQLite row
-    return {
-        "id": row[0], "content": row[1], "category": row[2],
-        "importance": row[3], "recall_count": row[4], "similarity": sim,
-    }
+    return {"id": best[0], "content": best[1], "category": best[2],
+            "importance": best[3], "recall_count": best[4], "similarity": sim}
 
 
 def detect_contradiction(existing_text: str, incoming_text: str) -> bool:

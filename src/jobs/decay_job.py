@@ -6,6 +6,7 @@ Manual usage:
     python -m src.jobs.decay_job
 """
 
+import sys
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 
@@ -40,6 +41,10 @@ def run():
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute("SELECT id, category, importance, recall_count, last_accessed_at FROM memories")
         edges = [dict(r) for r in cur.fetchall()]
+    elif backend == "duckdb":
+        from src.db.connection import duckdb_rows
+        result = conn.execute("SELECT id, category, importance, recall_count, last_accessed_at FROM memories")
+        edges = duckdb_rows(result)
     else:
         cur.execute("SELECT id, category, importance, recall_count, last_accessed_at FROM memories")
         edges = [dict(r) for r in cur.fetchall()]
@@ -58,6 +63,8 @@ def run():
         if strength < PRUNE_THRESHOLD:
             if backend == "postgres":
                 cur.execute("DELETE FROM memories WHERE id = %s", (edge["id"],))
+            elif backend == "duckdb":
+                conn.execute("DELETE FROM memories WHERE id = ?", [edge["id"]])
             else:
                 cur.execute("DELETE FROM memories WHERE id = ?", (edge["id"],))
             pruned += 1
@@ -68,7 +75,7 @@ def run():
     cur.close()
     conn.close()
 
-    print(f"Decay job complete ({backend}) — updated: {updated}, pruned: {pruned}")
+    print(f"Decay job complete ({backend}) — updated: {updated}, pruned: {pruned}", file=sys.stderr)
 
 
 if __name__ == "__main__":

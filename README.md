@@ -2,7 +2,7 @@
 
 **+16pp better recall than Mem0 on LoCoMo. 100% stale memory precision. Biologically-inspired memory decay for AI agents.**
 
-Persistent memory for Claude that works like human memory — important things stick, forgotten things fade, outdated facts get demoted automatically.
+Persistent memory for Claude and any MCP-compatible AI — works like human memory. Important things stick, forgotten things fade, outdated facts get pruned automatically.
 
 > Early stage — feedback and ideas welcome.
 
@@ -49,7 +49,7 @@ Importance additionally modulates the decay rate within each category. Memories 
 
 ## Setup
 
-**Zero infrastructure required** — uses SQLite out of the box. Two commands and you're done.
+**Zero infrastructure required** — uses DuckDB out of the box. Two commands and you're done.
 
 ### 1. Install
 
@@ -57,11 +57,21 @@ Importance additionally modulates the decay rate within each category. Memories 
 pip install yourmemory
 ```
 
-All dependencies are installed automatically. No clone, no separate download steps needed.
+All dependencies installed automatically. No clone, no Docker, no database setup.
 
-### 2. Wire into your AI client
+### 2. Get your config
 
-The database is created automatically at `~/.yourmemory/memories.db` on first use. No `.env` file needed.
+Run this once to get your exact config:
+
+```bash
+yourmemory-path
+```
+
+It prints your full executable path and a ready-to-paste config for any MCP client. Copy it.
+
+### 3. Wire into your AI client
+
+The database is created automatically at `~/.yourmemory/memories.duckdb` on first use.
 
 #### Claude Code
 
@@ -81,25 +91,45 @@ Reload Claude Code (`Cmd+Shift+P` → `Developer: Reload Window`).
 
 #### Cline (VS Code)
 
-Cline works best with SSE transport. Start the server first in a terminal:
+VS Code doesn't inherit your shell PATH, so use the **full path** from `yourmemory-path`.
 
-```bash
-yourmemory --sse --port 3000
-```
-
-Then in Cline → **MCP Servers** → **Edit MCP Settings**:
+In Cline → **MCP Servers** → **Edit MCP Settings**:
 
 ```json
 {
   "mcpServers": {
     "yourmemory": {
-      "url": "http://localhost:3000/sse"
+      "command": "/full/path/to/yourmemory",
+      "args": [],
+      "env": {
+        "YOURMEMORY_USER": "your_name",
+        "DATABASE_URL": ""
+      }
     }
   }
 }
 ```
 
-Save — Cline will connect automatically.
+Run `yourmemory-path` in terminal — it prints the exact config to paste.
+
+#### Cursor
+
+Add to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "yourmemory": {
+      "command": "/full/path/to/yourmemory",
+      "args": [],
+      "env": {
+        "YOURMEMORY_USER": "your_name",
+        "DATABASE_URL": ""
+      }
+    }
+  }
+}
+```
 
 #### Claude Desktop
 
@@ -119,9 +149,9 @@ Restart Claude Desktop.
 
 #### Any MCP-compatible client
 
-YourMemory is a standard stdio MCP server. The command is simply `yourmemory`. Add it to any client that supports MCP servers using the same pattern above.
+YourMemory is a standard stdio MCP server. Works with Claude Code, Claude Desktop, Cline, Cursor, Windsurf, Continue, and Zed. Use the full path from `yourmemory-path` if the client doesn't inherit shell PATH.
 
-### 3. Add memory instructions to your project
+### 4. Add memory instructions to your project
 
 Copy `sample_CLAUDE.md` into your project root as `CLAUDE.md` and replace:
 - `YOUR_NAME` — your name (e.g. `Alice`)
@@ -133,13 +163,19 @@ Claude will now follow the recall → store → update workflow automatically on
 
 ### PostgreSQL (optional — for teams or large datasets)
 
-If you have PostgreSQL + pgvector, create a `.env` file:
+Install with Postgres support:
+
+```bash
+pip install yourmemory[postgres]
+```
+
+Then create a `.env` file:
 
 ```bash
 DATABASE_URL=postgresql://YOUR_USER@localhost:5432/yourmemory
 ```
 
-The backend is selected automatically — `postgresql://` in `DATABASE_URL` → Postgres + pgvector, anything else → SQLite.
+The backend is selected automatically — `postgresql://` in `DATABASE_URL` → Postgres + pgvector, anything else → DuckDB.
 
 **macOS**
 ```bash
@@ -152,8 +188,6 @@ createdb yourmemory
 sudo apt install postgresql postgresql-contrib postgresql-16-pgvector
 createdb yourmemory
 ```
-
-> **One-liner setup script** (macOS/Linux): `bash scripts/setup_db.sh` handles install + DB creation automatically.
 
 ---
 
@@ -206,47 +240,20 @@ Runs automatically every 24 hours on startup — no cron needed. Memories below 
 
 ---
 
-## REST API
-
-```bash
-# Store
-curl -X POST http://localhost:8000/memories \
-  -H "Content-Type: application/json" \
-  -d '{"userId":"u1","content":"Prefers dark mode","importance":0.8}'
-
-# Retrieve
-curl -X POST http://localhost:8000/retrieve \
-  -H "Content-Type: application/json" \
-  -d '{"userId":"u1","query":"UI preferences"}'
-
-# List all
-curl "http://localhost:8000/memories?userId=u1"
-
-# Update
-curl -X PUT http://localhost:8000/memories/42 \
-  -H "Content-Type: application/json" \
-  -d '{"content":"Prefers dark mode in all apps","importance":0.85}'
-
-# Delete
-curl -X DELETE http://localhost:8000/memories/42
-```
-
----
-
 ## Stack
 
-- **PostgreSQL + pgvector** — vector similarity search
+- **DuckDB** — default backend, zero setup, native vector similarity (same quality as pgvector)
 - **sentence-transformers** — local embeddings (`all-mpnet-base-v2`, 768 dims, no external service needed)
-- **FastAPI** — REST server
 - **APScheduler** — automatic 24h decay job
 - **MCP** — Claude integration via Model Context Protocol
+- **PostgreSQL + pgvector** — optional, for teams / large datasets
 
 ---
 
 ## Architecture
 
 ```
-Claude Code
+Claude / Cline / Cursor / Any MCP client
     │
     ├── recall_memory(query)
     │       └── embed → cosine similarity → score = sim × strength → top-k
@@ -259,12 +266,12 @@ Claude Code
     └── update_memory(id, new_content)
             └── embed(new_content) → UPDATE memories
 
-PostgreSQL (pgvector)
-    └── memories
-        ├── embedding vector(768)
-        ├── importance float
-        ├── recall_count int
-        └── last_accessed_at
+DuckDB (default)                    PostgreSQL + pgvector (optional)
+    └── memories.duckdb                 └── memories table
+        ├── embedding FLOAT[768]            ├── embedding vector(768)
+        ├── importance FLOAT               ├── importance float
+        ├── recall_count INTEGER           ├── recall_count int
+        └── last_accessed_at               └── last_accessed_at
 ```
 
 ---

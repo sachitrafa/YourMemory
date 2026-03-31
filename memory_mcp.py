@@ -13,6 +13,17 @@ import os
 import sys
 import threading
 
+try:
+    import sqlite3  # noqa: F401
+except ImportError:
+    print(
+        "ERROR: sqlite3 is not available in your Python installation.\n"
+        "Fix: sudo apt-get install python3-sqlite3  (Ubuntu/Debian)\n"
+        "     or rebuild Python with libsqlite3-dev installed.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
 from dotenv import load_dotenv
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
@@ -39,7 +50,7 @@ def _run_sse(port: int):
         Mount("/messages/", app=sse.handle_post_message),
     ])
 
-    print(f"YourMemory MCP server running on http://0.0.0.0:{port}/sse", flush=True)
+    print(f"YourMemory MCP server running on http://0.0.0.0:{port}/sse", file=sys.stderr, flush=True)
     uvicorn.run(app, host="0.0.0.0", port=port, log_level="warning")
 
 # Add project root so src.services imports work
@@ -69,7 +80,8 @@ def _load_services():
     _services["get_conn"]         = get_conn
     _services["emb_to_db"]        = emb_to_db
 
-DEFAULT_USER       = "sachit"
+import getpass
+DEFAULT_USER       = os.getenv("YOURMEMORY_USER") or getpass.getuser()
 DEFAULT_IMPORTANCE = 0.5
 
 
@@ -126,7 +138,7 @@ async def list_tools() -> list[types.Tool]:
                         "description": "The fact, preference, failure, or strategy to remember.",
                     },
                     "importance": {
-                        "type": "number",
+                        "anyOf": [{"type": "number"}, {"type": "string"}],
                         "description": (
                             "You MUST decide this. How important is this memory? (0.0–1.0)\n"
                             "0.9–1.0 — core identity, permanent preferences (e.g. 'Sachit uses Python')\n"
@@ -160,7 +172,7 @@ async def list_tools() -> list[types.Tool]:
                         "description": "Who can recall this memory: 'shared' (any agent, default) or 'private' (only this agent).",
                     },
                 },
-                "required": ["content", "importance"],
+                "required": ["content"],
             },
         ),
         types.Tool(
@@ -182,7 +194,7 @@ async def list_tools() -> list[types.Tool]:
                         "description": "The updated or merged memory text.",
                     },
                     "importance": {
-                        "type": "number",
+                        "anyOf": [{"type": "number"}, {"type": "string"}],
                         "description": (
                             "You MUST decide this. Re-evaluate importance after the update. (0.0–1.0)\n"
                             "0.9–1.0 — core identity, permanent preferences\n"
@@ -192,7 +204,7 @@ async def list_tools() -> list[types.Tool]:
                         ),
                     },
                 },
-                "required": ["memory_id", "new_content", "importance"],
+                "required": ["memory_id", "new_content"],
             },
         ),
     ]
@@ -277,7 +289,7 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
 
         backend = get_backend()
         conn    = get_conn()
-        cur     = conn.cursor()
+        cur     = conn.cursor() if backend != "duckdb" else None
 
         resolution    = resolve(user_id, content, embedding, conn)
         action        = resolution["action"]
@@ -290,6 +302,11 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                     UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = NOW()
                     WHERE id = %s RETURNING id
                 """, (existing["id"],))
+            elif backend == "duckdb":
+                conn.execute("""
+                    UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = now()
+                    WHERE id = ?
+                """, [existing["id"]])
             else:
                 cur.execute("""
                     UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
@@ -310,6 +327,13 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                             recall_count = recall_count + 1, last_accessed_at = NOW()
                         WHERE id = %s RETURNING id
                     """, (final_content, new_emb_str, new_category, existing["id"]))
+                elif backend == "duckdb":
+                    conn.execute("""
+                        UPDATE memories
+                        SET content = ?, embedding = ?, category = ?,
+                            recall_count = recall_count + 1, last_accessed_at = now()
+                        WHERE id = ?
+                    """, [final_content, new_emb_str, new_category, existing["id"]])
                 else:
                     cur.execute("""
                         UPDATE memories
@@ -320,12 +344,18 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                 memory_id = existing["id"]
                 category  = new_category
             except Exception:
-                conn.rollback()
+                if backend != "duckdb":
+                    conn.rollback()
                 if backend == "postgres":
                     cur.execute("""
                         UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = NOW()
                         WHERE user_id = %s AND content = %s RETURNING id
                     """, (user_id, final_content))
+                elif backend == "duckdb":
+                    conn.execute("""
+                        UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = now()
+                        WHERE user_id = ? AND content = ?
+                    """, [user_id, final_content])
                 else:
                     cur.execute("""
                         UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
@@ -345,6 +375,16 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                     RETURNING id
                 """, (user_id, final_content, category, importance, emb_str, agent_id, visibility))
                 memory_id = cur.fetchone()[0]
+            elif backend == "duckdb":
+                result = conn.execute("""
+                    INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT (user_id, content) DO UPDATE
+                        SET recall_count = recall_count + 1, last_accessed_at = now()
+                    RETURNING id
+                """, [user_id, final_content, category, importance, emb_str, agent_id, visibility])
+                row = result.fetchone()
+                memory_id = row[0] if row else None
             else:
                 cur.execute("""
                     INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility)
@@ -354,8 +394,9 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                 """, (user_id, final_content, category, importance, emb_str, agent_id, visibility))
                 memory_id = cur.lastrowid
 
-        conn.commit()
-        cur.close()
+        if backend != "duckdb":
+            conn.commit()
+            cur.close()
         conn.close()
 
         return [types.TextContent(type="text", text=json.dumps(
@@ -376,16 +417,20 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         backend   = get_backend()
         emb_str   = emb_to_db(embedding, backend)
         conn      = get_conn()
-        cur       = conn.cursor()
+        cur       = conn.cursor() if backend != "duckdb" else None
 
         # Fetch owner to scope the dedup query
         if backend == "postgres":
             cur.execute("SELECT user_id FROM memories WHERE id = %s", (memory_id,))
+            owner = cur.fetchone()
+        elif backend == "duckdb":
+            owner = conn.execute("SELECT user_id FROM memories WHERE id = ?", [memory_id]).fetchone()
         else:
             cur.execute("SELECT user_id FROM memories WHERE id = ?", (memory_id,))
-        owner = cur.fetchone()
+            owner = cur.fetchone()
+
         if owner is None:
-            cur.close()
+            if cur: cur.close()
             conn.close()
             return [types.TextContent(type="text", text=json.dumps(
                 {"error": f"Memory {memory_id} not found."}))]
@@ -401,6 +446,17 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                     WHERE id = %s RETURNING id, content, category, importance
                 """, (existing["id"],))
                 row = cur.fetchone()
+                conn.commit()
+                cur.close()
+            elif backend == "duckdb":
+                conn.execute("""
+                    UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = now()
+                    WHERE id = ?
+                """, [existing["id"]])
+                row = conn.execute(
+                    "SELECT id, content, category, importance FROM memories WHERE id = ?",
+                    [existing["id"]]
+                ).fetchone()
             else:
                 cur.execute("""
                     UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
@@ -408,8 +464,8 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                 """, (existing["id"],))
                 cur.execute("SELECT id, content, category, importance FROM memories WHERE id = ?", (existing["id"],))
                 row = cur.fetchone()
-            conn.commit()
-            cur.close()
+                conn.commit()
+                cur.close()
             conn.close()
             return [types.TextContent(type="text", text=json.dumps(
                 {"updated": 1, "id": row[0], "content": row[1], "category": row[2],
@@ -418,32 +474,36 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         if backend == "postgres":
             cur.execute("""
                 UPDATE memories
-                SET content          = %s,
-                    embedding        = %s::vector,
-                    category         = %s,
-                    importance       = %s,
-                    recall_count     = recall_count + 1,
-                    last_accessed_at = NOW()
-                WHERE id = %s
-                RETURNING id, content, category, importance
+                SET content = %s, embedding = %s::vector, category = %s, importance = %s,
+                    recall_count = recall_count + 1, last_accessed_at = NOW()
+                WHERE id = %s RETURNING id, content, category, importance
             """, (new_content, emb_str, category, importance, memory_id))
             row = cur.fetchone()
+            conn.commit()
+            cur.close()
+        elif backend == "duckdb":
+            conn.execute("""
+                UPDATE memories
+                SET content = ?, embedding = ?, category = ?, importance = ?,
+                    recall_count = recall_count + 1, last_accessed_at = now()
+                WHERE id = ?
+            """, [new_content, emb_str, category, importance, memory_id])
+            row = conn.execute(
+                "SELECT id, content, category, importance FROM memories WHERE id = ?",
+                [memory_id]
+            ).fetchone()
         else:
             cur.execute("""
                 UPDATE memories
-                SET content          = ?,
-                    embedding        = ?,
-                    category         = ?,
-                    importance       = ?,
-                    recall_count     = recall_count + 1,
-                    last_accessed_at = datetime('now')
+                SET content = ?, embedding = ?, category = ?, importance = ?,
+                    recall_count = recall_count + 1, last_accessed_at = datetime('now')
                 WHERE id = ?
             """, (new_content, emb_str, category, importance, memory_id))
             cur.execute("SELECT id, content, category, importance FROM memories WHERE id = ?", (memory_id,))
             row = cur.fetchone()
+            conn.commit()
+            cur.close()
 
-        conn.commit()
-        cur.close()
         conn.close()
 
         if row is None:
@@ -479,6 +539,29 @@ async def main():
     async with stdio_server() as (read_stream, write_stream):
         await server.run(read_stream, write_stream, server.create_initialization_options())
 
+
+def print_path():
+    """Print the full path to the yourmemory executable and ready-to-paste Cline config."""
+    import shutil, json as _json, getpass
+    path = shutil.which("yourmemory") or sys.executable.replace("python", "yourmemory")
+    user = os.getenv("USER") or getpass.getuser() or "your_name"
+    config = {
+        "mcpServers": {
+            "yourmemory": {
+                "command": path,
+                "args": [],
+                "env": {
+                    "YOURMEMORY_USER": user,
+                    "DATABASE_URL": ""
+                },
+                "disabled": False,
+                "autoApprove": []
+            }
+        }
+    }
+    print(f"\nYourMemory path: {path}\n")
+    print("Paste this into your Cline MCP settings:\n")
+    print(_json.dumps(config, indent=2))
 
 def run():
     from src.db.migrate import migrate
