@@ -16,17 +16,6 @@ from src.db.connection import get_backend
 DEDUP_THRESHOLD     = 0.65   # below → always new memory
 REINFORCE_THRESHOLD = 0.85   # at or above → reinforce (near-identical paraphrase)
 
-# Polarity verb antonym pairs (spaCy lemma → antonym lemma)
-_ANTONYMS = {
-    "love":    "hate",    "hate":    "love",
-    "like":    "dislike", "dislike": "like",
-    "prefer":  "avoid",   "avoid":   "prefer",
-    "use":     "stop",    "stop":    "use",
-    "want":    "refuse",  "refuse":  "want",
-    "enjoy":   "dislike",
-    "start":   "stop",
-}
-
 
 def _cosine(a: list, b: list) -> float:
     import numpy as np
@@ -101,19 +90,50 @@ def find_near_duplicate(user_id: str, embedding: list, conn) -> dict | None:
             "importance": best[3], "recall_count": best[4], "similarity": sim}
 
 
+_POSITIVE_VERBS = {
+    "love", "like", "prefer", "enjoy", "use", "want", "start",
+    "adopt", "recommend", "favor", "support", "trust", "appreciate",
+}
+_NEGATIVE_VERBS = {
+    "hate", "dislike", "avoid", "stop", "refuse", "abandon",
+    "reject", "distrust", "dislike", "despise",
+}
+
+
+def _polarity(doc) -> int:
+    """
+    Return +1 (positive), -1 (negative), or 0 (neutral) for a doc.
+    Uses root verb lemma + negation detection — no sentiment model needed.
+    """
+    for token in doc:
+        # Use both lemma and raw text to handle spaCy lemmatization bugs
+        # e.g. "hates" → lemma "hat" (wrong) but text.rstrip("s") → "hate"
+        lemma = token.lemma_.lower()
+        raw = token.text.lower().rstrip("s")  # crude but catches loves/hates/likes/dislikes
+        is_negated = any(child.dep_ == "neg" for child in token.children)
+
+        if lemma in _POSITIVE_VERBS or raw in _POSITIVE_VERBS:
+            return -1 if is_negated else +1
+        if lemma in _NEGATIVE_VERBS or raw in _NEGATIVE_VERBS:
+            return +1 if is_negated else -1
+    return 0
+
+
 def detect_contradiction(existing_text: str, incoming_text: str) -> bool:
     """
     Return True if the incoming text contradicts the existing one.
-    Uses spaCy lemmas to find polarity verb antonym pairs.
+    Detects polarity flip using verb lemmas + negation — generalizes beyond
+    a fixed antonym list by treating any positive→negative or negative→positive
+    shift on the same topic as a contradiction.
     """
-    existing_verbs = {tok.lemma_.lower() for tok in _nlp(existing_text) if tok.pos_ == "VERB"}
-    incoming_verbs = {tok.lemma_.lower() for tok in _nlp(incoming_text) if tok.pos_ == "VERB"}
+    if _nlp is None:
+        return False
 
-    for verb in existing_verbs:
-        antonym = _ANTONYMS.get(verb)
-        if antonym and antonym in incoming_verbs:
-            return True
-    return False
+    existing_pol = _polarity(_nlp(existing_text))
+    incoming_pol = _polarity(_nlp(incoming_text))
+
+    # Both sentences must have clear polarity and they must be opposite
+    return existing_pol != 0 and incoming_pol != 0 and existing_pol != incoming_pol
 
 
 def merge_entities(existing_text: str, incoming_text: str) -> str:
@@ -168,12 +188,13 @@ def resolve(user_id: str, content: str, embedding: list, conn) -> dict:
 
     sim = match["similarity"]
 
-    if sim >= REINFORCE_THRESHOLD:
-        return {"action": "reinforce", "content": match["content"], "existing": match}
-
-    # DEDUP_THRESHOLD ≤ sim < REINFORCE_THRESHOLD
+    # Check contradiction first — even near-identical sentences can be opposites
+    # e.g. "dislike JavaScript" vs "love JavaScript" → sim ~0.92 but must replace
     if detect_contradiction(match["content"], content):
         return {"action": "replace", "content": content, "existing": match}
+
+    if sim >= REINFORCE_THRESHOLD:
+        return {"action": "reinforce", "content": match["content"], "existing": match}
 
     merged = merge_entities(match["content"], content)
     if merged == match["content"]:
