@@ -139,24 +139,42 @@
   <!-- BENCHMARKS -->
   <section id="benchmarks" class="bg-[#0A192F] text-white py-32">
     <div class="max-w-6xl mx-auto px-6">
-      <div class="grid lg:grid-cols-2 gap-20 items-center">
+
+      <!-- Section header -->
+      <div class="text-center mb-16">
+        <h2 class="text-5xl font-bold tracking-tighter mb-4">Data-proven<br/>superiority.</h2>
+        <p class="text-gray-400 max-w-xl mx-auto">Three independent benchmarks. Public datasets. Full methodology in <a href="https://github.com/sachitrafa/YourMemory/blob/main/BENCHMARKS.md" target="_blank" class="text-[#00D4FF] underline">BENCHMARKS.md</a>.</p>
+      </div>
+
+      <!-- Row 1: LoCoMo chart + callouts -->
+      <div class="grid lg:grid-cols-2 gap-16 items-center mb-20">
         <!-- Chart card -->
         <div class="bg-white/5 border border-white/10 p-10 rounded-3xl">
-          <div class="mb-10">
-            <h2 class="text-3xl font-bold mb-2">LoCoMo Recall@5</h2>
-            <p class="text-gray-400 font-mono text-xs uppercase tracking-tighter">Snap Research Standard Benchmark · 200 QA pairs</p>
+          <div class="mb-2">
+            <h3 class="text-2xl font-bold mb-1">LoCoMo Recall@5</h3>
+            <p class="text-gray-400 font-mono text-xs uppercase tracking-tighter mb-1">Snap Research · 533 QA pairs · Full Stack</p>
+            <p class="text-gray-600 font-mono text-[10px]">vector + graph + decay + resolve · 12 Apr 2026</p>
           </div>
-          <div class="space-y-8">
+          <div class="space-y-6 mt-8">
             <div>
               <div class="flex justify-between mb-2 text-sm">
-                <span class="font-bold">YourMemory MCP</span>
-                <span class="text-[#00D4FF] font-mono font-bold">34%</span>
+                <span class="font-bold">YourMemory <span class="text-[10px] font-mono text-gray-400 ml-1">full stack</span></span>
+                <span class="text-[#00D4FF] font-mono font-bold">52%</span>
               </div>
               <div class="h-4 bg-white/10 rounded-full overflow-hidden">
-                <div class="h-full bg-[#00D4FF] rounded-full" style="width:34%;box-shadow:0 0 14px rgba(0,212,255,0.5)"></div>
+                <div class="h-full bg-[#00D4FF] rounded-full" style="width:52%;box-shadow:0 0 14px rgba(0,212,255,0.5)"></div>
               </div>
             </div>
-            <div class="opacity-50">
+            <div class="opacity-55">
+              <div class="flex justify-between mb-2 text-sm">
+                <span class="font-medium">Supermemory</span>
+                <span class="font-mono">28%</span>
+              </div>
+              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
+                <div class="h-full bg-white/40 rounded-full" style="width:28%"></div>
+              </div>
+            </div>
+            <div class="opacity-40">
               <div class="flex justify-between mb-2 text-sm">
                 <span class="font-medium">Zep Cloud</span>
                 <span class="font-mono">22%</span>
@@ -165,7 +183,7 @@
                 <div class="h-full bg-white/40 rounded-full" style="width:22%"></div>
               </div>
             </div>
-            <div class="opacity-50">
+            <div class="opacity-40">
               <div class="flex justify-between mb-2 text-sm">
                 <span class="font-medium">Mem0</span>
                 <span class="font-mono">18%</span>
@@ -175,38 +193,91 @@
               </div>
             </div>
           </div>
+          <!-- Stack progression -->
+          <div class="mt-8 pt-6 border-t border-white/10">
+            <p class="text-gray-500 text-xs font-mono uppercase tracking-widest mb-3">Stack progression</p>
+            <div class="space-y-2 text-xs font-mono">
+              <div class="flex justify-between text-gray-400">
+                <span>Vector + decay only</span><span>47%</span>
+              </div>
+              <div class="flex justify-between text-[#00D4FF]">
+                <span>+ graph expansion</span><span class="font-bold">52% <span class="text-gray-500 font-normal">(+5pp)</span></span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Callouts -->
         <div>
-          <h2 class="text-5xl font-bold mb-8 tracking-tighter leading-none">
-            Data-proven<br/>superiority.
-          </h2>
-          <ul class="space-y-6">
+          <ul class="space-y-7">
             <li class="flex gap-4">
               <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
               <div>
-                <h4 class="font-bold text-lg leading-tight mb-1">+16pp Recall</h4>
-                <p class="text-gray-400">Outperforms standard vector memory systems on long-context multi-session recall.</p>
+                <h4 class="font-bold text-lg leading-tight mb-1">+24pp vs Supermemory <span class="text-gray-400 text-sm font-normal">(86% relative)</span></h4>
+                <p class="text-gray-400 text-sm">Full-stack retrieval (vector + graph BFS + Ebbinghaus decay) outperforms Supermemory's pure vector search on 9 of 10 LoCoMo samples.</p>
               </div>
             </li>
             <li class="flex gap-4">
               <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
               <div>
-                <h4 class="font-bold text-lg leading-tight mb-1">Zero LLM Costs</h4>
-                <p class="text-gray-400">Retrieval and pruning run fully locally with spaCy — not GPT-4.</p>
+                <h4 class="font-bold text-lg leading-tight mb-1">Graph layer: +5pp alone</h4>
+                <p class="text-gray-400 text-sm">Running vector + decay only scores 47%. Adding graph BFS expansion and recall propagation pushes it to 52% — measured on the same 533 QA pairs.</p>
               </div>
             </li>
             <li class="flex gap-4">
               <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
               <div>
-                <h4 class="font-bold text-lg leading-tight mb-1">100% Privacy</h4>
-                <p class="text-gray-400">Sensitive data lives in your local DuckDB file, never in a vendor's managed cloud.</p>
+                <h4 class="font-bold text-lg leading-tight mb-1">Zero LLM calls for retrieval</h4>
+                <p class="text-gray-400 text-sm">All retrieval, pruning, and graph traversal runs locally with spaCy and NetworkX — no GPT-4, no cloud inference cost.</p>
               </div>
             </li>
           </ul>
         </div>
       </div>
+
+      <!-- Row 2: Workflow efficiency stats -->
+      <div class="border-t border-white/10 pt-16">
+        <div class="text-center mb-10">
+          <h3 class="text-2xl font-bold mb-2">Workflow Efficiency</h3>
+          <p class="text-gray-400 text-sm">3-session developer workflow simulation — stateless baseline vs YourMemory</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <!-- Token savings -->
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-8">
+            <p class="text-[#00D4FF] font-mono font-bold text-4xl mb-2">−84%</p>
+            <h4 class="font-bold text-lg mb-2">Token savings</h4>
+            <p class="text-gray-400 text-sm leading-relaxed">At 30 sessions. Memory block stays flat (~76–91 tokens) while stateless history grows O(n). At 3 sessions: −19.7% tokens, −28% per-session context.</p>
+            <div class="mt-5 pt-5 border-t border-white/10 font-mono text-xs space-y-1 text-gray-500">
+              <div class="flex justify-between"><span>3 sessions</span><span class="text-gray-300">−19.7%</span></div>
+              <div class="flex justify-between"><span>30 sessions</span><span class="text-[#00D4FF] font-bold">−84.1%</span></div>
+              <div class="flex justify-between"><span>Stale tokens</span><span class="text-[#00D4FF] font-bold">−100%</span></div>
+            </div>
+          </div>
+          <!-- LLM call savings -->
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-8">
+            <p class="text-[#00D4FF] font-mono font-bold text-4xl mb-2">−14%</p>
+            <h4 class="font-bold text-lg mb-2">Fewer LLM calls</h4>
+            <p class="text-gray-400 text-sm leading-relaxed">Recalled context eliminates clarifying questions at the start of new sessions. Each clarifying round is a full LLM call that produces zero implementation output.</p>
+            <div class="mt-5 pt-5 border-t border-white/10 font-mono text-xs space-y-1 text-gray-500">
+              <div class="flex justify-between"><span>Session 1</span><span class="text-gray-300">0 saved</span></div>
+              <div class="flex justify-between"><span>Session 2</span><span class="text-[#00D4FF]">−1 clarify call</span></div>
+              <div class="flex justify-between"><span>Session 3+</span><span class="text-[#00D4FF]">−1 clarify call</span></div>
+            </div>
+          </div>
+          <!-- Decay pruning -->
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-8">
+            <p class="text-[#00D4FF] font-mono font-bold text-4xl mb-2">−4%</p>
+            <h4 class="font-bold text-lg mb-2">Context pruning</h4>
+            <p class="text-gray-400 text-sm leading-relaxed">Memories below Ebbinghaus strength 0.05 are pruned from retrieval entirely. 3/15 memories pruned in a 60-day synthetic set. Compounds at scale (200+ memories).</p>
+            <div class="mt-5 pt-5 border-t border-white/10 font-mono text-xs space-y-1 text-gray-500">
+              <div class="flex justify-between"><span>Pruned memories</span><span class="text-gray-300">20%</span></div>
+              <div class="flex justify-between"><span>Top-5 tokens</span><span class="text-[#00D4FF]">74 → 71</span></div>
+              <div class="flex justify-between"><span>No stale facts</span><span class="text-[#00D4FF]">injected</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
