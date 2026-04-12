@@ -564,6 +564,47 @@ def print_path():
     print(path)
 
 
+_MEMORY_RULES = """
+## YourMemory — Agent Memory Rules
+
+### Step 1 — Recall before acting
+At the start of every task call `recall_memory` with keywords from the request:
+```
+recall_memory(query="<keywords>", user_id="<your_name>")
+```
+Use the recalled context to answer without asking the user to repeat themselves.
+
+### Step 2 — Decide: store, update, or ignore
+| Case | Condition | Action |
+|---|---|---|
+| New knowledge | No existing memory covers it | `store_memory(content, importance)` |
+| Extension | Adds detail to a recalled memory | `update_memory(memory_id, merged_sentence, importance)` |
+| Contradiction | Conflicts with a recalled memory | `update_memory(memory_id, new_content, importance)` |
+| Ignore | Question, filler, or no lasting value | Do nothing |
+
+Store facts about: user preferences, project decisions, recurring failures, strategies that worked.
+Never store questions, Claude's own responses, or temporary session state.
+
+### Step 3 — Importance (required on every store/update)
+| Value | When to use |
+|---|---|
+| 0.9–1.0 | Core identity, permanent facts ("User prefers Python") |
+| 0.7–0.8 | Strong preferences, architectural decisions |
+| 0.5 | Regular project facts, one-time choices |
+| 0.2–0.3 | Transient session context |
+
+### Category (controls decay rate)
+- `fact` ~24 days — preferences, identity (default)
+- `strategy` ~38 days — approaches that worked (decays slowest)
+- `assumption` ~19 days — inferred, uncertain context
+- `failure` ~11 days — errors and what went wrong (decays fastest)
+
+Write memories as one sentence: "Sachit prefers X" / "The project uses X" / "Pagination fixed the timeout".
+"""
+
+_RULES_MARKER = "## YourMemory — Agent Memory Rules"
+
+
 def _write_mcp_config(path: str, mcp_entry: dict, client_name: str) -> bool:
     """Inject yourmemory into a JSON config file, creating it if absent.
     Returns True on success."""
@@ -688,7 +729,51 @@ def setup():
     for line in snippet.splitlines():
         print("  " + line)
 
+    # ── 4. Inject memory rules into global agent instructions ───────────────
+    print("\n[4/4] Injecting memory rules into global agent instructions…")
+    _inject_memory_rules(home)
+
     print("\n✓ Setup complete. Restart your AI client to load YourMemory.\n")
+
+
+def _inject_memory_rules(home: str) -> None:
+    """Append _MEMORY_RULES to every detected global agent instruction file.
+    Skips silently if the rules block is already present.
+    """
+    candidates = [
+        # Claude Code global instructions
+        os.path.join(home, ".claude", "CLAUDE.md"),
+        # Cursor global rules
+        os.path.join(home, ".cursor", "rules", "memory.mdc"),
+        # Windsurf global rules
+        os.path.join(home, ".codeium", "windsurf", "memories", "memory_rules.md"),
+    ]
+
+    wrote_any = False
+    for path in candidates:
+        dir_ = os.path.dirname(path)
+        if not os.path.isdir(dir_):
+            continue  # client not installed — skip
+        try:
+            existing = ""
+            if os.path.exists(path):
+                with open(path) as f:
+                    existing = f.read()
+            if _RULES_MARKER in existing:
+                print(f"  ✓  Already present → {path}")
+                wrote_any = True
+                continue
+            with open(path, "a") as f:
+                if existing and not existing.endswith("\n"):
+                    f.write("\n")
+                f.write("\n" + _MEMORY_RULES)
+            print(f"  ✓  Memory rules appended → {path}")
+            wrote_any = True
+        except Exception as exc:
+            print(f"  ✗  Could not write to {path}: {exc}")
+
+    if not wrote_any:
+        print("  (No global instruction files detected — add MEMORY_RULES.md to your project's CLAUDE.md manually.)")
 
 
 def run():
