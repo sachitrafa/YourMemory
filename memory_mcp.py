@@ -558,60 +558,137 @@ async def main():
 
 
 def print_path():
-    """Print the full path to the yourmemory executable and ready-to-paste Cline config."""
-    import shutil, json as _json, getpass
+    """Print the full path to the yourmemory executable (kept for power users)."""
+    import shutil
     path = shutil.which("yourmemory") or sys.executable.replace("python", "yourmemory")
-    user = os.getenv("USER") or getpass.getuser() or "your_name"
-    config = {
-        "mcpServers": {
-            "yourmemory": {
-                "command": path,
-                "args": [],
-                "env": {
-                    "YOURMEMORY_USER": user,
-                    "DATABASE_URL": ""
-                },
-                "disabled": False,
-                "autoApprove": []
-            }
-        }
-    }
-    print(f"\nYourMemory path: {path}\n")
-    print("Paste this into your Cline MCP settings:\n")
-    print(_json.dumps(config, indent=2))
+    print(path)
+
+
+def _write_mcp_config(path: str, mcp_entry: dict, client_name: str) -> bool:
+    """Inject yourmemory into a JSON config file, creating it if absent.
+    Returns True on success."""
+    import json as _json
+    try:
+        dir_ = os.path.dirname(path)
+        if dir_:
+            os.makedirs(dir_, exist_ok=True)
+        data = {}
+        if os.path.exists(path):
+            with open(path) as f:
+                try:
+                    data = _json.load(f)
+                except Exception:
+                    data = {}
+        data.setdefault("mcpServers", {})["yourmemory"] = mcp_entry
+        with open(path, "w") as f:
+            _json.dump(data, f, indent=2)
+        print(f"  ✓  {client_name} → {path}")
+        return True
+    except Exception as exc:
+        print(f"  ✗  {client_name}: could not write ({exc})")
+        return False
+
 
 def setup():
-    """Run once after pip install to download the spaCy model."""
-    import subprocess
-    print("YourMemory setup — installing spaCy language model...")
-    result = subprocess.run(
+    """One-time setup: spaCy model, database, and client configs.
+
+    Detects installed AI clients (Claude Code, Claude Desktop, Cursor, Windsurf,
+    Cline/VS Code) and writes the MCP config entry to each. Prints a ready-to-paste
+    snippet for any client not detected automatically.
+    """
+    import subprocess, shutil, json as _json
+
+    exe = shutil.which("yourmemory") or sys.executable.replace("python", "yourmemory")
+    mcp_entry = {"command": exe}
+
+    # ── 1. spaCy language model ─────────────────────────────────────────────
+    print("\n[1/3] Downloading spaCy language model…")
+    r = subprocess.run(
         [sys.executable, "-m", "spacy", "download", "en_core_web_sm"],
-        check=False,
+        check=False, capture_output=True,
     )
-    if result.returncode == 0:
-        print("✓ spaCy model installed successfully.")
+    if r.returncode == 0:
+        print("  ✓  en_core_web_sm installed.")
     else:
-        # Fallback: install via direct wheel URL
-        print("Direct download fallback...")
-        result2 = subprocess.run(
+        r2 = subprocess.run(
             [sys.executable, "-m", "pip", "install",
              "https://github.com/explosion/spacy-models/releases/download/"
              "en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
              "--break-system-packages"],
-            check=False,
+            check=False, capture_output=True,
         )
-        if result2.returncode == 0:
-            print("✓ spaCy model installed successfully.")
+        if r2.returncode == 0:
+            print("  ✓  en_core_web_sm installed (direct wheel).")
         else:
-            print("✗ Could not install spaCy model automatically.")
-            print("  Run manually: python -m spacy download en_core_web_sm")
-            print("  YourMemory will still work using the built-in regex fallback.")
+            print("  ⚠  spaCy model unavailable — built-in fallback will be used.")
+            print("     To install manually: python -m spacy download en_core_web_sm")
 
-    # Also run DB migration
+    # ── 2. Database migration ───────────────────────────────────────────────
+    print("\n[2/3] Initialising database…")
     from src.db.migrate import migrate
     migrate()
-    print("✓ Database initialised.")
-    print("\nSetup complete. Run yourmemory-path to get your MCP config.")
+    print("  ✓  Database ready.")
+
+    # ── 3. Client config auto-detection ────────────────────────────────────
+    print("\n[3/3] Writing MCP config to detected clients…")
+
+    home = os.path.expanduser("~")
+    wrote_any = False
+
+    # Claude Code
+    cc_path = os.path.join(home, ".claude", "settings.json")
+    if os.path.exists(os.path.join(home, ".claude")):
+        if _write_mcp_config(cc_path, mcp_entry, "Claude Code"):
+            wrote_any = True
+
+    # Claude Desktop (macOS)
+    cd_dir = os.path.join(home, "Library", "Application Support", "Claude")
+    if os.path.isdir(cd_dir):
+        cd_path = os.path.join(cd_dir, "claude_desktop_config.json")
+        if _write_mcp_config(cd_path, mcp_entry, "Claude Desktop"):
+            wrote_any = True
+
+    # Cursor
+    for cursor_path in [
+        os.path.join(home, ".cursor", "mcp.json"),
+        os.path.join(home, "Library", "Application Support", "Cursor", "User", "settings.json"),
+    ]:
+        if os.path.exists(os.path.dirname(cursor_path)):
+            if _write_mcp_config(cursor_path, mcp_entry, "Cursor"):
+                wrote_any = True
+            break
+
+    # Windsurf
+    for ws_path in [
+        os.path.join(home, ".codeium", "windsurf", "mcp_settings.json"),
+        os.path.join(home, "Library", "Application Support", "Windsurf", "User", "settings.json"),
+    ]:
+        if os.path.exists(os.path.dirname(ws_path)):
+            if _write_mcp_config(ws_path, mcp_entry, "Windsurf"):
+                wrote_any = True
+            break
+
+    # Cline (VS Code extension)
+    vscode_ext = os.path.join(home, "Library", "Application Support",
+                              "Code", "User", "globalStorage")
+    if os.path.isdir(vscode_ext):
+        for entry in os.listdir(vscode_ext):
+            if "claude-dev" in entry or "cline" in entry.lower():
+                cline_path = os.path.join(vscode_ext, entry, "settings", "cline_mcp_settings.json")
+                if _write_mcp_config(cline_path, mcp_entry, "Cline (VS Code)"):
+                    wrote_any = True
+                break
+
+    if not wrote_any:
+        print("  (No installed clients detected automatically.)")
+
+    # Always print a copy-paste snippet for unlisted clients
+    snippet = _json.dumps({"mcpServers": {"yourmemory": mcp_entry}}, indent=2)
+    print("\n  For any other client, add this to its MCP settings:")
+    for line in snippet.splitlines():
+        print("  " + line)
+
+    print("\n✓ Setup complete. Restart your AI client to load YourMemory.\n")
 
 
 def run():

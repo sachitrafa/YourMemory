@@ -531,8 +531,8 @@
   <!-- SETUP -->
   <section id="setup" class="border-t border-gray-200 bg-white py-24">
     <div class="max-w-3xl mx-auto px-6">
-      <h2 class="text-4xl font-bold tracking-tighter mb-2">Four commands.</h2>
-      <p class="text-gray-500 mb-12">Zero infrastructure. DuckDB database created automatically at <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">~/.yourmemory/memories.duckdb</code> on first use.</p>
+      <h2 class="text-4xl font-bold tracking-tighter mb-2">Two commands.</h2>
+      <p class="text-gray-500 mb-12">Install, run setup. That's it — spaCy model, database, and client configs are handled automatically.</p>
 
       <div class="space-y-4">
         <div class="bg-[#0A192F] text-gray-300 rounded-2xl overflow-hidden">
@@ -542,27 +542,27 @@
         <div class="bg-[#0A192F] text-gray-300 rounded-2xl overflow-hidden">
           <div class="px-4 py-2 border-b border-gray-800 text-[10px] uppercase tracking-widest text-gray-500 font-mono">2. Setup (run once)</div>
           <pre class="p-5 font-mono text-sm"><span class="text-gray-500">$</span> yourmemory-setup</pre>
-          <div class="px-5 pb-4 text-xs text-gray-500">Downloads the spaCy language model and initialises the database. Only needed once.</div>
-        </div>
-        <div class="bg-[#0A192F] text-gray-300 rounded-2xl overflow-hidden">
-          <div class="px-4 py-2 border-b border-gray-800 text-[10px] uppercase tracking-widest text-gray-500 font-mono">3. Get your Cline / Cursor config</div>
-          <pre class="p-5 font-mono text-sm"><span class="text-gray-500">$</span> yourmemory-path</pre>
-          <div class="px-5 pb-4 text-xs text-gray-500">Prints your full executable path + ready-to-paste JSON config for Cline, Cursor, Windsurf, and more.</div>
-        </div>
-        <div class="bg-[#0A192F] text-gray-300 rounded-2xl overflow-hidden">
-          <div class="px-4 py-2 border-b border-gray-800 text-[10px] uppercase tracking-widest text-gray-500 font-mono">4. Claude Code — add to ~/.claude/settings.json</div>
-          <pre class="p-5 font-mono text-sm text-cyan-100">{
-  "mcpServers": {
-    "yourmemory": {
-      "command": "yourmemory"
-    }
-  }
-}</pre>
+          <div class="px-5 pb-5 space-y-1">
+            <p class="text-xs text-gray-500">Downloads the spaCy model, initialises the database, and <span class="text-gray-300 font-medium">auto-writes the MCP config</span> to every detected client on your machine.</p>
+            <div class="mt-3 font-mono text-xs text-gray-600 space-y-1">
+              <p><span class="text-green-500">✓</span>  spaCy model installed</p>
+              <p><span class="text-green-500">✓</span>  Database ready</p>
+              <p><span class="text-green-500">✓</span>  Claude Code → ~/.claude/settings.json</p>
+              <p><span class="text-green-500">✓</span>  Claude Desktop → auto-detected if installed</p>
+              <p><span class="text-green-500">✓</span>  Cursor / Windsurf / Cline → auto-detected if installed</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Client tabs -->
-      <div class="mt-8">
+      <!-- Done callout -->
+      <div class="mt-6 bg-cyan-50 border border-cyan-100 rounded-2xl px-6 py-4 flex items-start gap-3">
+        <svg class="mt-0.5 shrink-0" width="18" height="18" fill="none" stroke="#0891b2" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <p class="text-sm text-cyan-800">Restart your AI client after setup. YourMemory starts automatically as an MCP server — no background process to manage.</p>
+      </div>
+
+      <!-- Client tags -->
+      <div class="mt-10">
         <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Works with</p>
         <div class="flex flex-wrap gap-2">
           <span class="px-3 py-1 bg-gray-100 rounded-full text-xs font-medium text-gray-600">Claude Code</span>
