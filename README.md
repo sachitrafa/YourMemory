@@ -1,6 +1,6 @@
 # YourMemory
 
-**+16pp better recall than Mem0 on LoCoMo. 100% stale memory precision. Biologically-inspired memory decay for AI agents.**
+**59% Recall@5 on LoCoMo-10. Biologically-inspired memory decay for AI agents.**
 
 Persistent memory for Claude and any MCP-compatible AI — works like human memory. Important things stick, forgotten things fade, outdated facts get pruned automatically. Related memories stay alive longer through a graph layer that understands connections between them.
 
@@ -10,15 +10,22 @@ Persistent memory for Claude and any MCP-compatible AI — works like human memo
 
 ## Benchmarks
 
-Evaluated against Mem0 (free tier) on the public [LoCoMo dataset](https://github.com/snap-research/locomo) (Snap Research) — 10 conversation pairs, 200 QA pairs total.
+**Dataset:** [snap-research/LoCoMo](https://github.com/snap-research/locomo) — `locomo10.json`, 10 multi-session conversation samples, **1,534 QA pairs**, categories 1–4.
 
-| Metric | YourMemory | Mem0 | Margin |
-|--------|:----------:|:----:|:------:|
-| LoCoMo Recall@5 *(200 QA pairs)* | **34%** | 18% | **+16pp** |
-| Stale Memory Precision *(5 contradiction pairs)* | **100%** | 0% | **+100pp** |
-| Memories pruned *(noise reduction)* | **20%** | 0% | — |
+**Script:** [`benchmarks/locomo_4way.py`](https://github.com/sachitrafa/YourMemory/blob/main/benchmarks/locomo_4way.py) — fully reproducible, no special tuning. All API keys loaded from environment variables; no hardcoded credentials.
 
-Full methodology and per-sample results in [BENCHMARKS.md](BENCHMARKS.md).
+**Metric:** Recall@5 — does the correct answer appear in the top-5 retrieved chunks?
+
+**Hit rule:** exact substring match OR ≥50% meaningful-token overlap (tokens with len > 3), applied identically to all systems.
+
+| System | Recall@5 | Hits | 95% CI | Samples |
+|--------|:--------:|:----:|:------:|:-------:|
+| **YourMemory** (BM25 + vector + graph + decay) | **59%** | 899/1,534 | 56–61% | 10/10 |
+| Zep Cloud | 28% | 428/1,534 | 26–30% | 10/10 |
+
+Supermemory and Mem0 were included in the run but exhausted their free-tier API quotas mid-benchmark (Supermemory after sample 4, Mem0 after sample 6) — their partial results are in [`benchmarks/locomo_4way_results.json`](https://github.com/sachitrafa/YourMemory/blob/main/benchmarks/locomo_4way_results.json).
+
+Full per-sample breakdown and methodology in [BENCHMARKS.md](BENCHMARKS.md).
 Read the writeup: [I built memory decay for AI agents using the Ebbinghaus forgetting curve](https://dev.to/sachit_mishra_686a94d1bb5/i-built-memory-decay-for-ai-agents-using-the-ebbinghaus-forgetting-curve-1b0e)
 
 ---

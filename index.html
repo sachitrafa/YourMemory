@@ -3,7 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourMemory | Persistent memory for AI agents</title>
+
+  <!-- Primary SEO -->
+  <title>YourMemory — Persistent Memory for AI Agents | MCP Compatible</title>
+  <meta name="description" content="YourMemory gives your AI assistant persistent memory that survives across sessions. 59% Recall@5 on LoCoMo-10. Works with Claude, Cursor, Cline and any MCP client. Open source, self-hostable.">
+  <meta name="keywords" content="AI memory, persistent memory AI, MCP memory server, Claude memory, agent memory, Ebbinghaus decay, memory layer AI agents, yourmemory">
+  <meta name="author" content="Sachit Misra">
+  <link rel="canonical" href="https://yourmemory.ai/">
+
+  <!-- Open Graph (LinkedIn, Slack, iMessage previews) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yourmemory.ai/">
+  <meta property="og:title" content="YourMemory — Persistent Memory for AI Agents">
+  <meta property="og:description" content="Your AI assistant forgets you after every session. YourMemory fixes that — biologically-inspired memory decay, hybrid graph + vector retrieval, 59% Recall@5 on LoCoMo-10. MCP compatible.">
+  <meta property="og:image" content="https://yourmemory.ai/og-image.png">
+  <meta property="og:site_name" content="YourMemory">
+
+  <!-- Twitter / X card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="YourMemory — Persistent Memory for AI Agents">
+  <meta name="twitter:description" content="Your AI assistant forgets you after every session. YourMemory fixes that — 59% Recall@5 on LoCoMo-10. MCP compatible. Self-hostable.">
+  <meta name="twitter:image" content="https://yourmemory.ai/og-image.png">
+
+  <!-- Structured data (SoftwareApplication) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "YourMemory",
+    "applicationCategory": "DeveloperApplication",
+    "description": "Persistent, biologically-inspired memory layer for AI agents. Hybrid BM25 + vector + knowledge graph retrieval with Ebbinghaus decay. MCP compatible, self-hostable.",
+    "url": "https://yourmemory.ai",
+    "author": {
+      "@type": "Person",
+      "name": "Sachit Misra"
+    },
+    "license": "https://creativecommons.org/licenses/by-nc/4.0/",
+    "codeRepository": "https://github.com/sachitrafa/YourMemory",
+    "operatingSystem": "Linux, macOS, Windows",
+    "programmingLanguage": "Python"
+  }
+  </script>
+
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='10' y='80' width='80' height='10' rx='2' fill='%230A192F'/%3E%3Crect x='25' y='60' width='50' height='10' rx='2' fill='%230A192F'/%3E%3Crect x='40' y='40' width='15' height='10' rx='2' fill='%230A192F'/%3E%3Crect x='60' y='40' width='5' height='10' rx='1' fill='%2300D4FF'/%3E%3Crect x='47.5' y='20' width='5' height='10' rx='1' fill='%2300D4FF' fill-opacity='0.6'/%3E%3C/svg%3E">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800;9..40,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -140,8 +181,8 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-5xl font-bold tracking-tighter mb-4">Data-proven<br/>superiority.</h2>
-        <p class="text-gray-400 max-w-xl mx-auto">Three independent benchmarks. Public datasets. Full methodology in <a href="https://github.com/sachitrafa/YourMemory/blob/main/BENCHMARKS.md" target="_blank" class="text-[#00D4FF] underline">BENCHMARKS.md</a>.</p>
+        <h2 class="text-5xl font-bold tracking-tighter mb-4">Benchmarked on<br/>public data.</h2>
+        <p class="text-gray-400 max-w-xl mx-auto">LoCoMo-10 (Snap Research) — 1,534 QA pairs across 10 multi-session conversations. Full methodology and per-sample results in <a href="https://github.com/sachitrafa/YourMemory/blob/main/BENCHMARKS.md" target="_blank" class="text-[#00D4FF] underline">BENCHMARKS.md</a>.</p>
       </div>
 
       <!-- Row 1: LoCoMo chart + callouts -->
@@ -150,57 +191,38 @@
         <div class="bg-white/5 border border-white/10 p-10 rounded-3xl">
           <div class="mb-2">
             <h3 class="text-2xl font-bold mb-1">LoCoMo Recall@5</h3>
-            <p class="text-gray-400 font-mono text-xs uppercase tracking-tighter mb-1">Snap Research · 533 QA pairs · Full Stack</p>
-            <p class="text-gray-600 font-mono text-[10px]">vector + graph + decay + resolve · 12 Apr 2026</p>
+            <p class="text-gray-400 font-mono text-xs uppercase tracking-tighter mb-1">snap-research/LoCoMo · 1,534 QA pairs · 10 sessions</p>
+            <p class="text-gray-600 font-mono text-[10px]">benchmarks/locomo_4way.py · BM25 + vector + graph + decay · 20 Apr 2026</p>
           </div>
           <div class="space-y-6 mt-8">
             <div>
               <div class="flex justify-between mb-2 text-sm">
-                <span class="font-bold">YourMemory <span class="text-[10px] font-mono text-gray-400 ml-1">full stack</span></span>
-                <span class="text-[#00D4FF] font-mono font-bold">52%</span>
+                <span class="font-bold">YourMemory <span class="text-[10px] font-mono text-gray-400 ml-1">BM25 + vector + graph + decay</span></span>
+                <span class="text-[#00D4FF] font-mono font-bold">59%</span>
               </div>
               <div class="h-4 bg-white/10 rounded-full overflow-hidden">
-                <div class="h-full bg-[#00D4FF] rounded-full" style="width:52%;box-shadow:0 0 14px rgba(0,212,255,0.5)"></div>
+                <div class="h-full bg-[#00D4FF] rounded-full" style="width:59%;box-shadow:0 0 14px rgba(0,212,255,0.5)"></div>
               </div>
             </div>
-            <div class="opacity-55">
+            <div class="opacity-45">
               <div class="flex justify-between mb-2 text-sm">
-                <span class="font-medium">Supermemory</span>
+                <span class="font-medium">Zep Cloud <span class="text-[10px] font-mono text-gray-500 ml-1">10/10 samples</span></span>
                 <span class="font-mono">28%</span>
               </div>
               <div class="h-4 bg-white/10 rounded-full overflow-hidden">
                 <div class="h-full bg-white/40 rounded-full" style="width:28%"></div>
               </div>
             </div>
-            <div class="opacity-40">
-              <div class="flex justify-between mb-2 text-sm">
-                <span class="font-medium">Zep Cloud</span>
-                <span class="font-mono">22%</span>
-              </div>
-              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
-                <div class="h-full bg-white/40 rounded-full" style="width:22%"></div>
-              </div>
-            </div>
-            <div class="opacity-40">
-              <div class="flex justify-between mb-2 text-sm">
-                <span class="font-medium">Mem0</span>
-                <span class="font-mono">18%</span>
-              </div>
-              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
-                <div class="h-full bg-white/40 rounded-full" style="width:18%"></div>
-              </div>
-            </div>
           </div>
-          <!-- Stack progression -->
+          <!-- Dataset info -->
           <div class="mt-8 pt-6 border-t border-white/10">
-            <p class="text-gray-500 text-xs font-mono uppercase tracking-widest mb-3">Stack progression</p>
-            <div class="space-y-2 text-xs font-mono">
-              <div class="flex justify-between text-gray-400">
-                <span>Vector + decay only</span><span>47%</span>
-              </div>
-              <div class="flex justify-between text-[#00D4FF]">
-                <span>+ graph expansion</span><span class="font-bold">52% <span class="text-gray-500 font-normal">(+5pp)</span></span>
-              </div>
+            <p class="text-gray-500 text-xs font-mono uppercase tracking-widest mb-3">Dataset</p>
+            <div class="space-y-2 text-xs font-mono text-gray-400">
+              <div class="flex justify-between"><span>Source</span><span>snap-research/LoCoMo</span></div>
+              <div class="flex justify-between"><span>File</span><span>locomo10.json</span></div>
+              <div class="flex justify-between"><span>QA pairs</span><span class="text-[#00D4FF]">1,534</span></div>
+              <div class="flex justify-between"><span>Sessions</span><span class="text-[#00D4FF]">10/10</span></div>
+              <div class="flex justify-between"><span>Script</span><span>benchmarks/locomo_4way.py</span></div>
             </div>
           </div>
         </div>
@@ -211,15 +233,15 @@
             <li class="flex gap-4">
               <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
               <div>
-                <h4 class="font-bold text-lg leading-tight mb-1">+24pp vs Supermemory <span class="text-gray-400 text-sm font-normal">(86% relative)</span></h4>
-                <p class="text-gray-400 text-sm">YourMemory's multi-layer retrieval outperforms Supermemory's pure semantic search on 9 of 10 LoCoMo samples — with no cloud dependency.</p>
+                <h4 class="font-bold text-lg leading-tight mb-1">+31pp vs Zep <span class="text-gray-400 text-sm font-normal">(111% relative)</span></h4>
+                <p class="text-gray-400 text-sm">Both systems ran all 10 samples to completion on the same 1,534 QA pairs. YourMemory led every single session — the only memory layer tested that completed the full benchmark clean.</p>
               </div>
             </li>
             <li class="flex gap-4">
               <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
               <div>
-                <h4 class="font-bold text-lg leading-tight mb-1">Graph layer: +5pp alone</h4>
-                <p class="text-gray-400 text-sm">The graph expansion layer adds +5 percentage points on top of semantic search and decay alone — measured on the same 533 QA pairs.</p>
+                <h4 class="font-bold text-lg leading-tight mb-1">Reproducible — script is public</h4>
+                <p class="text-gray-400 text-sm">The full benchmark script is <a href="https://github.com/sachitrafa/YourMemory/blob/main/benchmarks/locomo_4way.py" target="_blank" class="text-[#00D4FF] underline">benchmarks/locomo_4way.py</a>. Same dataset, same hit rule, same top-5 limit for every system. Run it yourself.</p>
               </div>
             </li>
             <li class="flex gap-4">

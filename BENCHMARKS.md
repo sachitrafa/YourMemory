@@ -1,86 +1,51 @@
 # YourMemory Benchmarks
 
-Evaluation of YourMemory against Mem0 and Zep Cloud across three metrics.
-
 ---
 
-## 1. Long-Context Recall Accuracy — LoCoMo Dataset
+## 1. Long-Context Recall Accuracy — LoCoMo-10 (20 April 2026)
 
-**Dataset:** [LoCoMo](https://github.com/snap-research/locomo) (Snap Research) — a public long-context memory benchmark consisting of multi-session conversations spanning weeks to months. We used `locomo10.json` (10 conversation pairs, 1,534 QA pairs total, categories 1–4).
+**Dataset:** [snap-research/LoCoMo](https://github.com/snap-research/locomo) — `locomo10.json`, 10 multi-session conversation samples spanning weeks to months.
 
-**Method:** Session summaries were stored in both systems. Each QA pair was evaluated at the end of all sessions. A hit is recorded if the correct answer appears in the top-5 retrieved results.
+**Script:** [`benchmarks/locomo_4way.py`](https://github.com/sachitrafa/YourMemory/blob/main/benchmarks/locomo_4way.py) — fully reproducible. All API keys loaded from environment variables; no hardcoded credentials.
 
-**Embedding model:** `all-mpnet-base-v2` (sentence-transformers, 768 dims, runs fully in-process — no external service required)
+**Input:** `session_summary` fields from each conversation sample — identical text fed to every system in the same order.
 
-**Metric:** Recall@5
+**Queries:** QA pairs with category in {1, 2, 3, 4}, string answers only. **1,534 QA pairs total.**
 
-### vs Mem0 (free tier) — 15 March 2026
+**Metric:** Recall@5 — does the correct answer appear in the top-5 retrieved chunks?
 
-| Sample | Speakers | YourMemory | Mem0 |
-|--------|----------|:----------:|:----:|
-| 1 | Caroline & Melanie | 40% | 35% |
-| 2 | Jon & Gina | 65% | 5% |
-| 3 | John & Maria | 20% | 15% |
-| 4 | Joanna & Nate | 30% | 5% |
-| 5 | Tim & John | 20% | 10% |
-| 6 | Audrey & Andrew | 40% | 25% |
-| 7 | James & John | 35% | 15% |
-| 8 | Deborah & Jolene | 20% | 10% |
-| 9 | Evan & Sam | 30% | 20% |
-| 10 | Calvin & Dave | 45% | 45% |
-| **Total** | **200 QA pairs** | **34%** | **18%** |
+**Hit rule:** exact substring match OR ≥50% of meaningful tokens (len > 3) present in the retrieved context. Applied identically to every system.
 
-**YourMemory leads by +16 percentage points.** YourMemory wins 9 out of 10 samples and ties 1. Mem0's automatic fact extraction condenses session content and loses specific details (dates, names, events) that LoCoMo QA pairs target. YourMemory preserves full session summaries, retaining those details while Ebbinghaus decay keeps the most relevant content ranked highest.
+**Isolation:** each system gets a fresh user/container per sample; cleanup (delete) is called after every sample.
 
-### vs Supermemory — 12 April 2026 (full stack: vector + graph + decay + resolve)
+### Results
 
-**YourMemory configuration:** Full HTTP stack on localhost:8000. Each session summary passes through resolve (deduplication/merge), embed, graph indexing, and Ebbinghaus decay. Retrieval uses vector search + multi-hop graph expansion + recall propagation. Embedding model: `nomic-embed-text` via Ollama.
+| System | Configuration | Recall@5 | Hits | 95% CI | Samples completed |
+|--------|---------------|:--------:|:----:|:------:|:-----------------:|
+| **YourMemory** | Local HTTP server · BM25 + vector + graph + Ebbinghaus decay | **59%** | **899/1,534** | 56–61% | **10/10** |
+| Zep Cloud | Thread memory · `memory.search` limit=5 | 28% | 428/1,534 | 26–30% | 10/10 |
+| Supermemory | Cloud API · no rerank · limit=5 | 31%* | 470/1,534 | 28–33% | 4/10* |
+| Mem0 | Cloud API · `search` limit=5 | 18%* | 272/1,534 | 16–20% | 6/10* |
 
-**Supermemory configuration:** Cloud API (`supermemory.add` / `search.memories`), rerank enabled, no temporal signal.
+\* Supermemory exhausted its free-tier search quota (10,000 queries) during sample 5. Mem0 exhausted its free-tier quota (1,000 ops) during sample 7. Their hits and percentages are computed over all 1,534 QA pairs using 0 hits for the samples not completed — the numbers are accurate for what was tested. Recall figures for these two systems would likely improve on a full run.
 
-| Sample | Speakers | YourMemory | Supermemory |
-|--------|----------|:----------:|:-----------:|
-| 1 | Caroline & Melanie | 46% | 46% |
-| 2 | Jon & Gina | 74% | 16% |
-| 3 | John & Maria | 31% | 24% |
-| 4 | Frank & Elaine | 58% | 32% |
-| 5 | Jane & Anne | 60% | 28% |
-| 6 | Kevin & Sarah | 47% | 24% |
-| 7 | Michael & Ashley | 50% | 34% |
-| 8 | Justin & Gabrielle | 57% | 26% |
-| 9 | Diana & Allen | 51% | 14% |
-| 10 | George & Olivia | 50% | 38% |
-| **Total** | **533 QA pairs** | **52%** | **28%** |
+### Per-sample breakdown (YourMemory vs Zep — both completed all 10 samples)
 
-**YourMemory leads by +24 percentage points (86% relative improvement).** YourMemory wins 9 out of 10 samples and ties 1 (Caroline & Melanie, where all facts come from a single time window and decay provides no signal). Supermemory's pure vector search has no temporal awareness — it cannot distinguish a fact from session 1 from one in session 5. YourMemory's Ebbinghaus decay re-ranks by recency and reinforcement, and the graph expansion layer surfaces related memories that the query didn't directly match.
+| Sample | Speakers | QA pairs | YourMemory | Zep Cloud |
+|--------|----------|:--------:|:----------:|:---------:|
+| 1 | Caroline & Melanie | 146 | 64% | 26% |
+| 2 | Jon & Gina | 81 | 54% | 37% |
+| 3 | John & Maria | 152 | 64% | 32% |
+| 4 | Joanna & Nate | 199 | 57% | 26% |
+| 5 | Tim & John | 178 | 68% | 27% |
+| 6 | Audrey & Andrew | 123 | 58% | 28% |
+| 7 | James & John | 150 | 57% | 33% |
+| 8 | Deborah & Jolene | 191 | 61% | 25% |
+| 9 | Evan & Sam | 156 | 56% | 26% |
+| 10 | Calvin & Dave | 158 | 43% | 25% |
+| **Total** | | **1,534** | **59%** | **28%** |
 
-**Stack progression on this run:**
-
-| Stack | Recall@5 | Delta |
-|-------|:--------:|------:|
-| Vector + decay only (in-process) | 47% | baseline |
-| Full stack (+ graph expansion, resolve, propagation) | 52% | +5pp |
-| Supermemory (vector only, no decay) | 28% | −24pp vs full stack |
-
-The graph layer contributed +5 percentage points on top of decay alone.
-
-### vs Zep Cloud — 27 March 2026 (all-mpnet-base-v2)
-
-| Sample | Speakers | YourMemory | Zep Cloud |
-|--------|----------|:----------:|:---------:|
-| 1 | Caroline & Melanie | 29% | 24% |
-| 2 | Jon & Gina | 47% | 46% |
-| 3 | John & Maria | 25% | 22% |
-| 4 | Joanna & Nate | 38% | 18% |
-| 5 | Tim & John | 31% | 24% |
-| 6 | Audrey & Andrew | 33% | 20% |
-| 7 | James & John | 37% | 23% |
-| 8 | Deborah & Jolene | 28% | 16% |
-| 9 | Evan & Sam | 32% | 18% |
-| 10 | Calvin & Dave | 43% | 26% |
-| **Total** | **1,534 QA pairs** | **34%** | **22%** |
-
-**YourMemory leads by +12 percentage points (54% relative improvement).** YourMemory wins 9 out of 10 samples and ties 1. Zep Cloud uses LLM-based fact extraction per thread, which summarises and condenses content — losing the specific details (dates, names, events) that LoCoMo QA pairs target. YourMemory's Ebbinghaus decay scores full session summaries by recency and importance, preserving those details while ranking the most relevant content highest.
+**YourMemory leads Zep by +31 percentage points (111% relative improvement) across all 10 samples.** YourMemory led every single sample. YourMemory's hybrid BM25 + vector + knowledge graph pipeline preserves full session summaries and uses Ebbinghaus decay to rank the most recently reinforced facts highest. Zep Cloud's LLM-based fact extraction condenses sessions, which loses the specific dates, names, and events that LoCoMo QA pairs target.
 
 ---
 

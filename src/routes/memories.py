@@ -67,7 +67,7 @@ def add_memory(req: MemoryRequest):
             """, (existing["id"],))
         else:
             cur.execute("""
-                UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
+                UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = now()
                 WHERE id = ?
             """, (existing["id"],))
         memory_id = existing["id"]
@@ -89,7 +89,7 @@ def add_memory(req: MemoryRequest):
                 cur.execute("""
                     UPDATE memories
                     SET content = ?, embedding = ?, category = ?,
-                        recall_count = recall_count + 1, last_accessed_at = datetime('now')
+                        recall_count = recall_count + 1, last_accessed_at = now()
                     WHERE id = ?
                 """, (final_content, new_emb_str, new_category, existing["id"]))
             memory_id = existing["id"]
@@ -104,7 +104,7 @@ def add_memory(req: MemoryRequest):
                 """, (req.userId, final_content))
             else:
                 cur.execute("""
-                    UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
+                    UPDATE memories SET recall_count = recall_count + 1, last_accessed_at = now()
                     WHERE user_id = ? AND content = ?
                 """, (req.userId, final_content))
             memory_id = existing["id"]
@@ -126,7 +126,7 @@ def add_memory(req: MemoryRequest):
                 INSERT INTO memories (user_id, content, category, importance, embedding)
                 VALUES (?, ?, ?, ?, ?)
                 ON CONFLICT (user_id, content) DO UPDATE
-                    SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
+                    SET recall_count = recall_count + 1, last_accessed_at = now()
             """, (req.userId, final_content, category, req.importance, emb_str))
             memory_id = cur.lastrowid
 
@@ -175,7 +175,7 @@ def update_memory(memory_id: int, req: UpdateMemoryRequest):
                 category         = ?,
                 importance       = ?,
                 recall_count     = recall_count + 1,
-                last_accessed_at = datetime('now')
+                last_accessed_at = now()
             WHERE id = ?
         """, (req.content, emb_str, category, req.importance, memory_id))
         cur.execute("SELECT id, content, category, importance FROM memories WHERE id = ?", (memory_id,))

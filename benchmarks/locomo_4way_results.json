@@ -1,0 +1,182 @@
+{
+  "benchmark": "LoCoMo-10 Recall@5",
+  "date": "2026-04-20T09:36:35.919734+00:00",
+  "top_k": 5,
+  "total_qa": 1534,
+  "systems": {
+    "YourMemory": {
+      "recall_pct": 59,
+      "hits": 899,
+      "ci95": [
+        56,
+        61
+      ]
+    },
+    "Supermemory": {
+      "recall_pct": 31,
+      "hits": 470,
+      "ci95": [
+        28,
+        33
+      ]
+    },
+    "Zep": {
+      "recall_pct": 28,
+      "hits": 428,
+      "ci95": [
+        26,
+        30
+      ]
+    },
+    "Mem0": {
+      "recall_pct": 18,
+      "hits": 272,
+      "ci95": [
+        16,
+        20
+      ]
+    }
+  },
+  "methodology": {
+    "dataset": "snap-research/LoCoMo, 10 samples",
+    "input": "session_summary fields",
+    "qa_filter": "category in {1,2,3,4}, string answers",
+    "hit_rule": "exact substring OR >=50% token overlap (len>3)",
+    "yourmemory": "local HTTP server \u2014 BM25 + vector + graph + Ebbinghaus decay",
+    "supermemory": "cloud API, rerank=True, limit=5",
+    "zep": "Zep Cloud, thread memory, memory.search limit=5",
+    "mem0": "Mem0 Cloud, search limit=5"
+  },
+  "per_sample": [
+    {
+      "sample": 1,
+      "speakers": "Caroline & Melanie",
+      "qa": 146,
+      "YourMemory_hits": 94,
+      "Supermemory_hits": 39,
+      "Zep_hits": 38,
+      "Mem0_hits": 36,
+      "YourMemory_pct": 64,
+      "Supermemory_pct": 27,
+      "Zep_pct": 26,
+      "Mem0_pct": 25
+    },
+    {
+      "sample": 2,
+      "speakers": "Jon & Gina",
+      "qa": 81,
+      "YourMemory_hits": 44,
+      "Supermemory_hits": 15,
+      "Zep_hits": 30,
+      "Mem0_hits": 33,
+      "YourMemory_pct": 54,
+      "Supermemory_pct": 19,
+      "Zep_pct": 37,
+      "Mem0_pct": 41
+    },
+    {
+      "sample": 3,
+      "speakers": "John & Maria",
+      "qa": 152,
+      "YourMemory_hits": 98,
+      "Supermemory_hits": 49,
+      "Zep_hits": 48,
+      "Mem0_hits": 49,
+      "YourMemory_pct": 64,
+      "Supermemory_pct": 32,
+      "Zep_pct": 32,
+      "Mem0_pct": 32
+    },
+    {
+      "sample": 4,
+      "speakers": "Joanna & Nate",
+      "qa": 199,
+      "YourMemory_hits": 113,
+      "Supermemory_hits": 56,
+      "Zep_hits": 52,
+      "Mem0_hits": 34,
+      "YourMemory_pct": 57,
+      "Supermemory_pct": 28,
+      "Zep_pct": 26,
+      "Mem0_pct": 17
+    },
+    {
+      "sample": 5,
+      "speakers": "Tim & John",
+      "qa": 178,
+      "YourMemory_hits": 121,
+      "Supermemory_hits": 50,
+      "Zep_hits": 48,
+      "Mem0_hits": 46,
+      "YourMemory_pct": 68,
+      "Supermemory_pct": 28,
+      "Zep_pct": 27,
+      "Mem0_pct": 26
+    },
+    {
+      "sample": 6,
+      "speakers": "Audrey & Andrew",
+      "qa": 123,
+      "YourMemory_hits": 71,
+      "Supermemory_hits": 42,
+      "Zep_hits": 35,
+      "Mem0_hits": 27,
+      "YourMemory_pct": 58,
+      "Supermemory_pct": 34,
+      "Zep_pct": 28,
+      "Mem0_pct": 22
+    },
+    {
+      "sample": 7,
+      "speakers": "James & John",
+      "qa": 150,
+      "YourMemory_hits": 86,
+      "Supermemory_hits": 58,
+      "Zep_hits": 49,
+      "Mem0_hits": 47,
+      "YourMemory_pct": 57,
+      "Supermemory_pct": 39,
+      "Zep_pct": 33,
+      "Mem0_pct": 31
+    },
+    {
+      "sample": 8,
+      "speakers": "Deborah & Jolene",
+      "qa": 191,
+      "YourMemory_hits": 116,
+      "Supermemory_hits": 55,
+      "Zep_hits": 48,
+      "Mem0_hits": 0,
+      "YourMemory_pct": 61,
+      "Supermemory_pct": 29,
+      "Zep_pct": 25,
+      "Mem0_pct": 0
+    },
+    {
+      "sample": 9,
+      "speakers": "Evan & Sam",
+      "qa": 156,
+      "YourMemory_hits": 88,
+      "Supermemory_hits": 58,
+      "Zep_hits": 41,
+      "Mem0_hits": 0,
+      "YourMemory_pct": 56,
+      "Supermemory_pct": 37,
+      "Zep_pct": 26,
+      "Mem0_pct": 0
+    },
+    {
+      "sample": 10,
+      "speakers": "Calvin & Dave",
+      "qa": 158,
+      "YourMemory_hits": 68,
+      "Supermemory_hits": 48,
+      "Zep_hits": 39,
+      "Mem0_hits": 0,
+      "YourMemory_pct": 43,
+      "Supermemory_pct": 30,
+      "Zep_pct": 25,
+      "Mem0_pct": 0
+    }
+  ]
+}
