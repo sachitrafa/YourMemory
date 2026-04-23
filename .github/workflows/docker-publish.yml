@@ -28,5 +28,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/your-memory/cognitive-ai-memory:latest
-            ghcr.io/your-memory/cognitive-ai-memory:1.0.3
+            ghcr.io/sachitrafa/yourmemory:latest
+            ghcr.io/sachitrafa/yourmemory:1.0.3
