@@ -210,6 +210,7 @@ def list_memories(
     userId: str = Query(..., description="User whose memories to list"),
     limit: int = Query(50, ge=1, le=500),
     category: Optional[str] = Query(None),
+    agent_id: Optional[str] = Query(None, description="Filter by agent_id; 'user' for user-owned only"),
 ):
     backend = get_backend()
     conn    = get_conn()
@@ -220,21 +221,27 @@ def list_memories(
             from psycopg2.extras import RealDictCursor
             cur.close()
             cur = conn.cursor(cursor_factory=RealDictCursor)
-            sql    = "SELECT id, content, category, importance, recall_count, last_accessed_at, created_at FROM memories WHERE user_id = %s"
+            sql    = "SELECT id, content, category, importance, recall_count, last_accessed_at, created_at, agent_id FROM memories WHERE user_id = %s"
             params = [userId]
             if category:
                 sql += " AND category = %s"
                 params.append(category)
+            if agent_id:
+                sql += " AND agent_id = %s" if agent_id != "user" else " AND (agent_id IS NULL OR agent_id = 'user')"
+                if agent_id != "user": params.append(agent_id)
             sql += " ORDER BY last_accessed_at DESC LIMIT %s"
             params.append(limit)
             cur.execute(sql, params)
             rows = [dict(r) for r in cur.fetchall()]
         else:
-            sql    = "SELECT id, content, category, importance, recall_count, last_accessed_at, created_at FROM memories WHERE user_id = ?"
+            sql    = "SELECT id, content, category, importance, recall_count, last_accessed_at, created_at, agent_id FROM memories WHERE user_id = ?"
             params = [userId]
             if category:
                 sql += " AND category = ?"
                 params.append(category)
+            if agent_id:
+                sql += " AND agent_id = ?" if agent_id != "user" else " AND (agent_id IS NULL OR agent_id = 'user')"
+                if agent_id != "user": params.append(agent_id)
             sql += " ORDER BY last_accessed_at DESC LIMIT ?"
             params.append(limit)
             result = conn.execute(sql, params)
@@ -260,6 +267,7 @@ def list_memories(
             "strength":         round(strength, 4),
             "last_accessed_at": str(m["last_accessed_at"]),
             "created_at":       str(m["created_at"]),
+            "agent_id":         m.get("agent_id") or "user",
         })
 
     return {"total": len(memories), "memories": memories}
