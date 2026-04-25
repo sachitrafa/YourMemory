@@ -42,4 +42,4 @@ def revoke(req: RevokeRequest):
 
 @router.get("/agents")
 def get_agents(user_id: str):
-    return {"agents": list_agents(user_id)}
+    return {"agents": list_agents(user_id.strip().lower())}

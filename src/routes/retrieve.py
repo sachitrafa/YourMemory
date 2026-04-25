@@ -14,4 +14,4 @@ class RetrieveRequest(BaseModel):
 
 @router.post("/retrieve")
 def retrieve_memories(req: RetrieveRequest):
-    return retrieve(req.userId, req.query, req.topK)
+    return retrieve(req.userId.strip().lower(), req.query, req.topK)

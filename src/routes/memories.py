@@ -212,6 +212,7 @@ def list_memories(
     category: Optional[str] = Query(None),
     agent_id: Optional[str] = Query(None, description="Filter by agent_id; 'user' for user-owned only"),
 ):
+    userId = userId.strip().lower()
     backend = get_backend()
     conn    = get_conn()
     cur     = conn.cursor()
