@@ -854,29 +854,68 @@ def setup():
 
     # ── 4. Inject memory rules into global agent instructions ───────────────
     print("\n[4/4] Injecting memory rules into global agent instructions…")
-    _inject_memory_rules(home)
+
+    # Resolve user_id: env var → saved file → prompt
+    uid_path = os.path.join(home, ".yourmemory", "user_id")
+    user_id = os.getenv("YOURMEMORY_USER", "").strip()
+    if not user_id and os.path.exists(uid_path):
+        with open(uid_path) as f:
+            user_id = f.read().strip()
+    if not user_id:
+        try:
+            user_id = input("  Your name (used as memory user_id, e.g. 'alice'): ").strip()
+        except (EOFError, OSError):
+            user_id = ""
+    if not user_id:
+        user_id = "user"
+    os.makedirs(os.path.dirname(uid_path), exist_ok=True)
+    with open(uid_path, "w") as f:
+        f.write(user_id)
+    print(f"  user_id → {user_id}")
+
+    _inject_memory_rules(home, user_id)
 
     print("\n✓ Setup complete. Restart your AI client to load YourMemory.\n")
 
 
-def _inject_memory_rules(home: str) -> None:
-    """Append _MEMORY_RULES to every detected global agent instruction file.
-    Skips silently if the rules block is already present.
+def _inject_memory_rules(home: str, user_id: str = "user") -> None:
+    """Append memory rules to every detected global agent instruction file.
+    Replaces <your_name> with the actual user_id. Skips if already present.
     """
+    rules = _MEMORY_RULES.replace("<your_name>", user_id)
+
     candidates = [
-        # Claude Code global instructions
+        # Claude Code — all platforms
         os.path.join(home, ".claude", "CLAUDE.md"),
-        # Cursor global rules
+        # Cursor — all platforms
         os.path.join(home, ".cursor", "rules", "memory.mdc"),
-        # Windsurf global rules
+        # Windsurf — all platforms
         os.path.join(home, ".codeium", "windsurf", "memories", "memory_rules.md"),
+        # OpenCode — all platforms
+        os.path.join(home, ".config", "opencode", "instructions.md"),
     ]
+
+    # Cline (VS Code) — platform-specific globalStorage path
+    if sys.platform == "darwin":
+        vscode_global = os.path.join(home, "Library", "Application Support",
+                                     "Code", "User", "globalStorage")
+    elif sys.platform == "win32":
+        vscode_global = os.path.join(os.getenv("APPDATA", ""), "Code",
+                                     "User", "globalStorage")
+    else:
+        vscode_global = os.path.join(home, ".config", "Code", "User", "globalStorage")
+
+    if os.path.isdir(vscode_global):
+        for entry in os.listdir(vscode_global):
+            if "claude-dev" in entry or "cline" in entry.lower():
+                candidates.append(os.path.join(vscode_global, entry, "settings", "instructions.md"))
+                break
 
     wrote_any = False
     for path in candidates:
         dir_ = os.path.dirname(path)
         if not os.path.isdir(dir_):
-            continue  # client not installed — skip
+            continue
         try:
             existing = ""
             if os.path.exists(path):
@@ -886,22 +925,75 @@ def _inject_memory_rules(home: str) -> None:
                 print(f"  ✓  Already present → {path}")
                 wrote_any = True
                 continue
+            os.makedirs(dir_, exist_ok=True)
             with open(path, "a") as f:
                 if existing and not existing.endswith("\n"):
                     f.write("\n")
-                f.write("\n" + _MEMORY_RULES)
-            print(f"  ✓  Memory rules appended → {path}")
+                f.write("\n" + rules)
+            print(f"  ✓  Memory rules injected → {path}")
             wrote_any = True
         except Exception as exc:
             print(f"  ✗  Could not write to {path}: {exc}")
 
     if not wrote_any:
-        print("  (No global instruction files detected — add MEMORY_RULES.md to your project's CLAUDE.md manually.)")
+        print("  (No global instruction files detected — copy sample_CLAUDE.md to your project's CLAUDE.md manually.)")
+
+
+def _first_run_setup() -> None:
+    """Silently run first-time setup when the MCP server starts for the first time.
+
+    Triggered when ~/.yourmemory/user_id does not exist.
+    All output goes to stderr — stdout is reserved for the MCP stdio stream.
+    spaCy download runs in a background thread so it doesn't delay server startup.
+    """
+    home = os.path.expanduser("~")
+    uid_path = os.path.join(home, ".yourmemory", "user_id")
+
+    if os.path.exists(uid_path):
+        return  # already set up
+
+    print("  [YourMemory] First run detected — running setup…", file=sys.stderr)
+
+    # Resolve user_id: env var → system login → fallback
+    user_id = os.getenv("YOURMEMORY_USER", "").strip()
+    if not user_id:
+        try:
+            import getpass
+            user_id = getpass.getuser()
+        except Exception:
+            user_id = "user"
+
+    os.makedirs(os.path.join(home, ".yourmemory"), exist_ok=True)
+    with open(uid_path, "w") as f:
+        f.write(user_id)
+    print(f"  [YourMemory] user_id → {user_id}", file=sys.stderr)
+
+    # Inject memory rules into detected client instruction files
+    _inject_memory_rules(home, user_id)
+
+    # Fire install ping
+    _ping_install()
+
+    # Download spaCy model in background — don't block server startup
+    def _download_spacy():
+        try:
+            import subprocess
+            subprocess.run(
+                [sys.executable, "-m", "spacy", "download", "en_core_web_sm"],
+                check=False, capture_output=True,
+            )
+        except Exception:
+            pass
+
+    threading.Thread(target=_download_spacy, daemon=True, name="spacy-dl").start()
+
+    print("  [YourMemory] Setup complete. Memory rules injected into your AI client.", file=sys.stderr)
 
 
 def run():
     from src.db.migrate import migrate
     migrate()
+    _first_run_setup()
     _start_decay_scheduler()
 
     # SSE mode: --sse flag, PORT env var, or Windows default (stdio pipes unreliable on Windows)
