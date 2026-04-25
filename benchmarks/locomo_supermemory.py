@@ -37,8 +37,7 @@ load_dotenv()
 
 LOCOMO_PATH    = os.path.expanduser("~/Desktop/locomo/data/locomo10.json")
 YM_BASE_URL    = "http://localhost:8000"
-SM_API_KEY     = os.getenv("SUPERMEMORY_API_KEY",
-                  "sm_zV11bPYcZyFsxwqc3GPHgB_dCXi9sRGEivc1nq4eIN9tTxqwbGA3C1mAueFM94sFEBS6KeaFCLxzyFyMXo4pt4n")
+SM_API_KEY     = os.getenv("SUPERMEMORY_API_KEY")
 TOP_K          = 5
 MAX_SAMPLES    = None   # None = all 10
 MAX_QA         = None   # None = all QA pairs per sample
@@ -170,7 +169,7 @@ class SupermemorySystem:
                     rerank=True,
                 )
                 chunks = []
-                for item in resp.memories or []:
+                for item in resp.results or []:
                     content = getattr(item, "content", None)
                     if content:
                         chunks.append(content)

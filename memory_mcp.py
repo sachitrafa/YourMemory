@@ -662,6 +662,49 @@ def _write_mcp_config(path: str, mcp_entry: dict, client_name: str) -> bool:
         return False
 
 
+_TELEMETRY_ENDPOINT = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run"
+
+
+def _ping_install() -> None:
+    """Fire a one-time anonymous install ping.
+
+    Guards (either stops the ping):
+      1. YOURMEMORY_TELEMETRY=off env var
+      2. ~/.yourmemory/instance_id already exists on disk
+
+    Server-side guard: INSERT OR IGNORE on UNIQUE instance_id column.
+    """
+    if os.getenv("YOURMEMORY_TELEMETRY", "").lower() == "off":
+        return
+
+    import uuid, urllib.request, urllib.error
+
+    id_path = os.path.join(os.path.expanduser("~"), ".yourmemory", "instance_id")
+
+    # Guard 1 — already pinged, never ping again
+    if os.path.exists(id_path):
+        return
+
+    instance_id = str(uuid.uuid4())
+
+    try:
+        os.makedirs(os.path.dirname(id_path), exist_ok=True)
+        # Write file BEFORE the network call so a crash/timeout never causes a second ping
+        with open(id_path, "w") as f:
+            f.write(instance_id)
+
+        payload = json.dumps({"instance_id": instance_id}).encode()
+        req = urllib.request.Request(
+            _TELEMETRY_ENDPOINT,
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        urllib.request.urlopen(req, timeout=5)
+    except Exception:
+        pass  # never break setup due to telemetry
+
+
 def setup():
     """One-time setup: spaCy model, database, and client configs.
 
@@ -716,6 +759,7 @@ def setup():
     from src.db.migrate import migrate
     migrate()
     print("  ✓  Database ready.")
+    _ping_install()
 
     # ── 3. Client config auto-detection ────────────────────────────────────
     print("\n[3/3] Writing MCP config to detected clients…")
