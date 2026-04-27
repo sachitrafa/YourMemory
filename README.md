@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="logo.svg.png" alt="YourMemory Logo" width="80"/>
-
 # YourMemory
 
 **Persistent memory for AI agents — built on the science of how humans remember.**
@@ -11,8 +9,6 @@
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Recall@5](https://img.shields.io/badge/Recall%405-59%25-brightgreen)](BENCHMARKS.md)
 [![Docker Build](https://img.shields.io/github/actions/workflow/status/sachitrafa/YourMemory/docker-publish.yml?branch=main&label=docker&logo=docker)](https://github.com/sachitrafa/YourMemory/actions/workflows/docker-publish.yml)
-
-<img src="og-image.png" alt="YourMemory — 59% Recall@5 vs 28% Zep Cloud" width="720"/>
 
 </div>
 
