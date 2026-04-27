@@ -6,6 +6,7 @@ Graph is persisted as a pickle file at ~/.yourmemory/graph.pkl.
 import os
 import pickle
 import threading
+from collections import deque
 from pathlib import Path
 from typing import Optional
 
@@ -110,10 +111,10 @@ class NetworkXBackend(GraphBackend):
                 return []
 
             visited = {}  # memory_id → {"distance": int, "edge_weight": float}
-            queue = [(memory_id, 0, 1.0)]  # (node, depth, cumulative_weight)
+            queue = deque([(memory_id, 0, 1.0)])  # (node, depth, cumulative_weight)
 
             while queue:
-                node, depth, cum_weight = queue.pop(0)
+                node, depth, cum_weight = queue.popleft()
                 if depth > max_depth:
                     continue
 
