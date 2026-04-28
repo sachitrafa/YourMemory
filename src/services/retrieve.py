@@ -161,10 +161,10 @@ def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None) -> 
 
     seed_ids = [m["id"] for m in result.get("memories", [])]
     if seed_ids:
-        extra_ids = expand_with_graph(seed_ids, user_id, top_k=top_k)
-        new_ids = [i for i in extra_ids if i not in set(seed_ids)]
-        if new_ids:
-            extra = _fetch_by_ids(new_ids, user_id, backend)
+        graph_hits = expand_with_graph(seed_ids, user_id, top_k=top_k)
+        new_hits = [(nid, ew) for nid, ew in graph_hits if nid not in set(seed_ids)]
+        if new_hits:
+            extra = _fetch_by_ids(new_hits, user_id, backend)
             result = _merge_graph_results(result, extra, top_k)
 
         reinforced = [m for m in result.get("memories", [])
@@ -184,11 +184,13 @@ def _score_candidates(candidates: list, fts_scores: dict[int, float] | None = No
     Add strength + hybrid score to each candidate.
 
     Hybrid formula:
-        score = W_BM25 × bm25_norm + W_VECTOR × (cosine × ebbinghaus)
+        score = W_BM25 × bm25_norm + W_VECTOR × cosine
 
-    fts_scores: {memory_id → normalized BM25 score} from keyword search.
-    If a candidate has no BM25 hit, its BM25 component is 0 and the vector
-    signal carries it alone — preserving existing behaviour for pure semantic queries.
+    Decay (strength) is computed for display and pruning purposes only — it is
+    intentionally excluded from the ranking formula. Multiplying cosine by strength
+    causes old-but-still-valid memories to rank below newer but irrelevant ones,
+    which is wrong: decay handles staleness via the 24h pruning job, not ranking.
+    Knowledge-update conflicts are resolved at store time via contradiction detection.
     """
     fts = fts_scores or {}
     scored = []
@@ -200,8 +202,7 @@ def _score_candidates(candidates: list, fts_scores: dict[int, float] | None = No
             category=m["category"],
         )
         bm25_norm    = fts.get(m["id"], 0.0)
-        vector_score = m["similarity"] * strength
-        hybrid_score = W_BM25 * bm25_norm + W_VECTOR * vector_score
+        hybrid_score = W_BM25 * bm25_norm + W_VECTOR * m["similarity"]
         scored.append({
             **m,
             "strength":   strength,
@@ -296,10 +297,19 @@ def _finish(candidates: list, top_k: int, conn, backend: str,
 
 # ── Graph expansion helpers ───────────────────────────────────────────────────
 
-def _fetch_by_ids(ids: list, user_id: str, backend: str) -> list:
-    """Fetch memory rows by primary key, return scored dicts."""
-    if not ids:
+def _fetch_by_ids(hits: list[tuple[int, float]], user_id: str, backend: str) -> list:
+    """
+    Fetch memory rows for graph-expanded (id, edge_weight) pairs.
+
+    edge_weight (cosine × verb_weight) is used as the similarity proxy —
+    it encodes how strongly each node is connected to its seed, which was
+    itself relevant to the query.  This replaces the previous flat 0.5.
+    """
+    if not hits:
         return []
+    ids       = [nid for nid, _ in hits]
+    ew_by_id  = {nid: ew for nid, ew in hits}
+
     conn = get_conn()
     rows = []
     try:
@@ -339,17 +349,25 @@ def _fetch_by_ids(ids: list, user_id: str, backend: str) -> list:
 
     scored = []
     for m in rows:
-        strength = compute_strength(
+        strength   = compute_strength(
             last_accessed_at=parse_dt(m["last_accessed_at"]),
             recall_count=m["recall_count"],
             importance=m["importance"],
             category=m["category"],
         )
+        edge_weight = ew_by_id.get(m["id"], 0.4)
+        # Cap similarity below REINFORCE_THRESHOLD so graph-expanded nodes
+        # never accidentally trigger propagate_recall — their edge_weight
+        # measures connection to a seed, not direct similarity to the query.
+        # Apply W_VECTOR so graph scores live on the same scale as direct
+        # matches (0.4×bm25 + 0.6×cosine), ensuring no graph node can
+        # outrank a direct cosine match of equal or higher relevance.
+        sim = min(edge_weight, REINFORCE_THRESHOLD - 0.01)
         scored.append({
             **m,
-            "similarity": 0.5,
+            "similarity": sim,
             "strength":   strength,
-            "score":      0.5 * strength,
+            "score":      W_VECTOR * sim * strength,
             "via_graph":  True,
         })
     return scored

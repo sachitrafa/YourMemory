@@ -7,7 +7,8 @@
 [![PyPI](https://img.shields.io/pypi/v/yourmemory?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/yourmemory/)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/yourmemory?color=brightgreen)](https://pypi.org/project/yourmemory/)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
-[![Recall@5](https://img.shields.io/badge/Recall%405-59%25-brightgreen)](BENCHMARKS.md)
+[![LoCoMo Recall@5](https://img.shields.io/badge/LoCoMo%20Recall%405-59%25-brightgreen)](BENCHMARKS.md)
+[![LongMemEval Recall@5](https://img.shields.io/badge/LongMemEval%20Recall--all%405-85%25-brightgreen)](BENCHMARKS.md)
 [![Docker Build](https://img.shields.io/github/actions/workflow/status/sachitrafa/YourMemory/docker-publish.yml?branch=main&label=docker&logo=docker)](https://github.com/sachitrafa/YourMemory/actions/workflows/docker-publish.yml)
 
 </div>
@@ -24,7 +25,7 @@ Every session, your AI assistant starts from zero. It asks the same questions, f
 
 ## How Well Does It Work?
 
-Tested on [LoCoMo-10](https://github.com/snap-research/locomo) — 1,534 QA pairs across 10 multi-session conversations.
+### LoCoMo-10 — 1,534 QA pairs across 10 multi-session conversations
 
 | System | Recall@5 | 95% CI |
 |--------|:--------:|:------:|
@@ -32,6 +33,14 @@ Tested on [LoCoMo-10](https://github.com/snap-research/locomo) — 1,534 QA pair
 | Zep Cloud | 28% | 26–30% |
 
 > **2× better recall than Zep Cloud on the same benchmark.**
+
+*The 59% result used `all-mpnet-base-v2`. The current default model (`multi-qa-mpnet-base-dot-v1`) scores 55% on LoCoMo session-summary retrieval — see [BENCHMARKS.md](BENCHMARKS.md) for details.*
+
+### LongMemEval-S — 500 questions, ~53 sessions each
+
+| System | Recall-all@5 | nDCG@5 |
+|--------|:------------:|:------:|
+| **YourMemory** (full stack · `multi-qa-mpnet-base-dot-v1`) | **85%** | **87%** |
 
 Full methodology in [BENCHMARKS.md](BENCHMARKS.md). Writeup: [I built memory decay for AI agents using the Ebbinghaus forgetting curve](https://dev.to/sachit_mishra_686a94d1bb5/i-built-memory-decay-for-ai-agents-using-the-ebbinghaus-forgetting-curve-1b0e).
 
@@ -227,12 +236,12 @@ recall_memory("Python formatting")
 Memory strength decays exponentially — importance and recall frequency slow that decay:
 
 ```
-effective_λ = base_λ × (1 - importance × 0.8)
-strength    = clamp(importance × e^(−effective_λ × days) × (1 + recall_count × 0.2), 0, 1)
-score       = cosine_similarity × strength
+effective_λ  = base_λ × (1 - importance × 0.8)
+strength     = clamp(importance × e^(−effective_λ × days) × (1 + recall_count × 0.2), 0, 1)
+hybrid_score = 0.4 × bm25_norm + 0.6 × cosine_similarity
 ```
 
-Memories recalled frequently resist decay. Memories below strength `0.05` are pruned automatically every 24 hours.
+Decay (strength) is used for pruning only — not ranking. This prevents old-but-valid memories from being buried below newer irrelevant ones. Memories below strength `0.05` are pruned automatically every 24 hours.
 
 ### Hybrid Retrieval: Vector + BM25 + Graph
 
@@ -289,7 +298,7 @@ recall_memory(query="staging SSL", api_key="ym_xxxx")
 |-----------|------|
 | **DuckDB** | Default vector DB — zero setup, native cosine similarity |
 | **NetworkX** | Default graph backend — persists at `~/.yourmemory/graph.pkl` |
-| **sentence-transformers** | Local embeddings (`all-mpnet-base-v2`, 768 dims) |
+| **sentence-transformers** | Local embeddings (`multi-qa-mpnet-base-dot-v1`, 768 dims) |
 | **spaCy** | Local NLP for deduplication and SVO triple extraction |
 | **APScheduler** | Automatic 24h decay job |
 | **PostgreSQL + pgvector** | Optional — for teams or large datasets |

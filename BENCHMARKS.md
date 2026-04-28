@@ -2,11 +2,38 @@
 
 ---
 
-## 1. Long-Context Recall Accuracy — LoCoMo-10 (20 April 2026)
+## 1. Long-Context Retrieval — LongMemEval-S (28 April 2026)
+
+**Dataset:** [LongMemEval](https://github.com/xiaowu0162/LongMemEval) — `longmemeval_s_cleaned.json`, 500 questions each backed by ~53 haystack sessions.
+
+**Script:** [`benchmarks/longmemeval_fullstack.py`](https://github.com/sachitrafa/YourMemory/blob/main/benchmarks/longmemeval_fullstack.py)
+
+**Input:** Raw user-turn text from haystack sessions (real conversation turns, not summaries).
+
+**Metric:** `recall_all@5` (all gold sessions in top-5), `nDCG_any@5`.
+
+**Pipeline:** cosine similarity (threshold 0.50 / 0.20 fallback) + BM25 re-rank + graph BFS expansion (depth-2).
+
+**Model:** `multi-qa-mpnet-base-dot-v1` (retrieval-tuned, question→passage, 768 dims).
+
+### Results
+
+| System | Recall-all@5 | nDCG-any@5 |
+|--------|:------------:|:----------:|
+| **YourMemory** (full stack · BM25 + vector + graph BFS) | **84.8%** | **86.8%** |
+| YourMemory (cosine-only baseline, `all-mpnet-base-v2`) | 84.0% | 86.2% |
+
+Graph BFS expansion adds ~+0.8pp on recall-all@5 over cosine-only. The switch to `multi-qa-mpnet-base-dot-v1` (retrieval-tuned for question→passage matching) accounts for the improvement over the symmetric `all-mpnet-base-v2` baseline.
+
+---
+
+## 2. Long-Context Recall Accuracy — LoCoMo-10 (20 April 2026)
 
 **Dataset:** [snap-research/LoCoMo](https://github.com/snap-research/locomo) — `locomo10.json`, 10 multi-session conversation samples spanning weeks to months.
 
 **Script:** [`benchmarks/locomo_4way.py`](https://github.com/sachitrafa/YourMemory/blob/main/benchmarks/locomo_4way.py) — fully reproducible. All API keys loaded from environment variables; no hardcoded credentials.
+
+**Model:** `all-mpnet-base-v2` (symmetric similarity, 768 dims). *Note: the current default model is `multi-qa-mpnet-base-dot-v1`, which scores 55% on LoCoMo session-summary retrieval but 84.8% on LongMemEval raw-passage retrieval — see Section 1.*
 
 **Input:** `session_summary` fields from each conversation sample — identical text fed to every system in the same order.
 
@@ -49,7 +76,7 @@
 
 ---
 
-## 2. Workflow Efficiency — Token and LLM Call Savings
+## 3. Workflow Efficiency — Token and LLM Call Savings
 
 **Method:** A realistic multi-session developer workflow was simulated across 3 sessions with different inputs per session. Two approaches were compared: a stateless baseline (no memory, full conversation history carried forward) and YourMemory. The benchmark script is at [`benchmarks/two_session_comparison.py`](benchmarks/two_session_comparison.py).
 
@@ -84,7 +111,7 @@ The savings grow as the memory bank fills. By session 3+, YourMemory has accumul
 
 ---
 
-## 3. Decay-Based Token Pruning
+## 4. Decay-Based Token Pruning
 
 **Method:** A synthetic set of 15 memories spanning 0–60 days was evaluated. Memories with Ebbinghaus strength below the prune threshold (0.05) are excluded from retrieval entirely. Token counts are based on the top-5 memories injected into context.
 
@@ -103,16 +130,22 @@ Token savings compound at scale. A system with 200+ memories over 6 months will 
 
 ## Scoring Formula
 
-YourMemory retrieval score combines semantic relevance with biological memory strength:
+YourMemory uses a two-stage retrieval pipeline:
 
+**Ranking (hybrid BM25 + vector — decay excluded):**
 ```
-score = cosine_similarity × Ebbinghaus_strength
-
-Ebbinghaus_strength = importance × e^(−λ_eff × days) × (1 + recall_count × 0.2)
-λ_eff = 0.16 × (1 − importance × 0.8)
+hybrid_score = 0.4 × bm25_norm + 0.6 × cosine_similarity
 ```
 
-Memories below strength `0.05` are pruned entirely. Memories above similarity `0.75` have their `recall_count` reinforced on retrieval.
+**Ebbinghaus decay (pruning and graph scoring only):**
+```
+strength = importance × e^(−λ_eff × days) × (1 + recall_count × 0.2)
+λ_eff    = base_λ × (1 − importance × 0.8)
+
+base_λ: fact=0.16, strategy=0.10, assumption=0.20, failure=0.35
+```
+
+Decay is intentionally excluded from the ranking formula — multiplying cosine by strength would cause old-but-valid memories to rank below newer irrelevant ones. Instead, decay governs the 24h pruning job (threshold 0.05) and graph node scores. Memories above similarity `0.75` have their `recall_count` reinforced on retrieval.
 
 ---
 

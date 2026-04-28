@@ -180,11 +180,13 @@ def expand_with_graph(
     seed_ids: list[int],
     user_id:  str,
     top_k:    int = 5,
-) -> list[int]:
+) -> list[tuple[int, float]]:
     """
-    BFS from each seed memory_id; return up to top_k extra ids not in seeds.
+    BFS from each seed memory_id; return up to top_k (id, edge_weight) pairs
+    not in seeds, sorted by edge_weight descending.
 
-    Returned list is sorted by cumulative edge_weight (strongest first).
+    edge_weight = cosine_similarity × verb_weight from SVO extraction —
+    represents how strongly each expanded node is connected to its seed.
     """
     g = _g()
     if g is None or not seed_ids:
@@ -208,7 +210,7 @@ def expand_with_graph(
                 candidates[nid] = ew
 
     ranked = sorted(candidates, key=lambda k: candidates[k], reverse=True)
-    return ranked[:top_k]
+    return [(nid, candidates[nid]) for nid in ranked[:top_k]]
 
 
 # ------------------------------------------------------------------ #
