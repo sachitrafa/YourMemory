@@ -205,17 +205,18 @@ Three tools, called by your AI automatically.
 
 | Tool | When | What it does |
 |------|------|--------------|
-| `recall_memory(query)` | Start of every task | Surfaces relevant memories ranked by similarity × strength |
-| `store_memory(content, importance)` | After learning something new | Embeds and stores with biological decay |
-| `update_memory(id, new_content)` | When a memory is outdated | Re-embeds and replaces |
+| `recall_memory(query, current_path?)` | Start of every task | Surfaces relevant memories ranked by similarity × strength; boosts spatially matched memories |
+| `store_memory(content, importance, context_paths?)` | After learning something new | Embeds and stores with biological decay; tags optional file/dir paths for spatial recall |
+| `update_memory(id, new_content)` | When a memory is outdated | Re-embeds and replaces; logs old content to audit trail |
 
 ```python
-# Example session
-store_memory("Sachit prefers tabs over spaces in Python", importance=0.9, category="fact")
+# Store with spatial context
+store_memory("Sachit prefers tabs over spaces in Python", importance=0.9, category="fact",
+             context_paths=["/projects/backend"])
 
-# Next session — without being told again:
-recall_memory("Python formatting")
-# → {"content": "Sachit prefers tabs over spaces in Python", "strength": 0.87}
+# Next session — spatial boost applied when working in that path:
+recall_memory("Python formatting", current_path="/projects/backend")
+# → {"content": "Sachit prefers tabs over spaces in Python", "strength": 0.87, "score": 0.81}
 ```
 
 ### Categories control how fast memories fade
@@ -237,11 +238,15 @@ Memory strength decays exponentially — importance and recall frequency slow th
 
 ```
 effective_λ  = base_λ × (1 - importance × 0.8)
-strength     = clamp(importance × e^(−effective_λ × days) × (1 + recall_count × 0.2), 0, 1)
+strength     = clamp(importance × e^(−effective_λ × active_days) × (1 + recall_count × 0.2), 0, 1)
 hybrid_score = 0.4 × bm25_norm + 0.6 × cosine_similarity
 ```
 
-Decay (strength) is used for pruning only — not ranking. This prevents old-but-valid memories from being buried below newer irrelevant ones. Memories below strength `0.05` are pruned automatically every 24 hours.
+`active_days` counts only days the user was active — vacations don't cause memory loss. Decay is used for pruning only, not ranking. Memories below strength `0.05` are pruned automatically every 24 hours.
+
+**Session wrap-up scoring:** recalled memory IDs are tracked per session and get a recall_count boost when the session goes idle (30 min default). Set `YOURMEMORY_SESSION_IDLE` to change the window.
+
+**Recall throttling:** identical (user, query) pairs are cached to avoid redundant retrieval within a configurable window. Set `YOURMEMORY_RECALL_COOLDOWN` (seconds, default 0 = off).
 
 ### Hybrid Retrieval: Vector + BM25 + Graph
 
@@ -338,19 +343,23 @@ createdb yourmemory
 ```
 Claude / Cline / Cursor / Any MCP client
     │
-    ├── recall_memory(query, api_key?)
-    │       └── embed → vector similarity (Round 1)
+    ├── recall_memory(query, current_path?, api_key?)
+    │       └── throttle check (YOURMEMORY_RECALL_COOLDOWN)
+    │               embed → vector similarity (Round 1)
     │               → graph BFS expansion  (Round 2)
     │               → score = sim × strength → top-k
-    │               → recall propagation → boost neighbours
+    │               → spatial boost (+0.08) if current_path matches context_paths
+    │               → session tracking → recall_count bump on session end
     │
-    ├── store_memory(content, importance, category?, visibility?, api_key?)
+    ├── store_memory(content, importance, category?, context_paths?, visibility?, api_key?)
     │       └── question? → reject
     │               contradiction check → update if conflict
     │               embed() → INSERT → index_memory() → graph node + edges
+    │               record_activity(user_id) → active days log
     │
     └── update_memory(id, new_content, importance)
-            └── embed(new_content) → UPDATE → refresh graph node
+            └── log old content → memory_history (audit trail)
+                    embed(new_content) → UPDATE → refresh graph node
 
   Vector DB (Round 1)             Graph DB (Round 2)
   DuckDB (default)                NetworkX (default)
@@ -358,8 +367,11 @@ Claude / Cline / Cursor / Any MCP client
     ├── embedding FLOAT[768]        ├── nodes: memory_id, strength
     ├── importance FLOAT            └── edges: sim × verb_weight ≥ 0.4
     ├── recall_count INTEGER
-    ├── visibility VARCHAR        Neo4j (opt-in)
-    └── agent_id VARCHAR            └── bolt://localhost:7687
+    ├── context_paths JSON        Neo4j (opt-in)
+    ├── visibility VARCHAR          └── bolt://localhost:7687
+    ├── agent_id VARCHAR
+    user_activity (active days log)
+    memory_history (supersession audit)
 ```
 
 ---
