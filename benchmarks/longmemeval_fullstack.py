@@ -196,15 +196,20 @@ def run_instance(entry: dict) -> dict:
     raw_bm25         = bm25.get_scores(question.split())
     bm25_norm        = np.array([normalize_bm25(float(s)) for s in raw_bm25])
 
-    # ── Decay (for graph nodes) ───────────────────────────────────────────
+    # ── Decay (for graph nodes, relative to question date) ───────────────
+    # Use q_date as reference so sessions from 2023 aren't penalised by
+    # ~1000 wall-clock days from datetime.now() — simulates the system
+    # as it would run at the time the question was asked.
     strengths = []
     for date_str in dates:
-        accessed = parse_date(date_str)
+        accessed  = parse_date(date_str)
+        days_old  = max(0.0, (q_date - accessed).total_seconds() / 86400)
         strengths.append(compute_strength(
             last_accessed_at=accessed,
             recall_count=0,
             importance=0.7,
             category="fact",
+            active_days=days_old,
         ))
     strengths = np.array(strengths)
 
@@ -255,8 +260,8 @@ def run_instance(entry: dict) -> dict:
     rankings   = top_indices + remaining
 
     # ── Evaluate ──────────────────────────────────────────────────────────
-    corpus_ids  = np.array(sess_ids)
-    correct_docs = list(set(sid for sid in sess_ids if "answer" in sid))
+    corpus_ids   = np.array(sess_ids)
+    correct_docs = list(entry.get("answer_session_ids", []))
 
     metrics_session = {}
     for k in [1, 3, 5, 10, 30, 50]:
