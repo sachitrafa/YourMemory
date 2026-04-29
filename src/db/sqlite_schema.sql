@@ -57,3 +57,22 @@ CREATE TABLE IF NOT EXISTS agent_registrations (
 
 CREATE INDEX IF NOT EXISTS agent_reg_user_id_idx ON agent_registrations (user_id);
 CREATE INDEX IF NOT EXISTS agent_reg_api_key_idx ON agent_registrations (api_key_hash);
+
+-- Feature: activity-aware decay — track days the user was active
+CREATE TABLE IF NOT EXISTS user_activity (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id   TEXT NOT NULL,
+    active_on TEXT NOT NULL,  -- YYYY-MM-DD
+    UNIQUE(user_id, active_on)
+);
+CREATE INDEX IF NOT EXISTS user_activity_user_idx ON user_activity (user_id);
+
+-- Feature: supersession audit log — old content before update_memory
+CREATE TABLE IF NOT EXISTS memory_history (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    memory_id     INTEGER NOT NULL,
+    old_content   TEXT NOT NULL,
+    reason        TEXT NOT NULL DEFAULT 'update',
+    superseded_at TEXT DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS memory_history_mid_idx ON memory_history (memory_id);

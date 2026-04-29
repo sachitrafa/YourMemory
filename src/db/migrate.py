@@ -6,6 +6,47 @@ from src.db.connection import get_backend, get_conn
 load_dotenv()
 
 
+def _add_columns(conn, backend: str) -> None:
+    """Idempotent ALTER TABLE additions for new columns."""
+    if backend == "sqlite":
+        for col, defn in [
+            ("context_paths", "TEXT DEFAULT NULL"),
+        ]:
+            try:
+                conn.execute(f"ALTER TABLE memories ADD COLUMN {col} {defn}")
+            except Exception:
+                pass  # column already exists
+        for tbl in ["user_activity", "memory_history"]:
+            pass  # created by schema.sql already
+
+    elif backend == "duckdb":
+        for col, defn in [
+            ("context_paths", "VARCHAR DEFAULT NULL"),
+        ]:
+            try:
+                conn.execute(f"ALTER TABLE memories ADD COLUMN {col} {defn}")
+            except Exception:
+                pass
+
+    elif backend == "postgres":
+        cur = conn.cursor()
+        for col, defn in [
+            ("context_paths", "TEXT DEFAULT NULL"),
+        ]:
+            cur.execute(f"""
+                DO $$ BEGIN
+                    IF NOT EXISTS (
+                        SELECT 1 FROM information_schema.columns
+                        WHERE table_name='memories' AND column_name='{col}'
+                    ) THEN
+                        ALTER TABLE memories ADD COLUMN {col} {defn};
+                    END IF;
+                END $$;
+            """)
+        conn.commit()
+        cur.close()
+
+
 def migrate():
     backend = get_backend()
 
@@ -35,6 +76,9 @@ def migrate():
         cur.execute(schema)
         conn.commit()
         cur.close()
+
+    # ── Additive column migrations (safe to re-run) ───────────────────────
+    _add_columns(conn, backend)
 
     # ── Post-schema FTS setup ─────────────────────────────────────────────
     if backend == "sqlite":

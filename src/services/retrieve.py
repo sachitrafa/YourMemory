@@ -139,7 +139,11 @@ def _fts_search_postgres(conn, user_id: str, agent_id: str | None,
         return {}
 
 
-def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None) -> dict:
+SPATIAL_BOOST = 0.08   # score bonus when memory context_paths overlap current path
+
+
+def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None,
+             current_path: str | None = None) -> dict:
     """
     Round 1 — vector search (cosine similarity):
        - DuckDB:   native array_cosine_similarity
@@ -158,6 +162,9 @@ def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None) -> 
         result = _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id)
     else:
         result = _retrieve_sqlite(user_id, query, query_embedding, top_k, agent_id)
+
+    if current_path and result.get("memories"):
+        result = _apply_spatial_boost(result, current_path, top_k)
 
     seed_ids = [m["id"] for m in result.get("memories", [])]
     if seed_ids:
@@ -178,6 +185,25 @@ def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None) -> 
 
 
 # ── Shared helpers ────────────────────────────────────────────────────────────
+
+def _apply_spatial_boost(result: dict, current_path: str, top_k: int) -> dict:
+    """Boost memories whose context_paths overlap with current_path, then re-rank."""
+    import json as _json
+    boosted = []
+    for m in result["memories"]:
+        extra = 0.0
+        raw = m.get("context_paths")
+        if raw:
+            try:
+                paths = _json.loads(raw) if isinstance(raw, str) else raw
+                if any(current_path.startswith(p) or p.startswith(current_path) for p in paths):
+                    extra = SPATIAL_BOOST
+            except Exception:
+                pass
+        boosted.append({**m, "score": round(m["score"] + extra, 4)})
+    boosted.sort(key=lambda x: x["score"], reverse=True)
+    return _format_result(boosted[:top_k])
+
 
 def _score_candidates(candidates: list, fts_scores: dict[int, float] | None = None) -> list:
     """
@@ -208,6 +234,7 @@ def _score_candidates(candidates: list, fts_scores: dict[int, float] | None = No
             "strength":   strength,
             "bm25":       round(bm25_norm, 4),
             "score":      hybrid_score,
+            "context_paths": m.get("context_paths"),
         })
     scored.sort(key=lambda x: x["score"], reverse=True)
     return scored
@@ -233,16 +260,17 @@ def _format_result(top: list) -> dict:
         "context": _build_context(top),
         "memories": [
             {
-                "id":         m["id"],
-                "content":    m["content"],
-                "category":   m["category"],
-                "agent_id":   m.get("agent_id"),
-                "visibility": m.get("visibility"),
-                "importance": round(m["importance"], 4),
-                "strength":   round(m["strength"], 4),
-                "similarity": round(m["similarity"], 4),
-                "bm25":       round(m.get("bm25", 0.0), 4),
-                "score":      round(m["score"], 4),
+                "id":            m["id"],
+                "content":       m["content"],
+                "category":      m["category"],
+                "agent_id":      m.get("agent_id"),
+                "visibility":    m.get("visibility"),
+                "importance":    round(m["importance"], 4),
+                "strength":      round(m["strength"], 4),
+                "similarity":    round(m["similarity"], 4),
+                "bm25":          round(m.get("bm25", 0.0), 4),
+                "score":         round(m["score"], 4),
+                "context_paths": m.get("context_paths"),
             }
             for m in top
         ],
@@ -317,7 +345,7 @@ def _fetch_by_ids(hits: list[tuple[int, float]], user_id: str, backend: str) -> 
             from psycopg2.extras import RealDictCursor
             cur = conn.cursor(cursor_factory=RealDictCursor)
             cur.execute(
-                "SELECT id, content, category, importance, recall_count, last_accessed_at,"
+                "SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,"
                 "       agent_id, visibility FROM memories WHERE id = ANY(%s) AND user_id = %s",
                 (ids, user_id),
             )
@@ -327,7 +355,7 @@ def _fetch_by_ids(hits: list[tuple[int, float]], user_id: str, backend: str) -> 
             from src.db.connection import duckdb_rows
             placeholders = ", ".join("?" * len(ids))
             result = conn.execute(
-                f"SELECT id, content, category, importance, recall_count, last_accessed_at,"
+                f"SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,"
                 f"       agent_id, visibility FROM memories WHERE id IN ({placeholders}) AND user_id = ?",
                 ids + [user_id],
             )
@@ -336,7 +364,7 @@ def _fetch_by_ids(hits: list[tuple[int, float]], user_id: str, backend: str) -> 
             cur = conn.cursor()
             placeholders = ", ".join("?" * len(ids))
             cur.execute(
-                f"SELECT id, content, category, importance, recall_count, last_accessed_at,"
+                f"SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,"
                 f"       agent_id, visibility FROM memories WHERE id IN ({placeholders}) AND user_id = ?",
                 ids + [user_id],
             )
@@ -430,7 +458,7 @@ def _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id):
     cur  = conn.cursor(cursor_factory=RealDictCursor)
     if agent_id:
         cur.execute("""
-            SELECT id, content, category, importance, recall_count, last_accessed_at,
+            SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,
                    agent_id, visibility,
                    1 - (embedding <=> %s::vector) AS similarity
             FROM memories
@@ -443,7 +471,7 @@ def _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id):
               SIMILARITY_THRESHOLD, embedding_str, top_k * 2))
     else:
         cur.execute("""
-            SELECT id, content, category, importance, recall_count, last_accessed_at,
+            SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,
                    agent_id, visibility,
                    1 - (embedding <=> %s::vector) AS similarity
             FROM memories
@@ -469,7 +497,7 @@ def _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id):
     def _query(threshold):
         if agent_id:
             return duckdb_rows(conn.execute("""
-                SELECT id, content, category, importance, recall_count, last_accessed_at,
+                SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,
                        agent_id, visibility,
                        array_cosine_similarity(embedding, ?::FLOAT[768]) AS similarity
                 FROM memories
@@ -479,7 +507,7 @@ def _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id):
                 ORDER BY similarity DESC LIMIT ?
             """, [query_embedding, user_id, agent_id, query_embedding, threshold, top_k * 2]))
         return duckdb_rows(conn.execute("""
-            SELECT id, content, category, importance, recall_count, last_accessed_at,
+            SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,
                    agent_id, visibility,
                    array_cosine_similarity(embedding, ?::FLOAT[768]) AS similarity
             FROM memories
@@ -505,14 +533,14 @@ def _retrieve_sqlite(user_id, query, query_embedding, top_k, agent_id):
     cur  = conn.cursor()
     if agent_id:
         cur.execute("""
-            SELECT id, content, category, importance, recall_count, last_accessed_at,
+            SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,
                    agent_id, visibility, embedding
             FROM memories
             WHERE user_id = ? AND (visibility = 'shared' OR (visibility = 'private' AND agent_id = ?))
         """, (user_id, agent_id))
     else:
         cur.execute("""
-            SELECT id, content, category, importance, recall_count, last_accessed_at,
+            SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,
                    agent_id, visibility, embedding
             FROM memories WHERE user_id = ? AND visibility = 'shared'
         """, (user_id,))

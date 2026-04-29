@@ -102,8 +102,75 @@ def _load_services():
     _services["emb_to_db"]        = emb_to_db
 
 import getpass
+import time
+from collections import defaultdict
+
 DEFAULT_USER       = os.getenv("YOURMEMORY_USER") or getpass.getuser()
 DEFAULT_IMPORTANCE = 0.5
+
+# ── Recall throttling ─────────────────────────────────────────────────────────
+# YOURMEMORY_RECALL_COOLDOWN: seconds to cache recall results per user (0 = off)
+_RECALL_COOLDOWN   = int(os.getenv("YOURMEMORY_RECALL_COOLDOWN", "0"))
+_recall_cache: dict[str, tuple[float, dict]] = {}   # user_id → (ts, result)
+
+# ── Session wrap-up scoring ───────────────────────────────────────────────────
+# Track which memory IDs were recalled in the current session per user.
+# A "session" ends after SESSION_IDLE_SECONDS of no recall activity.
+_SESSION_IDLE      = int(os.getenv("YOURMEMORY_SESSION_IDLE", "1800"))  # 30 min
+_session_hits: dict[str, set]   = defaultdict(set)    # user_id → {memory_id}
+_session_last: dict[str, float] = {}                   # user_id → last recall ts
+
+
+# ── Session wrap-up helpers ───────────────────────────────────────────────────
+
+def _flush_session(user_id: str) -> None:
+    """Bump recall_count for every memory recalled in the just-ended session."""
+    ids = list(_session_hits.pop(user_id, set()))
+    _session_last.pop(user_id, None)
+    if not ids:
+        return
+    try:
+        from src.db.connection import get_backend, get_conn
+        backend = get_backend()
+        conn    = get_conn()
+        try:
+            if backend == "postgres":
+                cur = conn.cursor()
+                cur.execute(
+                    "UPDATE memories SET recall_count = recall_count + 1 WHERE id = ANY(%s)",
+                    (ids,),
+                )
+                conn.commit()
+                cur.close()
+            elif backend == "duckdb":
+                ph = ", ".join("?" * len(ids))
+                conn.execute(
+                    f"UPDATE memories SET recall_count = recall_count + 1 WHERE id IN ({ph})",
+                    ids,
+                )
+            else:
+                cur = conn.cursor()
+                for mid in ids:
+                    cur.execute(
+                        "UPDATE memories SET recall_count = recall_count + 1 WHERE id = ?", (mid,)
+                    )
+                conn.commit()
+                cur.close()
+        finally:
+            conn.close()
+        print(f"[session] wrap-up: boosted {len(ids)} memories for {user_id}", file=sys.stderr)
+    except Exception as exc:
+        print(f"[session] wrap-up failed: {exc}", file=sys.stderr)
+
+
+def _session_watchdog() -> None:
+    """Background thread: flush idle sessions every minute."""
+    while True:
+        time.sleep(60)
+        now = time.time()
+        for uid, last in list(_session_last.items()):
+            if now - last >= _SESSION_IDLE:
+                _flush_session(uid)
 
 
 # ── MCP Server ────────────────────────────────────────────────────────────────
@@ -139,6 +206,10 @@ async def list_tools() -> list[types.Tool]:
                     "top_k": {
                         "type": "integer",
                         "description": "Max memories to return (default: 5).",
+                    },
+                    "current_path": {
+                        "type": "string",
+                        "description": "Current working file or directory path. Memories tagged with matching paths receive a relevance boost.",
                     },
                 },
                 "required": ["query"],
@@ -191,6 +262,11 @@ async def list_tools() -> list[types.Tool]:
                     "visibility": {
                         "type": "string",
                         "description": "Who can recall this memory: 'shared' (any agent, default) or 'private' (only this agent).",
+                    },
+                    "context_paths": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "File or directory paths this memory is associated with (e.g. ['src/services/', 'pyproject.toml']). Used for spatial relevance boosting during retrieval.",
                     },
                 },
                 "required": ["content"],
@@ -245,10 +321,18 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
     emb_to_db        = _services["emb_to_db"]
 
     if name == "recall_memory":
-        user_id = arguments.get("user_id", DEFAULT_USER).strip().lower()
-        query   = arguments["query"]
-        top_k   = arguments.get("top_k", 5)
-        api_key = arguments.get("api_key")
+        user_id      = arguments.get("user_id", DEFAULT_USER).strip().lower()
+        query        = arguments["query"]
+        top_k        = arguments.get("top_k", 5)
+        api_key      = arguments.get("api_key")
+        current_path = arguments.get("current_path")
+
+        # ── Recall throttling ──────────────────────────────────────────────
+        cache_key = f"{user_id}:{query}"
+        if _RECALL_COOLDOWN > 0:
+            cached = _recall_cache.get(cache_key)
+            if cached and (time.time() - cached[0]) < _RECALL_COOLDOWN:
+                return [types.TextContent(type="text", text=json.dumps(cached[1], default=str))]
 
         agent = None
         if api_key:
@@ -258,7 +342,8 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                     {"error": "Invalid or revoked API key."}))]
 
         agent_id = agent["agent_id"] if agent else None
-        result   = retrieve(user_id, query, top_k=top_k, agent_id=agent_id)
+        result   = retrieve(user_id, query, top_k=top_k, agent_id=agent_id,
+                            current_path=current_path)
 
         if agent:
             can_read = agent.get("can_read", [])
@@ -268,6 +353,26 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                     if m["agent_id"] in can_read
                 ]
                 result["memoriesFound"] = len(result["memories"])
+
+        # ── Session wrap-up tracking ───────────────────────────────────────
+        now_ts = time.time()
+        # If session was idle, flush before starting a new one
+        if user_id in _session_last and (now_ts - _session_last[user_id]) >= _SESSION_IDLE:
+            _flush_session(user_id)
+        for m in result.get("memories", []):
+            _session_hits[user_id].add(m["id"])
+        _session_last[user_id] = now_ts
+
+        # ── Cache result ───────────────────────────────────────────────────
+        if _RECALL_COOLDOWN > 0:
+            _recall_cache[cache_key] = (now_ts, result)
+
+        # ── Record activity (best-effort) ──────────────────────────────────
+        try:
+            from src.services.decay import record_activity
+            record_activity(user_id)
+        except Exception:
+            pass
 
         return [types.TextContent(type="text", text=json.dumps(result, default=str))]
 
@@ -307,6 +412,10 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         raw_category = arguments.get("category", "").strip().lower()
         category     = raw_category if raw_category in valid_categories else categorize(content)
         embedding    = embed(content)
+
+        # context_paths — serialise list to JSON string for storage
+        raw_paths    = arguments.get("context_paths")
+        context_paths_str = json.dumps(raw_paths) if raw_paths else None
 
         backend = get_backend()
         conn    = get_conn()
@@ -389,30 +498,30 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
             emb_str = emb_to_db(embedding, backend)
             if backend == "postgres":
                 cur.execute("""
-                    INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility)
-                    VALUES (%s, %s, %s, %s, %s::vector, %s, %s)
+                    INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility, context_paths)
+                    VALUES (%s, %s, %s, %s, %s::vector, %s, %s, %s)
                     ON CONFLICT (user_id, content) DO UPDATE
                         SET recall_count = memories.recall_count + 1, last_accessed_at = NOW()
                     RETURNING id
-                """, (user_id, final_content, category, importance, emb_str, agent_id, visibility))
+                """, (user_id, final_content, category, importance, emb_str, agent_id, visibility, context_paths_str))
                 memory_id = cur.fetchone()[0]
             elif backend == "duckdb":
                 result = conn.execute("""
-                    INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility, context_paths)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT (user_id, content) DO UPDATE
                         SET recall_count = recall_count + 1, last_accessed_at = now()
                     RETURNING id
-                """, [user_id, final_content, category, importance, emb_str, agent_id, visibility])
+                """, [user_id, final_content, category, importance, emb_str, agent_id, visibility, context_paths_str])
                 row = result.fetchone()
                 memory_id = row[0] if row else None
             else:
                 cur.execute("""
-                    INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility, context_paths)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT (user_id, content) DO UPDATE
                         SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
-                """, (user_id, final_content, category, importance, emb_str, agent_id, visibility))
+                """, (user_id, final_content, category, importance, emb_str, agent_id, visibility, context_paths_str))
                 memory_id = cur.lastrowid
 
         if backend != "duckdb":
@@ -436,6 +545,13 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
             except Exception as _ge:
                 import sys as _sys
                 print(f"[graph] index_memory failed: {_ge}", file=_sys.stderr)
+
+        # ── Record activity ────────────────────────────────────────────────
+        try:
+            from src.services.decay import record_activity
+            record_activity(user_id)
+        except Exception:
+            pass
 
         return [types.TextContent(type="text", text=json.dumps(
             {"stored": 1, "id": memory_id, "content": final_content, "category": category,
@@ -509,6 +625,39 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                 {"updated": 1, "id": row[0], "content": row[1], "category": row[2],
                  "importance": row[3], "action": "reinforce_existing"}))]
 
+        # ── Supersession: log old content before overwriting ───────────────
+        try:
+            if backend == "postgres":
+                cur.execute("SELECT content FROM memories WHERE id = %s", (memory_id,))
+                old_row = cur.fetchone()
+            elif backend == "duckdb":
+                old_row = conn.execute(
+                    "SELECT content FROM memories WHERE id = ?", [memory_id]
+                ).fetchone()
+            else:
+                cur.execute("SELECT content FROM memories WHERE id = ?", (memory_id,))
+                old_row = cur.fetchone()
+
+            if old_row:
+                old_content = old_row[0]
+                if backend == "postgres":
+                    cur.execute(
+                        "INSERT INTO memory_history (memory_id, old_content, reason) VALUES (%s, %s, 'update')",
+                        (memory_id, old_content),
+                    )
+                elif backend == "duckdb":
+                    conn.execute(
+                        "INSERT INTO memory_history (memory_id, old_content, reason) VALUES (?, ?, 'update')",
+                        [memory_id, old_content, "update"],
+                    )
+                else:
+                    cur.execute(
+                        "INSERT INTO memory_history (memory_id, old_content, reason) VALUES (?, ?, 'update')",
+                        (memory_id, old_content),
+                    )
+        except Exception:
+            pass  # never block the update due to history logging
+
         if backend == "postgres":
             cur.execute("""
                 UPDATE memories
@@ -547,6 +696,13 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         if row is None:
             return [types.TextContent(type="text", text=json.dumps(
                 {"error": f"Memory {memory_id} not found."}))]
+
+        # ── Record activity ────────────────────────────────────────────────
+        try:
+            from src.services.decay import record_activity
+            record_activity(user_id_owner)
+        except Exception:
+            pass
 
         return [types.TextContent(type="text", text=json.dumps(
             {"updated": 1, "id": row[0], "content": row[1], "category": row[2], "importance": row[3]}))]
@@ -593,6 +749,10 @@ def _start_decay_scheduler():
 
     t = threading.Thread(target=loop, daemon=True, name="decay-scheduler")
     t.start()
+
+    # Session wrap-up watchdog
+    w = threading.Thread(target=_session_watchdog, daemon=True, name="session-watchdog")
+    w.start()
 
 
 async def main():

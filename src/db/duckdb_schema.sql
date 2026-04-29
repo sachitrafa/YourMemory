@@ -17,6 +17,23 @@ CREATE TABLE IF NOT EXISTS memories (
     UNIQUE(user_id, content)
 );
 
+CREATE SEQUENCE IF NOT EXISTS user_activity_id_seq;
+CREATE TABLE IF NOT EXISTS user_activity (
+    id        BIGINT    DEFAULT nextval('user_activity_id_seq') PRIMARY KEY,
+    user_id   VARCHAR   NOT NULL,
+    active_on DATE      NOT NULL,
+    UNIQUE(user_id, active_on)
+);
+
+CREATE SEQUENCE IF NOT EXISTS memory_history_id_seq;
+CREATE TABLE IF NOT EXISTS memory_history (
+    id            BIGINT    DEFAULT nextval('memory_history_id_seq') PRIMARY KEY,
+    memory_id     BIGINT    NOT NULL,
+    old_content   TEXT      NOT NULL,
+    reason        VARCHAR   NOT NULL DEFAULT 'update',
+    superseded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE SEQUENCE IF NOT EXISTS agent_registrations_id_seq;
 CREATE TABLE IF NOT EXISTS agent_registrations (
     id           BIGINT    DEFAULT nextval('agent_registrations_id_seq') PRIMARY KEY,
