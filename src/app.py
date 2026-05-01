@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
-from src.routes import memories, retrieve, agents, ui
+from src.routes import memories, retrieve, agents, ui, graph_viz
 from src.jobs.decay_job import run as run_decay
 from src.db.migrate import migrate
 
@@ -24,6 +24,7 @@ app.include_router(memories.router)
 app.include_router(retrieve.router)
 app.include_router(agents.router)
 app.include_router(ui.router)
+app.include_router(graph_viz.router)
 
 
 @app.get("/health")

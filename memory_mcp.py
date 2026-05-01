@@ -62,12 +62,30 @@ def _run_sse(port: int):
         result  = list_memories(userId=user_id, limit=limit, category=category)
         return JSONResponse(result)
 
+    async def handle_graph_viz(request: Request):
+        from src.routes.graph_viz import graph_viz
+        return await graph_viz(
+            memoryId=int(request.query_params.get("memoryId", 0)),
+            userId=request.query_params.get("userId", "sachit"),
+            depth=int(request.query_params.get("depth", 2)),
+        )
+
+    async def handle_graph_data(request: Request):
+        from src.routes.graph_viz import graph_data
+        return graph_data(
+            memoryId=int(request.query_params.get("memoryId", 0)),
+            userId=request.query_params.get("userId", "sachit"),
+            depth=int(request.query_params.get("depth", 2)),
+        )
+
     app = Starlette(routes=[
-        Route("/sse",       endpoint=handle_sse),
-        Route("/health",    endpoint=handle_health),
-        Route("/ui",        endpoint=handle_ui),
-        Route("/memories",  endpoint=handle_memories),
-        Mount("/messages/", app=sse.handle_post_message),
+        Route("/sse",        endpoint=handle_sse),
+        Route("/health",     endpoint=handle_health),
+        Route("/ui",         endpoint=handle_ui),
+        Route("/memories",   endpoint=handle_memories),
+        Route("/graph",      endpoint=handle_graph_viz),
+        Route("/graph/data", endpoint=handle_graph_data),
+        Mount("/messages/",  app=sse.handle_post_message),
     ])
 
     print(f"YourMemory MCP server running on http://0.0.0.0:{port}/sse", file=sys.stderr, flush=True)
