@@ -775,8 +775,13 @@ def _write_opencode_config(path: str, exe: str, client_name: str) -> bool:
             with open(path) as f:
                 try:
                     data = _json.load(f)
-                except Exception:
-                    data = {}
+                except Exception as parse_exc:
+                    print(f"  ✗  {client_name}: could not parse existing config ({parse_exc}) — skipping to avoid data loss")
+                    return False
+            # Already configured — do nothing
+            if isinstance(data.get("mcp"), dict) and "yourmemory" in data["mcp"]:
+                print(f"  ✓  {client_name} already configured")
+                return True
         data.setdefault("mcp", {})["yourmemory"] = {
             "type":        "local",
             "command":     [exe],
@@ -1117,8 +1122,8 @@ def _first_run_setup() -> None:
     # Inject memory rules into detected client instruction files
     _inject_memory_rules(home, user_id)
 
-    # Fire install ping
-    _ping_install()
+    # Fire install ping in background — never block MCP server startup
+    threading.Thread(target=_ping_install, daemon=True, name="ping-first-run").start()
 
     # Download spaCy model in background — don't block server startup
     def _download_spacy():
