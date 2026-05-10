@@ -194,83 +194,320 @@
     <div class="max-w-6xl mx-auto px-6">
 
       <!-- Section header -->
-      <div class="text-center mb-16">
+      <div class="text-center mb-12">
         <h2 class="text-5xl font-bold tracking-tighter mb-4">Benchmarked on<br/>public data.</h2>
-        <p class="text-gray-400 max-w-xl mx-auto">LoCoMo-10 (Snap Research) — 1,534 QA pairs across 10 multi-session conversations. Full methodology and per-sample results in <a href="https://github.com/sachitrafa/YourMemory/blob/main/BENCHMARKS.md" target="_blank" class="text-[#00D4FF] underline">BENCHMARKS.md</a>.</p>
+        <p class="text-gray-400 max-w-xl mx-auto">Three external datasets. All scripts are public and reproducible — full methodology in <a href="https://github.com/sachitrafa/YourMemory/blob/main/BENCHMARKS.md" target="_blank" class="text-[#00D4FF] underline">BENCHMARKS.md</a>.</p>
       </div>
 
-      <!-- Row 1: LoCoMo chart + callouts -->
-      <div class="grid lg:grid-cols-2 gap-16 items-center mb-20">
-        <!-- Chart card -->
-        <div class="bg-white/5 border border-white/10 p-10 rounded-3xl">
-          <div class="mb-2">
-            <h3 class="text-2xl font-bold mb-1">LoCoMo Recall@5</h3>
-            <p class="text-gray-400 font-mono text-xs uppercase tracking-tighter mb-1">snap-research/LoCoMo · 1,534 QA pairs · 10 sessions</p>
-            <p class="text-gray-600 font-mono text-[10px]">benchmarks/locomo_4way.py · BM25 + vector + graph + decay · 20 Apr 2026</p>
-          </div>
-          <div class="space-y-6 mt-8">
-            <div>
-              <div class="flex justify-between mb-2 text-sm">
-                <span class="font-bold">YourMemory <span class="text-[10px] font-mono text-gray-400 ml-1">BM25 + vector + graph + decay</span></span>
-                <span class="text-[#00D4FF] font-mono font-bold">59%</span>
-              </div>
-              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
-                <div class="h-full bg-[#00D4FF] rounded-full" style="width:59%;box-shadow:0 0 14px rgba(0,212,255,0.5)"></div>
-              </div>
-            </div>
-            <div class="opacity-45">
-              <div class="flex justify-between mb-2 text-sm">
-                <span class="font-medium">Zep Cloud <span class="text-[10px] font-mono text-gray-500 ml-1">10/10 samples</span></span>
-                <span class="font-mono">28%</span>
-              </div>
-              <div class="h-4 bg-white/10 rounded-full overflow-hidden">
-                <div class="h-full bg-white/40 rounded-full" style="width:28%"></div>
-              </div>
-            </div>
-          </div>
-          <!-- Dataset info -->
-          <div class="mt-8 pt-6 border-t border-white/10">
-            <p class="text-gray-500 text-xs font-mono uppercase tracking-widest mb-3">Dataset</p>
-            <div class="space-y-2 text-xs font-mono text-gray-400">
-              <div class="flex justify-between"><span>Source</span><span>snap-research/LoCoMo</span></div>
-              <div class="flex justify-between"><span>File</span><span>locomo10.json</span></div>
-              <div class="flex justify-between"><span>QA pairs</span><span class="text-[#00D4FF]">1,534</span></div>
-              <div class="flex justify-between"><span>Sessions</span><span class="text-[#00D4FF]">10/10</span></div>
-              <div class="flex justify-between"><span>Script</span><span>benchmarks/locomo_4way.py</span></div>
-            </div>
-          </div>
-        </div>
+      <!-- Tab navigation -->
+      <div class="flex gap-2 mb-10 justify-center flex-wrap">
+        <button onclick="switchTab('locomo')" id="tab-locomo"
+          class="px-5 py-2.5 rounded-full text-sm font-bold transition-all border border-[#00D4FF] bg-[#00D4FF] text-[#0A192F]">
+          LoCoMo-10
+          <span class="ml-1.5 text-[10px] font-mono opacity-70">59% Recall@5</span>
+        </button>
+        <button onclick="switchTab('longmemeval')" id="tab-longmemeval"
+          class="px-5 py-2.5 rounded-full text-sm font-bold transition-all border border-white/20 text-gray-400 hover:border-white/40 hover:text-gray-200">
+          LongMemEval-S
+          <span class="ml-1.5 text-[10px] font-mono opacity-70">84.8% Recall-all@5</span>
+        </button>
+        <button onclick="switchTab('hotpotqa')" id="tab-hotpotqa"
+          class="px-5 py-2.5 rounded-full text-sm font-bold transition-all border border-white/20 text-gray-400 hover:border-white/40 hover:text-gray-200">
+          HotpotQA Multi-Hop
+          <span class="ml-1.5 text-[10px] font-mono opacity-70">71.5% BOTH_FOUND@5</span>
+        </button>
+      </div>
 
-        <!-- Callouts -->
-        <div>
-          <ul class="space-y-7">
-            <li class="flex gap-4">
-              <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      <!-- Tab 1: LoCoMo -->
+      <div id="panel-locomo" class="benchmark-panel">
+        <div class="grid lg:grid-cols-2 gap-16 items-center mb-4">
+          <!-- Chart card -->
+          <div class="bg-white/5 border border-white/10 p-10 rounded-3xl">
+            <div class="mb-2">
+              <h3 class="text-2xl font-bold mb-1">LoCoMo Recall@5</h3>
+              <p class="text-gray-400 font-mono text-xs uppercase tracking-tighter mb-1">snap-research/LoCoMo · 1,534 QA pairs · 10 sessions</p>
+              <p class="text-gray-600 font-mono text-[10px]">benchmarks/locomo_4way.py · BM25 + vector + graph + decay · 20 Apr 2026</p>
+            </div>
+            <div class="space-y-6 mt-8">
               <div>
-                <h4 class="font-bold text-lg leading-tight mb-1">+31pp vs Zep <span class="text-gray-400 text-sm font-normal">(111% relative)</span></h4>
-                <p class="text-gray-400 text-sm">Both systems ran all 10 samples to completion on the same 1,534 QA pairs. YourMemory led every single session — the only memory layer tested that completed the full benchmark clean.</p>
+                <div class="flex justify-between mb-2 text-sm">
+                  <span class="font-bold">YourMemory <span class="text-[10px] font-mono text-gray-400 ml-1">BM25 + vector + graph + decay</span></span>
+                  <span class="text-[#00D4FF] font-mono font-bold">59%</span>
+                </div>
+                <div class="h-4 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:59%;box-shadow:0 0 14px rgba(0,212,255,0.5)"></div>
+                </div>
               </div>
-            </li>
-            <li class="flex gap-4">
-              <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-              <div>
-                <h4 class="font-bold text-lg leading-tight mb-1">Reproducible — script is public</h4>
-                <p class="text-gray-400 text-sm">The full benchmark script is <a href="https://github.com/sachitrafa/YourMemory/blob/main/benchmarks/locomo_4way.py" target="_blank" class="text-[#00D4FF] underline">benchmarks/locomo_4way.py</a>. Same dataset, same hit rule, same top-5 limit for every system. Run it yourself.</p>
+              <div class="opacity-45">
+                <div class="flex justify-between mb-2 text-sm">
+                  <span class="font-medium">Zep Cloud <span class="text-[10px] font-mono text-gray-500 ml-1">10/10 samples</span></span>
+                  <span class="font-mono">28%</span>
+                </div>
+                <div class="h-4 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-white/40 rounded-full" style="width:28%"></div>
+                </div>
               </div>
-            </li>
-            <li class="flex gap-4">
-              <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-              <div>
-                <h4 class="font-bold text-lg leading-tight mb-1">Zero LLM calls for retrieval</h4>
-                <p class="text-gray-400 text-sm">All retrieval, pruning, and graph expansion runs fully on your machine — no cloud inference cost, no data leaving your environment.</p>
+            </div>
+            <div class="mt-8 pt-6 border-t border-white/10">
+              <p class="text-gray-500 text-xs font-mono uppercase tracking-widest mb-3">Dataset</p>
+              <div class="space-y-2 text-xs font-mono text-gray-400">
+                <div class="flex justify-between"><span>Source</span><span>snap-research/LoCoMo</span></div>
+                <div class="flex justify-between"><span>File</span><span>locomo10.json</span></div>
+                <div class="flex justify-between"><span>QA pairs</span><span class="text-[#00D4FF]">1,534</span></div>
+                <div class="flex justify-between"><span>Sessions</span><span class="text-[#00D4FF]">10/10</span></div>
+                <div class="flex justify-between"><span>Script</span><span>benchmarks/locomo_4way.py</span></div>
               </div>
-            </li>
-          </ul>
+            </div>
+          </div>
+          <!-- Callouts -->
+          <div>
+            <ul class="space-y-7">
+              <li class="flex gap-4">
+                <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                <div>
+                  <h4 class="font-bold text-lg leading-tight mb-1">+31pp vs Zep <span class="text-gray-400 text-sm font-normal">(111% relative)</span></h4>
+                  <p class="text-gray-400 text-sm">Both systems ran all 10 samples to completion on the same 1,534 QA pairs. YourMemory led every single session — the only memory layer tested that completed the full benchmark clean.</p>
+                </div>
+              </li>
+              <li class="flex gap-4">
+                <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                <div>
+                  <h4 class="font-bold text-lg leading-tight mb-1">Reproducible — script is public</h4>
+                  <p class="text-gray-400 text-sm">The full benchmark script is <a href="https://github.com/sachitrafa/YourMemory/blob/main/benchmarks/locomo_4way.py" target="_blank" class="text-[#00D4FF] underline">benchmarks/locomo_4way.py</a>. Same dataset, same hit rule, same top-5 limit for every system. Run it yourself.</p>
+                </div>
+              </li>
+              <li class="flex gap-4">
+                <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                <div>
+                  <h4 class="font-bold text-lg leading-tight mb-1">Zero LLM calls for retrieval</h4>
+                  <p class="text-gray-400 text-sm">All retrieval, pruning, and graph expansion runs fully on your machine — no cloud inference cost, no data leaving your environment.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 
-      <!-- Row 2: Workflow efficiency stats -->
-      <div class="border-t border-white/10 pt-16">
+      <!-- Tab 2: LongMemEval -->
+      <div id="panel-longmemeval" class="benchmark-panel hidden">
+        <div class="grid lg:grid-cols-2 gap-16 items-start mb-4">
+          <!-- Main metric card -->
+          <div class="bg-white/5 border border-white/10 p-10 rounded-3xl">
+            <h3 class="text-2xl font-bold mb-1">LongMemEval-S Recall-all@5</h3>
+            <p class="text-gray-400 font-mono text-xs uppercase tracking-tighter mb-1">LongMemEval · 500 questions · ~53 haystack sessions each</p>
+            <p class="text-gray-600 font-mono text-[10px]">benchmarks/longmemeval_fullstack.py · BM25 + vector + graph BFS · 28 Apr 2026</p>
+            <!-- Big number -->
+            <div class="mt-8 mb-8">
+              <p class="text-[#00D4FF] font-mono font-bold text-6xl mb-1">84.8%</p>
+              <p class="text-gray-400 text-sm">Recall-all@5 — all gold sessions in top 5</p>
+            </div>
+            <!-- Secondary metrics -->
+            <div class="space-y-4 mb-8">
+              <div>
+                <div class="flex justify-between mb-1.5 text-sm">
+                  <span class="font-bold">Recall-all@5 <span class="text-[10px] font-mono text-gray-500 ml-1">all gold sessions found</span></span>
+                  <span class="text-[#00D4FF] font-mono font-bold">84.8%</span>
+                </div>
+                <div class="h-3 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:84.8%;box-shadow:0 0 10px rgba(0,212,255,0.4)"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1.5 text-sm">
+                  <span class="text-gray-300">Recall-any@5 <span class="text-[10px] font-mono text-gray-500 ml-1">any gold session found</span></span>
+                  <span class="text-gray-300 font-mono">95.8%</span>
+                </div>
+                <div class="h-3 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-white/30 rounded-full" style="width:95.8%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1.5 text-sm">
+                  <span class="text-gray-300">nDCG-any@5 <span class="text-[10px] font-mono text-gray-500 ml-1">ranking quality</span></span>
+                  <span class="text-gray-300 font-mono">87.4%</span>
+                </div>
+                <div class="h-3 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-white/30 rounded-full" style="width:87.4%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="pt-6 border-t border-white/10">
+              <p class="text-gray-500 text-xs font-mono uppercase tracking-widest mb-3">Dataset</p>
+              <div class="space-y-2 text-xs font-mono text-gray-400">
+                <div class="flex justify-between"><span>Source</span><span>xiaowu0162/LongMemEval</span></div>
+                <div class="flex justify-between"><span>Split</span><span>longmemeval_s_cleaned.json</span></div>
+                <div class="flex justify-between"><span>Questions</span><span class="text-[#00D4FF]">500</span></div>
+                <div class="flex justify-between"><span>Haystack sessions / Q</span><span class="text-[#00D4FF]">~53</span></div>
+                <div class="flex justify-between"><span>Script</span><span>benchmarks/longmemeval_fullstack.py</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Breakdown by question type -->
+          <div>
+            <h4 class="font-bold text-lg mb-6 text-gray-200">Breakdown by question type</h4>
+            <div class="space-y-4">
+              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm font-semibold">knowledge-update</span>
+                  <span class="text-[#00D4FF] font-mono font-bold text-sm">97.4%</span>
+                </div>
+                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:97.4%"></div>
+                </div>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm font-semibold">single-session-assistant</span>
+                  <span class="text-[#00D4FF] font-mono font-bold text-sm">96.4%</span>
+                </div>
+                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:96.4%"></div>
+                </div>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm font-semibold">single-session-user</span>
+                  <span class="text-[#00D4FF] font-mono font-bold text-sm">95.7%</span>
+                </div>
+                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:95.7%"></div>
+                </div>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm font-semibold">single-session-preference</span>
+                  <span class="text-[#00D4FF] font-mono font-bold text-sm">83.3%</span>
+                </div>
+                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:83.3%"></div>
+                </div>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div class="flex justify-between items-center mb-2">
+                  <div>
+                    <span class="text-sm font-semibold">multi-session</span>
+                    <span class="ml-2 text-[10px] text-gray-500 font-mono">recall-any: 97.0%</span>
+                  </div>
+                  <span class="text-amber-400 font-mono font-bold text-sm">75.9%</span>
+                </div>
+                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-amber-400 rounded-full" style="width:75.9%"></div>
+                </div>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div class="flex justify-between items-center mb-2">
+                  <div>
+                    <span class="text-sm font-semibold">temporal-reasoning</span>
+                    <span class="ml-2 text-[10px] text-gray-500 font-mono">recall-any: 94.7%</span>
+                  </div>
+                  <span class="text-amber-400 font-mono font-bold text-sm">75.9%</span>
+                </div>
+                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-amber-400 rounded-full" style="width:75.9%"></div>
+                </div>
+              </div>
+            </div>
+            <p class="mt-5 text-gray-500 text-xs leading-relaxed">Temporal-reasoning and multi-session questions are hardest — the system retrieves <em>a</em> correct session 94–97% of the time (recall-any), but surfacing <em>all</em> required sessions in top-5 drops to 75.9%. These are the cases most dependent on time-anchored linking.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: HotpotQA -->
+      <div id="panel-hotpotqa" class="benchmark-panel hidden">
+        <div class="grid lg:grid-cols-2 gap-16 items-start mb-4">
+          <!-- Main metric card -->
+          <div class="bg-white/5 border border-white/10 p-10 rounded-3xl">
+            <h3 class="text-2xl font-bold mb-1">HotpotQA Multi-Hop BOTH_FOUND@5</h3>
+            <p class="text-gray-400 font-mono text-xs uppercase tracking-tighter mb-1">HotpotQA distractor · 200 questions · 166 bridge + 34 comparison</p>
+            <p class="text-gray-600 font-mono text-[10px]">benchmarks/hotpotqa_reasoning.py · vector + BM25 + entity graph · 6 May 2026</p>
+            <!-- Big number -->
+            <div class="mt-8 mb-8">
+              <p class="text-[#00D4FF] font-mono font-bold text-6xl mb-1">71.5%</p>
+              <p class="text-gray-400 text-sm">BOTH_FOUND@5 — both supporting facts in top 5</p>
+            </div>
+            <!-- Entity graph impact -->
+            <div class="space-y-4 mb-8">
+              <div>
+                <div class="flex justify-between mb-1.5 text-sm">
+                  <span class="font-bold">With entity graph <span class="text-[10px] font-mono text-gray-500 ml-1">vector + BM25 + graph</span></span>
+                  <span class="text-[#00D4FF] font-mono font-bold">71.5%</span>
+                </div>
+                <div class="h-3 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:71.5%;box-shadow:0 0 10px rgba(0,212,255,0.4)"></div>
+                </div>
+              </div>
+              <div class="opacity-50">
+                <div class="flex justify-between mb-1.5 text-sm">
+                  <span class="text-gray-300">Similarity-only <span class="text-[10px] font-mono text-gray-500 ml-1">no entity edges</span></span>
+                  <span class="text-gray-300 font-mono">59.5%</span>
+                </div>
+                <div class="h-3 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-white/30 rounded-full" style="width:59.5%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-cyan-950/40 border border-cyan-800/40 rounded-xl px-4 py-3 mb-6">
+              <p class="text-[#00D4FF] font-bold text-sm">+12pp from entity graph edges</p>
+              <p class="text-gray-400 text-xs mt-0.5">spaCy NER links memories that share named entities — bridge questions gain +14pp because Fact 2 is unreachable by cosine similarity alone.</p>
+            </div>
+            <div class="pt-5 border-t border-white/10">
+              <p class="text-gray-500 text-xs font-mono uppercase tracking-widest mb-3">Dataset</p>
+              <div class="space-y-2 text-xs font-mono text-gray-400">
+                <div class="flex justify-between"><span>Source</span><span>hotpotqa.github.io</span></div>
+                <div class="flex justify-between"><span>Split</span><span>distractor dev set</span></div>
+                <div class="flex justify-between"><span>Questions tested</span><span class="text-[#00D4FF]">200</span></div>
+                <div class="flex justify-between"><span>Total in dataset</span><span>7,405</span></div>
+                <div class="flex justify-between"><span>Script</span><span>benchmarks/hotpotqa_reasoning.py</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Bridge vs Comparison breakdown -->
+          <div>
+            <h4 class="font-bold text-lg mb-6 text-gray-200">Bridge vs Comparison questions</h4>
+            <!-- Bridge -->
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-7 mb-4">
+              <div class="flex justify-between items-start mb-4">
+                <div>
+                  <h5 class="font-bold text-base mb-1">Bridge <span class="font-normal text-gray-400 text-sm">(166 questions)</span></h5>
+                  <p class="text-gray-500 text-xs leading-relaxed">Fact 1 names an entity. Fact 2 is about that entity's property. Low embedding similarity — pure vector retrieval stops at Fact 1.</p>
+                </div>
+                <span class="text-[#00D4FF] font-mono font-bold text-2xl ml-4 shrink-0">68.7%</span>
+              </div>
+              <div class="h-3 bg-white/10 rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-[#00D4FF] rounded-full" style="width:68.7%"></div>
+              </div>
+              <div class="font-mono text-xs text-gray-500 space-y-1">
+                <div class="flex justify-between"><span>BOTH_FOUND</span><span class="text-[#00D4FF]">114 / 166</span></div>
+                <div class="flex justify-between"><span>ONE_FOUND</span><span>48 / 166</span></div>
+                <div class="flex justify-between"><span>NONE_FOUND</span><span>4 / 166</span></div>
+                <div class="flex justify-between pt-1 border-t border-white/10 mt-2"><span>Entity graph gain</span><span class="text-[#00D4FF] font-bold">+14pp</span></div>
+              </div>
+            </div>
+            <!-- Comparison -->
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-7 mb-6">
+              <div class="flex justify-between items-start mb-4">
+                <div>
+                  <h5 class="font-bold text-base mb-1">Comparison <span class="font-normal text-gray-400 text-sm">(34 questions)</span></h5>
+                  <p class="text-gray-500 text-xs leading-relaxed">Both facts give a measurable attribute (date, count, age). Shared vocabulary with the query lets Round 1 vector retrieval find both.</p>
+                </div>
+                <span class="text-[#00D4FF] font-mono font-bold text-2xl ml-4 shrink-0">85.3%</span>
+              </div>
+              <div class="h-3 bg-white/10 rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-[#00D4FF] rounded-full" style="width:85.3%"></div>
+              </div>
+              <div class="font-mono text-xs text-gray-500 space-y-1">
+                <div class="flex justify-between"><span>BOTH_FOUND</span><span class="text-[#00D4FF]">29 / 34</span></div>
+                <div class="flex justify-between"><span>ONE_FOUND</span><span>5 / 34</span></div>
+                <div class="flex justify-between"><span>NONE_FOUND</span><span>0 / 34</span></div>
+              </div>
+            </div>
+            <p class="text-gray-500 text-xs leading-relaxed">The remaining 28.5% gap on bridge questions represents cases where the bridging entity appears in neither the query nor any retrieved fact — the graph cannot connect what was never indexed.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workflow efficiency (always visible) -->
+      <div class="border-t border-white/10 pt-16 mt-12">
         <div class="text-center mb-10">
           <h3 class="text-2xl font-bold mb-2">Workflow Efficiency</h3>
           <p class="text-gray-400 text-sm">3-session developer workflow simulation — stateless baseline vs YourMemory</p>
@@ -824,6 +1061,21 @@
       btn.textContent = 'Copied!';
       btn.classList.add('text-green-400');
       setTimeout(() => { btn.textContent = orig; btn.classList.remove('text-green-400'); }, 2000);
+    }
+
+    function switchTab(id) {
+      document.querySelectorAll('.benchmark-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById('panel-' + id).classList.remove('hidden');
+      ['locomo','longmemeval','hotpotqa'].forEach(t => {
+        const btn = document.getElementById('tab-' + t);
+        if (t === id) {
+          btn.classList.add('bg-[#00D4FF]', 'text-[#0A192F]', 'border-[#00D4FF]');
+          btn.classList.remove('border-white/20', 'text-gray-400', 'hover:border-white/40', 'hover:text-gray-200');
+        } else {
+          btn.classList.remove('bg-[#00D4FF]', 'text-[#0A192F]', 'border-[#00D4FF]');
+          btn.classList.add('border-white/20', 'text-gray-400', 'hover:border-white/40', 'hover:text-gray-200');
+        }
+      });
     }
   </script>
 </body>
