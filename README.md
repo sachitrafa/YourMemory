@@ -11,6 +11,7 @@
 [![LoCoMo Recall@5](https://img.shields.io/badge/LoCoMo%20Recall%405-59%25-brightgreen)](BENCHMARKS.md)
 [![LongMemEval Recall@5](https://img.shields.io/badge/LongMemEval%20Recall--all%405-85%25-brightgreen)](BENCHMARKS.md)
 [![Docker Build](https://img.shields.io/github/actions/workflow/status/sachitrafa/YourMemory/docker-publish.yml?branch=main&label=docker&logo=docker)](https://github.com/sachitrafa/YourMemory/actions/workflows/docker-publish.yml)
+[![oosmetrics](https://api.oosmetrics.com/api/v1/badge/achievement/9106de02-3dae-41ff-bc28-109da93fe87d.svg)](https://oosmetrics.com/repo/sachitrafa/YourMemory)
 
 </div>
 
