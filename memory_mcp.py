@@ -121,6 +121,19 @@ def _load_services():
 
 import getpass
 import time
+from datetime import datetime, timezone as _tz
+
+
+def _parse_dt(value) -> datetime | None:
+    if not value:
+        return None
+    if isinstance(value, datetime):
+        return value.replace(tzinfo=_tz.utc) if value.tzinfo is None else value
+    try:
+        dt = datetime.fromisoformat(str(value))
+        return dt.replace(tzinfo=_tz.utc) if dt.tzinfo is None else dt
+    except Exception:
+        return None
 
 DEFAULT_USER       = os.getenv("YOURMEMORY_USER") or getpass.getuser()
 DEFAULT_IMPORTANCE = 0.5
@@ -235,6 +248,10 @@ async def list_tools() -> list[types.Tool]:
                         "type": "array",
                         "items": {"type": "string"},
                         "description": "File or directory paths this memory is associated with (e.g. ['src/services/', 'pyproject.toml']). Used for spatial relevance boosting during retrieval.",
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "description": "ISO8601 timestamp to use as the memory's creation time. Overrides the default (now). Useful for backfilling historical memories.",
                     },
                 },
                 "required": ["content"],
@@ -376,6 +393,9 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         raw_paths    = arguments.get("context_paths")
         context_paths_str = json.dumps(raw_paths) if raw_paths else None
 
+        # created_at — optional historical timestamp override
+        created_dt = _parse_dt(arguments.get("created_at"))
+
         backend = get_backend()
         conn    = get_conn()
         cur     = conn.cursor() if backend != "duckdb" else None
@@ -456,31 +476,56 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         else:  # "new"
             emb_str = emb_to_db(embedding, backend)
             if backend == "postgres":
-                cur.execute("""
-                    INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility, context_paths)
-                    VALUES (%s, %s, %s, %s, %s::vector, %s, %s, %s)
-                    ON CONFLICT (user_id, content) DO UPDATE
-                        SET recall_count = memories.recall_count + 1, last_accessed_at = NOW()
-                    RETURNING id
-                """, (user_id, final_content, category, importance, emb_str, agent_id, visibility, context_paths_str))
+                if created_dt:
+                    cur.execute("""
+                        INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility, context_paths, created_at, last_accessed_at)
+                        VALUES (%s, %s, %s, %s, %s::vector, %s, %s, %s, %s, %s)
+                        ON CONFLICT (user_id, content) DO UPDATE
+                            SET recall_count = memories.recall_count + 1, last_accessed_at = NOW()
+                        RETURNING id
+                    """, (user_id, final_content, category, importance, emb_str, agent_id, visibility, context_paths_str, created_dt, created_dt))
+                else:
+                    cur.execute("""
+                        INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility, context_paths)
+                        VALUES (%s, %s, %s, %s, %s::vector, %s, %s, %s)
+                        ON CONFLICT (user_id, content) DO UPDATE
+                            SET recall_count = memories.recall_count + 1, last_accessed_at = NOW()
+                        RETURNING id
+                    """, (user_id, final_content, category, importance, emb_str, agent_id, visibility, context_paths_str))
                 memory_id = cur.fetchone()[0]
             elif backend == "duckdb":
-                result = conn.execute("""
-                    INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility, context_paths)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                    ON CONFLICT (user_id, content) DO UPDATE
-                        SET recall_count = recall_count + 1, last_accessed_at = now()
-                    RETURNING id
-                """, [user_id, final_content, category, importance, emb_str, agent_id, visibility, context_paths_str])
+                if created_dt:
+                    conn.execute("""
+                        INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility, context_paths, created_at, last_accessed_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT (user_id, content) DO UPDATE
+                            SET recall_count = recall_count + 1, last_accessed_at = now()
+                    """, [user_id, final_content, category, importance, emb_str, agent_id, visibility, context_paths_str, created_dt, created_dt])
+                else:
+                    conn.execute("""
+                        INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility, context_paths)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT (user_id, content) DO UPDATE
+                            SET recall_count = recall_count + 1, last_accessed_at = now()
+                    """, [user_id, final_content, category, importance, emb_str, agent_id, visibility, context_paths_str])
+                result = conn.execute("SELECT id FROM memories WHERE user_id = ? AND content = ?", [user_id, final_content])
                 row = result.fetchone()
                 memory_id = row[0] if row else None
             else:
-                cur.execute("""
-                    INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility, context_paths)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                    ON CONFLICT (user_id, content) DO UPDATE
-                        SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
-                """, (user_id, final_content, category, importance, emb_str, agent_id, visibility, context_paths_str))
+                if created_dt:
+                    cur.execute("""
+                        INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility, context_paths, created_at, last_accessed_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT (user_id, content) DO UPDATE
+                            SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
+                    """, (user_id, final_content, category, importance, emb_str, agent_id, visibility, context_paths_str, created_dt.isoformat(), created_dt.isoformat()))
+                else:
+                    cur.execute("""
+                        INSERT INTO memories (user_id, content, category, importance, embedding, agent_id, visibility, context_paths)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT (user_id, content) DO UPDATE
+                            SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
+                    """, (user_id, final_content, category, importance, emb_str, agent_id, visibility, context_paths_str))
                 memory_id = cur.lastrowid
 
         if backend != "duckdb":
