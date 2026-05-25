@@ -1,0 +1,113 @@
+{
+  "benchmark": "LongMemEval \u2014 Temporal Boost Ablation",
+  "date": "2026-05-25T11:38:32.882675+00:00",
+  "top_k": 5,
+  "total_questions": 500,
+  "temporal_boost_value": 0.25,
+  "questions_with_temporal_range": 28,
+  "overall": {
+    "base_pct": 89.4,
+    "boost_pct": 89.4,
+    "delta_pp": 0.0,
+    "ci95_base": [
+      86.4,
+      91.8
+    ],
+    "ci95_boost": [
+      86.4,
+      91.8
+    ]
+  },
+  "by_type": {
+    "knowledge-update": {
+      "n": 78,
+      "base_pct": 96.15,
+      "boost_pct": 96.15,
+      "delta_pp": 0.0,
+      "ci95_base": [
+        89.3,
+        98.7
+      ],
+      "ci95_boost": [
+        89.3,
+        98.7
+      ]
+    },
+    "multi-session": {
+      "n": 133,
+      "base_pct": 95.49,
+      "boost_pct": 95.49,
+      "delta_pp": 0.0,
+      "ci95_base": [
+        90.5,
+        97.9
+      ],
+      "ci95_boost": [
+        90.5,
+        97.9
+      ]
+    },
+    "single-session-assistant": {
+      "n": 56,
+      "base_pct": 98.21,
+      "boost_pct": 98.21,
+      "delta_pp": 0.0,
+      "ci95_base": [
+        90.6,
+        99.7
+      ],
+      "ci95_boost": [
+        90.6,
+        99.7
+      ]
+    },
+    "single-session-preference": {
+      "n": 30,
+      "base_pct": 90.0,
+      "boost_pct": 90.0,
+      "delta_pp": 0.0,
+      "ci95_base": [
+        74.4,
+        96.5
+      ],
+      "ci95_boost": [
+        74.4,
+        96.5
+      ]
+    },
+    "single-session-user": {
+      "n": 70,
+      "base_pct": 72.86,
+      "boost_pct": 72.86,
+      "delta_pp": 0.0,
+      "ci95_base": [
+        61.5,
+        81.9
+      ],
+      "ci95_boost": [
+        61.5,
+        81.9
+      ]
+    },
+    "temporal-reasoning": {
+      "n": 133,
+      "base_pct": 84.21,
+      "boost_pct": 84.21,
+      "delta_pp": 0.0,
+      "ci95_base": [
+        77.1,
+        89.4
+      ],
+      "ci95_boost": [
+        77.1,
+        89.4
+      ]
+    }
+  },
+  "methodology": {
+    "base": "cosine(q, memory) \u00d7 ebbinghaus_strength",
+    "boost": "base + 0.25 if session_date within resolved temporal window",
+    "anchor": "question_date (not datetime.now)",
+    "temporal_detection": "spaCy DATE/TIME entities + regex patterns"
+  }
+}

@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from .embed import embed
 from .decay import compute_strength
 from .utils import parse_dt
+from .temporal import detect_temporal_range, score_boost as temporal_score_boost
 from src.db.connection import get_backend, get_conn
 from src.graph.graph_store import expand_with_graph, propagate_recall
 
@@ -143,7 +144,7 @@ SPATIAL_BOOST = 0.08   # score bonus when memory context_paths overlap current p
 
 
 def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None,
-             current_path: str | None = None) -> dict:
+             current_path: str | None = None, no_graph: bool = False) -> dict:
     """
     Round 1 — vector search (cosine similarity):
        - DuckDB:   native array_cosine_similarity
@@ -152,22 +153,26 @@ def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None,
 
     Round 2 — graph expansion (multi-hop BFS from Round 1 seeds).
     Recall propagation: high-similarity memories boost graph neighbours.
+    Temporal boost: memories within a resolved date range score higher.
+
+    no_graph=True: skip graph expansion — used for BEAM ablation benchmark.
     """
     query_embedding = embed(query)
     backend = get_backend()
+    temporal_range = detect_temporal_range(query)
 
     if backend == "postgres":
-        result = _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id)
+        result = _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id, temporal_range)
     elif backend == "duckdb":
-        result = _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id)
+        result = _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id, temporal_range)
     else:
-        result = _retrieve_sqlite(user_id, query, query_embedding, top_k, agent_id)
+        result = _retrieve_sqlite(user_id, query, query_embedding, top_k, agent_id, temporal_range)
 
     if current_path and result.get("memories"):
         result = _apply_spatial_boost(result, current_path, top_k)
 
     seed_ids = [m["id"] for m in result.get("memories", [])]
-    if seed_ids:
+    if seed_ids and not no_graph:
         graph_hits = expand_with_graph(seed_ids, user_id, top_k=top_k)
         new_hits = [(nid, ew) for nid, ew in graph_hits if nid not in set(seed_ids)]
         if new_hits:
@@ -205,18 +210,23 @@ def _apply_spatial_boost(result: dict, current_path: str, top_k: int) -> dict:
     return _format_result(boosted[:top_k])
 
 
-def _score_candidates(candidates: list, fts_scores: dict[int, float] | None = None) -> list:
+def _score_candidates(candidates: list, fts_scores: dict[int, float] | None = None,
+                      temporal_range=None) -> list:
     """
     Add strength + hybrid score to each candidate.
 
     Hybrid formula:
-        score = W_BM25 × bm25_norm + W_VECTOR × cosine
+        score = W_BM25 × bm25_norm + W_VECTOR × cosine [+ temporal_boost]
 
     Decay (strength) is computed for display and pruning purposes only — it is
     intentionally excluded from the ranking formula. Multiplying cosine by strength
     causes old-but-still-valid memories to rank below newer but irrelevant ones,
     which is wrong: decay handles staleness via the 24h pruning job, not ranking.
     Knowledge-update conflicts are resolved at store time via contradiction detection.
+
+    temporal_range: optional (start, end) UTC datetime tuple from detect_temporal_range().
+    When present, memories whose created_at falls within the range receive a boost.
+    Has zero effect on non-temporal queries (temporal_range is None).
     """
     fts = fts_scores or {}
     scored = []
@@ -229,6 +239,7 @@ def _score_candidates(candidates: list, fts_scores: dict[int, float] | None = No
         )
         bm25_norm    = fts.get(m["id"], 0.0)
         hybrid_score = W_BM25 * bm25_norm + W_VECTOR * m["similarity"]
+        hybrid_score += temporal_score_boost(m.get("created_at"), temporal_range)
         scored.append({
             **m,
             "strength":   strength,
@@ -309,9 +320,10 @@ def _reinforce(top: list, conn, backend: str) -> None:
 
 
 def _finish(candidates: list, top_k: int, conn, backend: str,
-            fts_scores: dict[int, float] | None = None) -> dict:
+            fts_scores: dict[int, float] | None = None,
+            temporal_range=None) -> dict:
     """Score → rank → reinforce → format → close connection."""
-    scored = _score_candidates(candidates, fts_scores)
+    scored = _score_candidates(candidates, fts_scores, temporal_range=temporal_range)
     top = scored[:top_k]
     if not top:
         conn.close()
@@ -451,15 +463,15 @@ def _bump_recall_count(ids: list, backend: str) -> None:
 
 # ── Postgres path ─────────────────────────────────────────────────────────────
 
-def _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id):
+def _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id, temporal_range=None):
     from psycopg2.extras import RealDictCursor
     embedding_str = f"[{','.join(str(x) for x in query_embedding)}]"
     conn = get_conn()
     cur  = conn.cursor(cursor_factory=RealDictCursor)
     if agent_id:
         cur.execute("""
-            SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,
-                   agent_id, visibility,
+            SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
+                   context_paths, agent_id, visibility,
                    1 - (embedding <=> %s::vector) AS similarity
             FROM memories
             WHERE user_id = %s
@@ -471,8 +483,8 @@ def _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id):
               SIMILARITY_THRESHOLD, embedding_str, top_k * 2))
     else:
         cur.execute("""
-            SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,
-                   agent_id, visibility,
+            SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
+                   context_paths, agent_id, visibility,
                    1 - (embedding <=> %s::vector) AS similarity
             FROM memories
             WHERE user_id = %s
@@ -485,20 +497,21 @@ def _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id):
     candidates = [dict(row) for row in cur.fetchall()]
     cur.close()
     fts_scores = _fts_search_postgres(conn, user_id, agent_id, query=query, limit=top_k * 2)
-    return _finish(candidates, top_k, conn, backend="postgres", fts_scores=fts_scores)
+    return _finish(candidates, top_k, conn, backend="postgres", fts_scores=fts_scores,
+                   temporal_range=temporal_range)
 
 
 # ── DuckDB path ───────────────────────────────────────────────────────────────
 
-def _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id):
+def _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id, temporal_range=None):
     from src.db.connection import duckdb_rows
     conn = get_conn()
 
     def _query(threshold):
         if agent_id:
             return duckdb_rows(conn.execute("""
-                SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,
-                       agent_id, visibility,
+                SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
+                       context_paths, agent_id, visibility,
                        array_cosine_similarity(embedding, ?::FLOAT[768]) AS similarity
                 FROM memories
                 WHERE user_id = ?
@@ -507,8 +520,8 @@ def _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id):
                 ORDER BY similarity DESC LIMIT ?
             """, [query_embedding, user_id, agent_id, query_embedding, threshold, top_k * 2]))
         return duckdb_rows(conn.execute("""
-            SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,
-                   agent_id, visibility,
+            SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
+                   context_paths, agent_id, visibility,
                    array_cosine_similarity(embedding, ?::FLOAT[768]) AS similarity
             FROM memories
             WHERE user_id = ?
@@ -522,26 +535,27 @@ def _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id):
         candidates = _query(SIMILARITY_THRESHOLD_FALLBACK)
 
     fts_scores = _fts_search_duckdb(conn, user_id, agent_id, query=query, limit=top_k * 2)
-    return _finish(candidates, top_k, conn, backend="duckdb", fts_scores=fts_scores)
+    return _finish(candidates, top_k, conn, backend="duckdb", fts_scores=fts_scores,
+                   temporal_range=temporal_range)
 
 
 # ── SQLite path ───────────────────────────────────────────────────────────────
 
-def _retrieve_sqlite(user_id, query, query_embedding, top_k, agent_id):
+def _retrieve_sqlite(user_id, query, query_embedding, top_k, agent_id, temporal_range=None):
     from .utils import cosine
     conn = get_conn()
     cur  = conn.cursor()
     if agent_id:
         cur.execute("""
-            SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,
-                   agent_id, visibility, embedding
+            SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
+                   context_paths, agent_id, visibility, embedding
             FROM memories
             WHERE user_id = ? AND (visibility = 'shared' OR (visibility = 'private' AND agent_id = ?))
         """, (user_id, agent_id))
     else:
         cur.execute("""
-            SELECT id, content, category, importance, recall_count, last_accessed_at, context_paths,
-                   agent_id, visibility, embedding
+            SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
+                   context_paths, agent_id, visibility, embedding
             FROM memories WHERE user_id = ? AND visibility = 'shared'
         """, (user_id,))
     rows = cur.fetchall()
@@ -565,4 +579,5 @@ def _retrieve_sqlite(user_id, query, query_embedding, top_k, agent_id):
         candidates = _filter(SIMILARITY_THRESHOLD_FALLBACK)
 
     fts_scores = _fts_search_sqlite(conn, user_id, agent_id, query=query, limit=top_k * 2)
-    return _finish(candidates, top_k, conn, backend="sqlite", fts_scores=fts_scores)
+    return _finish(candidates, top_k, conn, backend="sqlite", fts_scores=fts_scores,
+                   temporal_range=temporal_range)

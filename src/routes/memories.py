@@ -29,6 +29,7 @@ class MemoryRequest(BaseModel):
     content:      str
     importance:   float            = DEFAULT_IMPORTANCE
     contextPaths: Optional[List[str]] = None   # spatial tagging
+    createdAt:    Optional[str]    = None       # ISO8601 — overrides insert timestamp (benchmarks/backfill)
 
 
 class UpdateMemoryRequest(BaseModel):
@@ -108,34 +109,60 @@ def add_memory(req: MemoryRequest):
                 category  = existing["category"]
 
         else:  # "new"
-            emb_str = emb_to_db(embedding, backend)
+            emb_str    = emb_to_db(embedding, backend)
+            created_dt = _parse_dt(req.createdAt) if req.createdAt else None
             if backend == "postgres":
-                cur.execute("""
-                    INSERT INTO memories (user_id, content, category, importance, embedding, context_paths)
-                    VALUES (%s, %s, %s, %s, %s::vector, %s)
-                    ON CONFLICT (user_id, content) DO UPDATE
-                        SET recall_count = memories.recall_count + 1, last_accessed_at = NOW()
-                    RETURNING id
-                """, (req.userId, final_content, category, req.importance, emb_str, context_paths_str))
+                if created_dt:
+                    cur.execute("""
+                        INSERT INTO memories (user_id, content, category, importance, embedding, context_paths, created_at, last_accessed_at)
+                        VALUES (%s, %s, %s, %s, %s::vector, %s, %s, %s)
+                        ON CONFLICT (user_id, content) DO UPDATE
+                            SET recall_count = memories.recall_count + 1, last_accessed_at = NOW()
+                        RETURNING id
+                    """, (req.userId, final_content, category, req.importance, emb_str, context_paths_str, created_dt, created_dt))
+                else:
+                    cur.execute("""
+                        INSERT INTO memories (user_id, content, category, importance, embedding, context_paths)
+                        VALUES (%s, %s, %s, %s, %s::vector, %s)
+                        ON CONFLICT (user_id, content) DO UPDATE
+                            SET recall_count = memories.recall_count + 1, last_accessed_at = NOW()
+                        RETURNING id
+                    """, (req.userId, final_content, category, req.importance, emb_str, context_paths_str))
                 row = cur.fetchone()
                 memory_id = row[0] if row else None
             elif backend == "duckdb":
-                conn.execute("""
-                    INSERT INTO memories (user_id, content, category, importance, embedding, context_paths)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                    ON CONFLICT (user_id, content) DO UPDATE
-                        SET recall_count = recall_count + 1, last_accessed_at = now()
-                """, [req.userId, final_content, category, req.importance, emb_str, context_paths_str])
+                if created_dt:
+                    conn.execute("""
+                        INSERT INTO memories (user_id, content, category, importance, embedding, context_paths, created_at, last_accessed_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT (user_id, content) DO UPDATE
+                            SET recall_count = recall_count + 1, last_accessed_at = now()
+                    """, [req.userId, final_content, category, req.importance, emb_str, context_paths_str, created_dt, created_dt])
+                else:
+                    conn.execute("""
+                        INSERT INTO memories (user_id, content, category, importance, embedding, context_paths)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        ON CONFLICT (user_id, content) DO UPDATE
+                            SET recall_count = recall_count + 1, last_accessed_at = now()
+                    """, [req.userId, final_content, category, req.importance, emb_str, context_paths_str])
                 result    = conn.execute("SELECT id FROM memories WHERE user_id = ? AND content = ?", [req.userId, final_content])
                 row       = result.fetchone()
                 memory_id = row[0] if row else None
             else:  # sqlite
-                cur.execute("""
-                    INSERT INTO memories (user_id, content, category, importance, embedding, context_paths)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                    ON CONFLICT (user_id, content) DO UPDATE
-                        SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
-                """, (req.userId, final_content, category, req.importance, emb_str, context_paths_str))
+                if created_dt:
+                    cur.execute("""
+                        INSERT INTO memories (user_id, content, category, importance, embedding, context_paths, created_at, last_accessed_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT (user_id, content) DO UPDATE
+                            SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
+                    """, (req.userId, final_content, category, req.importance, emb_str, context_paths_str, created_dt.isoformat(), created_dt.isoformat()))
+                else:
+                    cur.execute("""
+                        INSERT INTO memories (user_id, content, category, importance, embedding, context_paths)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        ON CONFLICT (user_id, content) DO UPDATE
+                            SET recall_count = recall_count + 1, last_accessed_at = datetime('now')
+                    """, (req.userId, final_content, category, req.importance, emb_str, context_paths_str))
                 memory_id = cur.lastrowid
 
         conn.commit()

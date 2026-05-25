@@ -17,6 +17,7 @@ class RetrieveRequest(BaseModel):
     query:       str
     topK:        int            = Field(5, ge=1, le=500)
     currentPath: Optional[str] = None   # spatial boost: current file/dir path
+    noGraph:     bool          = False  # ablation: skip graph expansion (BEAM baseline)
 
 
 @router.post("/retrieve")
@@ -28,7 +29,7 @@ def retrieve_memories(req: RetrieveRequest):
     if cached is not None:
         return cached
 
-    result = retrieve(user_id, req.query, req.topK, current_path=req.currentPath)
+    result = retrieve(user_id, req.query, req.topK, current_path=req.currentPath, no_graph=req.noGraph)
 
     # ── Session wrap-up tracking ───────────────────────────────────────────
     session_track(user_id, [m["id"] for m in result.get("memories", [])])

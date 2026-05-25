@@ -1,0 +1,119 @@
+{
+  "benchmark": "LoCoMo-10 Temporal Reasoning",
+  "date": "2026-05-25T08:58:36.027317+00:00",
+  "top_k": 5,
+  "total_qa": 1534,
+  "total_temporal": 428,
+  "overall_all_pct": 54,
+  "overall_temporal_pct": 66,
+  "ci95_all": [
+    51,
+    56
+  ],
+  "ci95_temporal": [
+    61,
+    70
+  ],
+  "per_sample": [
+    {
+      "sample": 1,
+      "speakers": "Caroline & Melanie",
+      "qa_total": 146,
+      "qa_temporal": 47,
+      "hits_all": 88,
+      "hits_temporal": 39,
+      "pct_all": 60,
+      "pct_temporal": 83
+    },
+    {
+      "sample": 2,
+      "speakers": "Jon & Gina",
+      "qa_total": 81,
+      "qa_temporal": 28,
+      "hits_all": 53,
+      "hits_temporal": 25,
+      "pct_all": 65,
+      "pct_temporal": 89
+    },
+    {
+      "sample": 3,
+      "speakers": "John & Maria",
+      "qa_total": 152,
+      "qa_temporal": 41,
+      "hits_all": 81,
+      "hits_temporal": 27,
+      "pct_all": 53,
+      "pct_temporal": 66
+    },
+    {
+      "sample": 4,
+      "speakers": "Joanna & Nate",
+      "qa_total": 199,
+      "qa_temporal": 54,
+      "hits_all": 80,
+      "hits_temporal": 24,
+      "pct_all": 40,
+      "pct_temporal": 44
+    },
+    {
+      "sample": 5,
+      "speakers": "Tim & John",
+      "qa_total": 178,
+      "qa_temporal": 42,
+      "hits_all": 99,
+      "hits_temporal": 23,
+      "pct_all": 56,
+      "pct_temporal": 55
+    },
+    {
+      "sample": 6,
+      "speakers": "Audrey & Andrew",
+      "qa_total": 123,
+      "qa_temporal": 30,
+      "hits_all": 66,
+      "hits_temporal": 20,
+      "pct_all": 54,
+      "pct_temporal": 67
+    },
+    {
+      "sample": 7,
+      "speakers": "James & John",
+      "qa_total": 150,
+      "qa_temporal": 46,
+      "hits_all": 91,
+      "hits_temporal": 35,
+      "pct_all": 61,
+      "pct_temporal": 76
+    },
+    {
+      "sample": 8,
+      "speakers": "Deborah & Jolene",
+      "qa_total": 191,
+      "qa_temporal": 61,
+      "hits_all": 96,
+      "hits_temporal": 36,
+      "pct_all": 50,
+      "pct_temporal": 59
+    },
+    {
+      "sample": 9,
+      "speakers": "Evan & Sam",
+      "qa_total": 156,
+      "qa_temporal": 32,
+      "hits_all": 78,
+      "hits_temporal": 20,
+      "pct_all": 50,
+      "pct_temporal": 62
+    },
+    {
+      "sample": 10,
+      "speakers": "Calvin & Dave",
+      "qa_total": 158,
+      "qa_temporal": 47,
+      "hits_all": 95,
+      "hits_temporal": 33,
+      "pct_all": 60,
+      "pct_temporal": 70
+    }
+  ]
+}
