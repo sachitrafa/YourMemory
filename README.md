@@ -7,55 +7,100 @@
 
 [![PyPI](https://img.shields.io/pypi/v/yourmemory?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/yourmemory/)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/yourmemory?color=brightgreen)](https://pypi.org/project/yourmemory/)
+[![Python](https://img.shields.io/pypi/pyversions/yourmemory)](https://pypi.org/project/yourmemory/)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
+[![GitHub Stars](https://img.shields.io/github/stars/sachitrafa/YourMemory?style=social)](https://github.com/sachitrafa/YourMemory)
+[![GitHub Issues](https://img.shields.io/github/issues/sachitrafa/YourMemory)](https://github.com/sachitrafa/YourMemory/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/sachitrafa/YourMemory)](https://github.com/sachitrafa/YourMemory/commits/main)
+[![Docker Build](https://img.shields.io/github/actions/workflow/status/sachitrafa/YourMemory/docker-publish.yml?branch=main&label=docker&logo=docker)](https://github.com/sachitrafa/YourMemory/actions/workflows/docker-publish.yml)
+
 [![LoCoMo Recall@5](https://img.shields.io/badge/LoCoMo%20Recall%405-59%25-brightgreen)](BENCHMARKS.md)
 [![LongMemEval Recall@5](https://img.shields.io/badge/LongMemEval%20Recall%405-89%25-brightgreen)](BENCHMARKS.md)
-[![Docker Build](https://img.shields.io/github/actions/workflow/status/sachitrafa/YourMemory/docker-publish.yml?branch=main&label=docker&logo=docker)](https://github.com/sachitrafa/YourMemory/actions/workflows/docker-publish.yml)
+[![HotpotQA BOTH@5](https://img.shields.io/badge/HotpotQA%20BOTH%405-71.5%25-brightgreen)](BENCHMARKS.md)
 [![oosmetrics](https://api.oosmetrics.com/api/v1/badge/achievement/9106de02-3dae-41ff-bc28-109da93fe87d.svg)](https://oosmetrics.com/repo/sachitrafa/YourMemory)
 
 </div>
 
 ---
 
-## The Problem
+## What Is YourMemory?
 
-Every session, your AI assistant starts from zero. It asks the same questions, forgets your preferences, re-learns your stack. There is no memory between conversations.
+Every session, your AI assistant starts from zero. It asks the same questions, forgets your preferences, re-learns your stack. **There is no memory between conversations.**
 
-**YourMemory fixes that.** It gives AI agents a persistent memory layer that works the way human memory does — important things stick, forgotten things fade, outdated facts get replaced automatically. One command to install, zero infrastructure required. Memory starts working the moment you add it to your AI client.
+YourMemory fixes that with a one-command install that plugs into Claude, Cursor, Cline, Windsurf, or any MCP client. It gives your AI a persistent memory layer modelled on human cognition:
+
+- **Things that matter stick** — importance score controls how quickly a memory decays
+- **Outdated facts get replaced** — subject-aware deduplication merges or supersedes memories automatically
+- **Related context surfaces together** — entity graph links memories that share people, places, or concepts
+- **Old memories fade naturally** — Ebbinghaus forgetting curve prunes stale context every 24 hours
+
+Zero infrastructure required. SQLite by default, Postgres for teams.
 
 ---
 
-## How Well Does It Work?
+## Table of Contents
+
+- [Benchmarks](#benchmarks)
+- [Quick Start](#quick-start)
+- [Memory Dashboard](#memory-dashboard)
+- [Ask Without an LLM Call](#ask-without-calling-the-api)
+- [MCP Tools](#mcp-tools)
+- [How It Works](#how-it-works)
+- [Multi-Agent Memory](#multi-agent-memory)
+- [Stack](#stack)
+- [Architecture](#architecture)
+- [Contributing](#contributing)
+
+---
+
+## Benchmarks
+
+Three external datasets, all scripts open source and reproducible. Full methodology in [BENCHMARKS.md](BENCHMARKS.md).
+
+### LongMemEval-S — 500 questions, ~53 distractor sessions each
+
+The hardest standard benchmark for long-term memory systems. Each question is backed by ~53 conversation sessions; the model must retrieve the right one(s) from the haystack.
+
+| Metric | Score |
+|--------|:-----:|
+| **Recall@5** (any gold session in top-5) | **89.4%** |
+| Recall-all@5 (all gold sessions in top-5) | 84.8% |
+| nDCG@5 (ranking quality) | 87.4% |
+
+**By question type (Recall@5):**
+
+| Question Type | Recall@5 | n |
+|---------------|:--------:|:-:|
+| single-session-assistant | 98.2% | 56 |
+| knowledge-update | 96.2% | 78 |
+| multi-session | 95.5% | 133 |
+| single-session-preference | 90.0% | 30 |
+| temporal-reasoning | 84.2% | 133 |
+| single-session-user | 72.9% | 70 |
 
 ### LoCoMo-10 — 1,534 QA pairs across 10 multi-session conversations
+
+Conversations spanning weeks to months. Every system ingests the same session summaries in the same order.
 
 | System | Recall@5 | 95% CI |
 |--------|:--------:|:------:|
 | **YourMemory** (BM25 + vector + graph + decay) | **59%** | 56–61% |
 | Zep Cloud | 28% | 26–30% |
+| Supermemory | 31%* | 28–33% |
+| Mem0 | 18%* | 16–20% |
 
-> **2× better recall than Zep Cloud on the same benchmark.**
-
-*The 59% result used `all-mpnet-base-v2`. The current default model (`multi-qa-mpnet-base-dot-v1`) scores 55% on LoCoMo session-summary retrieval — see [BENCHMARKS.md](BENCHMARKS.md) for details.*
-
-### LongMemEval-S — 500 questions, ~53 sessions each
-
-| System | Recall@5 | Recall-all@5 | nDCG@5 |
-|--------|:--------:|:------------:|:------:|
-| **YourMemory** (full stack · `multi-qa-mpnet-base-dot-v1`) | **89.4%** | **84.8%** | **87.4%** |
-
-Breakdown by question type (Recall@5): knowledge-update 96.2% · single-session-assistant 98.2% · multi-session 95.5% · temporal-reasoning 84.2% · single-session-preference 90.0% · single-session-user 72.9%
+> **2× better recall than Zep Cloud across all 10 samples.** \* Supermemory and Mem0 exhausted free-tier quotas mid-benchmark; scores computed over full 1,534 pairs using 0 for unfinished samples.
 
 ### HotpotQA — 200 multi-hop questions requiring two facts from different articles
 
 | System | BOTH_FOUND@5 |
 |--------|:------------:|
 | **YourMemory** (vector + BM25 + entity graph) | **71.5%** |
-| YourMemory (similarity graph only — no entity edges) | 59.5% |
+| YourMemory (no entity edges) | 59.5% |
 
-Entity-based graph edges link memories that share named entity mentions — enabling the system to follow a chain of facts rather than just retrieve by similarity.
+Entity graph edges add **+12 pp** — they traverse from Fact 1 to Fact 2 even when Fact 2 has low embedding similarity to the query.
 
-Full methodology in [BENCHMARKS.md](BENCHMARKS.md). Writeup: [I built memory decay for AI agents using the Ebbinghaus forgetting curve](https://dev.to/sachit_mishra_686a94d1bb5/i-built-memory-decay-for-ai-agents-using-the-ebbinghaus-forgetting-curve-1b0e).
+*Writeup: [I built memory decay for AI agents using the Ebbinghaus forgetting curve](https://dev.to/sachit_mishra_686a94d1bb5/i-built-memory-decay-for-ai-agents-using-the-ebbinghaus-forgetting-curve-1b0e)*
 
 ---
 
@@ -63,21 +108,16 @@ Full methodology in [BENCHMARKS.md](BENCHMARKS.md). Writeup: [I built memory dec
 
 **Supports Python 3.11–3.14. No Docker, no database setup, no external services.**
 
-### Step 1 — Install
+### 1 — Install
 
 ```bash
 pip install yourmemory
+yourmemory-setup
 ```
 
-### Step 2 — Get your config path
+`yourmemory-setup` auto-detects your AI client (Claude Code, Claude Desktop, Cursor, Cline, Windsurf, OpenCode), writes the MCP config, and initialises your database. **That's it for most users.**
 
-```bash
-yourmemory-path
-```
-
-Prints your full executable path and a ready-to-paste config block. Copy it.
-
-### Step 3 — Wire into your AI client
+### 2 — Wire into your AI client manually (if needed)
 
 <details>
 <summary><strong>Claude Code</strong></summary>
@@ -177,98 +217,44 @@ YourMemory is a standard stdio MCP server. Use the full path from `yourmemory-pa
 
 </details>
 
-> **First start is automatic.** On the first run, YourMemory initialises your database, downloads the language model, and injects memory workflow instructions into your AI client config — no manual setup needed.
-
-### Step 4 — Start remembering
-
-That's it. On the first MCP start, YourMemory automatically:
-- Initialises your local database at `~/.yourmemory/memories.duckdb`
-- Downloads the spaCy language model in the background
-- Injects the memory workflow rules into your AI client
-
-Your AI now recalls what it learned in previous sessions, without you telling it to.
+> **First start is automatic.** On the first run, YourMemory initialises your database at `~/.yourmemory/memories.duckdb`, downloads the spaCy language model in the background, and injects memory workflow rules into your AI client config. Nothing to configure manually.
 
 ---
 
 ## Memory Dashboard
 
-Every YourMemory instance ships with two built-in browser UIs — no extra setup, no separate process. They start automatically when the MCP server starts.
-
----
+Two built-in browser UIs — no extra setup, start automatically with the MCP server.
 
 ### Memory Browser — `http://localhost:3033/ui`
 
-A full read-only view of everything stored in memory for any user.
+A full read/write view of everything stored in memory.
 
-**Stats bar** — four live counters at the top:
+| What you see | Details |
+|---|---|
+| **Stats bar** | Total · Strong ≥50% · Fading 5–50% · Near prune <10% |
+| **Agent tabs** | All / User / per-agent views |
+| **Memory cards** | Content · strength bar · category · recall count · last accessed |
+| **Filters** | Category (fact / strategy / assumption / failure) · Sort by strength, recency, recall |
 
-| Counter | What it means |
-|---------|---------------|
-| Total memories | All stored memories for the active view |
-| Strong ≥ 50% | Healthy — will survive the next decay cycle |
-| Fading 5–50% | Weakening — will survive but need reinforcement |
-| Near prune < 10% | At risk — will be deleted in the next 24h pruning job |
+Pass `?user=<id>` to pre-load a specific user: `http://localhost:3033/ui?user=sachit`
 
-**Agent tabs** — switch between views without reloading:
-- `🧠 All` — every memory for the user
-- `👤 User` — only memories stored by the user directly (no agent writes)
-- `🤖 <agent-id>` — one tab per registered agent, showing only that agent's memories
+### Graph Visualiser — `http://localhost:3033/graph`
 
-**Filters and sorting:**
-
-| Control | Options |
-|---------|---------|
-| Category | All · fact · strategy · assumption · failure |
-| Sort | Strength (default) · Most recent · Recall count |
-
-**Memory cards** — each card shows:
-- Full memory content
-- Strength bar — color-coded green → cyan → yellow → red as strength falls
-- Strength percentage, category badge, agent badge (👤 user or 🤖 agent-id)
-- Memory ID, importance score, recall count, last accessed date
-
-**URL shortcut** — pass `?user=<id>` to auto-load on open:
-```
-http://localhost:3033/ui?user=sachit
-```
-
----
-
-### Graph Visualization — `http://localhost:3033/graph`
-
-An interactive map of how memories are connected. Requires a `memoryId` to use as the center node.
+An interactive force-directed map of how memories connect.
 
 ```
 http://localhost:3033/graph?memoryId=42&userId=sachit&depth=2
 ```
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `memoryId` | required | Center node to visualise from |
-| `userId` | `sachit` | User whose memories to load |
-| `depth` | `2` | BFS traversal depth (1–3) |
-
-**What you see:**
-- The root memory as a larger cyan node
-- Connected memories as smaller nodes, color-coded by category — green (strategy), red (failure), purple (assumption), blue (fact)
-- Edges weighted by semantic similarity — thicker edges = stronger connection
-- Click any node to see its full content in the side panel
-- Drag, zoom, and reposition the graph freely
-
-**JSON API** — get the raw graph data for any memory:
-```
-http://localhost:3033/graph/data?memoryId=42&userId=sachit&depth=2
-```
-
-Returns Cytoscape.js-compatible nodes and edges with weights, categories, and root flags.
+- Root memory as a larger cyan node; neighbours color-coded by category
+- Edge thickness = connection strength
+- Click any node for full content; drag, zoom, reposition freely
 
 ---
 
 ## Ask Without Calling the API
 
-The only memory system that can answer questions from memory **without making any LLM API call.**
-
-Every other system (Mem0, Zep, LangMem, Cognee) follows the same pattern: retrieve → inject into context → call your LLM. YourMemory has a `ask` command that short-circuits that loop entirely for trivial factual queries.
+The only memory system that can answer questions **without making any LLM API call.**
 
 ```bash
 yourmemory ask "what database does this project use"
@@ -277,20 +263,18 @@ yourmemory ask "what database does this project use"
 yourmemory ask "what port does the dashboard run on"
 # → 3033
 
-yourmemory ask "how do I deploy to kubernetes"
+yourmemory ask "how do I fix a kubernetes deployment"
 # → Not enough memory context to answer without Claude.
 ```
 
-When memory is strong enough to answer confidently, it responds instantly — zero tokens, zero cloud cost, zero latency. When it isn't, you get a clean decline rather than a hallucinated answer.
+When memory is strong enough, it answers instantly — zero tokens, zero cloud cost, zero latency. When it isn't, it declines cleanly rather than hallucinating.
 
-### Why this matters
-
-| | Mem0 / Zep / LangMem | YourMemory |
+| Query | Mem0 / Zep / LangMem | YourMemory |
 |---|---|---|
-| "What port does the server run on?" | Full LLM API call | Answered instantly, $0 |
-| "What database does this project use?" | Full LLM API call | Answered instantly, $0 |
-| "How do I fix a k8s deployment?" | Full LLM API call | Declines cleanly → Claude |
-| Privacy | Query sent to cloud | Query never leaves your machine |
+| "What port does the server run on?" | Full LLM API call | Instant, $0 |
+| "What database does this project use?" | Full LLM API call | Instant, $0 |
+| "How do I fix a k8s deployment?" | Full LLM API call | Declines → Claude |
+| Privacy | Query sent to cloud | Never leaves your machine |
 
 ---
 
@@ -298,30 +282,34 @@ When memory is strong enough to answer confidently, it responds instantly — ze
 
 Three tools, called by your AI automatically.
 
-| Tool | When | What it does |
-|------|------|--------------|
-| `recall_memory(query, current_path?)` | Start of every task | Surfaces relevant memories ranked by similarity × strength; boosts spatially matched memories |
-| `store_memory(content, importance, context_paths?)` | After learning something new | Embeds and stores with biological decay; tags optional file/dir paths for spatial recall |
-| `update_memory(id, new_content)` | When a memory is outdated | Re-embeds and replaces; logs old content to audit trail |
+| Tool | When your AI calls it | What it does |
+|------|-----------------------|--------------|
+| `recall_memory(query, current_path?)` | Start of every task | Surfaces memories ranked by similarity × decay strength; spatial boost for path-matched memories |
+| `store_memory(content, importance, category?, context_paths?)` | After learning something new | Embeds, deduplicates, stores with decay; tags optional file/dir paths |
+| `update_memory(id, new_content, importance)` | When a stored fact is outdated | Re-embeds and replaces; logs old content to audit trail |
 
 ```python
 # Store with spatial context
-store_memory("Sachit prefers tabs over spaces in Python", importance=0.9, category="fact",
-             context_paths=["/projects/backend"])
+store_memory(
+    "Sachit prefers tabs over spaces in Python",
+    importance=0.9,
+    category="fact",
+    context_paths=["/projects/backend"]
+)
 
-# Next session — spatial boost applied when working in that path:
+# Next session — spatial boost fires when working in that directory
 recall_memory("Python formatting", current_path="/projects/backend")
-# → {"content": "Sachit prefers tabs over spaces in Python", "strength": 0.87, "score": 0.81}
+# → {"content": "Sachit prefers tabs over spaces in Python", "strength": 0.87}
 ```
 
-### Categories control how fast memories fade
+### Memory categories control decay rate
 
-| Category | Survives without recall | Use case |
-|----------|------------------------|----------|
-| `strategy` | ~38 days | Successful patterns |
-| `fact` | ~24 days | Preferences, identity |
-| `assumption` | ~19 days | Inferred context |
-| `failure` | ~11 days | Errors, environment-specific issues |
+| Category | Half-life | Best for |
+|----------|-----------|----------|
+| `strategy` | ~38 days | Patterns that worked, architectural decisions |
+| `fact` | ~24 days | Preferences, identity, stable knowledge |
+| `assumption` | ~19 days | Inferred context, uncertain beliefs |
+| `failure` | ~11 days | Errors, wrong approaches, environment-specific issues |
 
 ---
 
@@ -329,58 +317,58 @@ recall_memory("Python formatting", current_path="/projects/backend")
 
 ### Ebbinghaus Forgetting Curve
 
-Memory strength decays exponentially — importance and recall frequency slow that decay:
+Memory strength decays exponentially. Importance and recall frequency slow that decay:
 
 ```
-effective_λ  = base_λ × (1 - importance × 0.8)
+effective_λ  = base_λ × (1 − importance × 0.8)
 strength     = clamp(importance × e^(−effective_λ × active_days) × (1 + recall_count × 0.2), 0, 1)
 hybrid_score = 0.4 × bm25_norm + 0.6 × cosine_similarity
 ```
 
-`active_days` counts only days the user was active — vacations don't cause memory loss. Decay is used for pruning only, not ranking. Memories below strength `0.05` are pruned automatically every 24 hours.
+`active_days` counts only days the user was active — vacations don't cause memory loss. Memories below strength `0.05` are pruned automatically every 24 hours.
 
-**Session wrap-up scoring:** recalled memory IDs are tracked per session and get a recall_count boost when the session goes idle (30 min default). Set `YOURMEMORY_SESSION_IDLE` to change the window.
+**Session wrap-up:** recalled memory IDs are tracked per session. When a session goes idle (30 min default), those memories get a `recall_count` boost. Set `YOURMEMORY_SESSION_IDLE` to change the window.
 
-**Recall throttling:** identical (user, query) pairs are cached to avoid redundant retrieval within a configurable window. Set `YOURMEMORY_RECALL_COOLDOWN` (seconds, default 0 = off).
+**Recall throttling:** identical (user, query) pairs are cached within a configurable window. Set `YOURMEMORY_RECALL_COOLDOWN` (seconds, default 0 = off).
 
-### Hybrid Retrieval: Vector + BM25 + Graph
+### Hybrid Retrieval: Vector + BM25 + Entity Graph
 
-Retrieval runs in two rounds to surface related context that vocabulary-based search misses:
+Retrieval runs in two rounds:
 
-**Round 1 — Hybrid search:** cosine similarity + BM25 keyword scoring, returns top-k above threshold.
+**Round 1 — Hybrid search:** cosine similarity + BM25 keyword scoring, returns top-k candidates above threshold.
 
-**Round 2 — Graph expansion:** BFS traversal from Round 1 seeds surfaces memories that share context but not vocabulary — connected via semantic edges (cosine similarity ≥ 0.4).
+**Round 2 — Graph expansion:** BFS traversal from Round 1 seeds surfaces memories that share context but not vocabulary — connected via semantic or entity edges.
 
 ```
 recall("Python backend")
   Round 1 → [1] Python/MongoDB    (sim=0.61)
              [2] DuckDB/spaCy     (sim=0.19)
-  Round 2 → [5] Docker/Kubernetes (sim=0.29 — below cut-off, surfaced via graph)
+  Round 2 → [5] Docker/Kubernetes (sim=0.29 — below cut-off, surfaced via shared entity "backend")
 ```
 
-**Chain-aware pruning:** A decayed memory is kept alive if any graph neighbour is above the prune threshold. Related memories age together.
+**Chain-aware pruning:** a decayed memory is kept alive if any graph neighbour is above the prune threshold. Related memories age together.
 
 ### Subject-Aware Deduplication
 
-When storing a new memory, YourMemory compares the incoming content against the nearest existing memory. Before merging, it verifies the two memories are about the **same entity** — not just the same topic.
+Before storing, YourMemory checks whether the new memory is about the same entity as the nearest existing one:
 
 ```
-"Sachit uses DuckDB"    vs  "YourMemory uses DuckDB"
- subject: Sachit             subject: YourMemory
- → different entities → stored as two separate facts ✓
+"Sachit uses DuckDB"      vs  "YourMemory uses DuckDB"
+ subject: Sachit               subject: YourMemory
+ → different entities → stored separately ✓
 
 "YourMemory uses DuckDB"  vs  "YourMemory stores data in DuckDB"
  subject: YourMemory           subject: YourMemory
  → same entity → merged ✓
 ```
 
-Subject comparison embeds the first two words of each sentence and compares them semantically — no hardcoded word lists, generalises to any sentence structure or language.
+Subject comparison embeds the first two tokens of each sentence — no hardcoded word lists, generalises to any language.
 
 ---
 
 ## Multi-Agent Memory
 
-Multiple agents can share the same YourMemory instance — each with isolated private memories and controlled access to shared context.
+Multiple agents can share one YourMemory instance — each with isolated private memories and controlled access to shared context.
 
 ```python
 from src.services.api_keys import register_agent
@@ -391,19 +379,19 @@ result = register_agent(
     can_read=["shared", "private"],
     can_write=["shared", "private"],
 )
-# → result["api_key"]  — ym_xxxx, shown once only
+# → result["api_key"]  — ym_xxxx (shown once only)
 ```
 
-Pass `api_key` to any MCP call to authenticate as an agent:
-
 ```python
-store_memory(content="Staging uses self-signed cert — skip SSL verify",
-             importance=0.7, category="failure",
-             api_key="ym_xxxx", visibility="private")
+# Agent stores a private failure memory
+store_memory(
+    "Staging uses self-signed cert — skip SSL verify",
+    importance=0.7, category="failure",
+    api_key="ym_xxxx", visibility="private"
+)
 
-recall_memory(query="staging SSL", api_key="ym_xxxx")
-# → returns shared memories + this agent's private memories
-# → other agents see shared only
+# Recalls shared + its own private memories; other agents see shared only
+recall_memory("staging SSL", api_key="ym_xxxx")
 ```
 
 ---
@@ -415,8 +403,8 @@ recall_memory(query="staging SSL", api_key="ym_xxxx")
 | **DuckDB** | Default vector DB — zero setup, native cosine similarity |
 | **NetworkX** | Default graph backend — persists at `~/.yourmemory/graph.pkl` |
 | **sentence-transformers** | Local embeddings (`multi-qa-mpnet-base-dot-v1`, 768 dims) |
-| **spaCy** | Local NLP for deduplication and SVO triple extraction |
-| **APScheduler** | Automatic 24h decay job |
+| **spaCy** | Local NLP for deduplication and entity extraction |
+| **APScheduler** | Automatic 24h decay and pruning job |
 | **PostgreSQL + pgvector** | Optional — for teams or large datasets |
 | **Neo4j** | Optional graph backend — `pip install 'yourmemory[neo4j]'` |
 
@@ -455,14 +443,14 @@ createdb yourmemory
 Claude / Cline / Cursor / Any MCP client
     │
     ├── recall_memory(query, current_path?, api_key?)
-    │       └── throttle check (YOURMEMORY_RECALL_COOLDOWN)
-    │               embed → vector similarity (Round 1)
-    │               → graph BFS expansion  (Round 2)
-    │               → score = sim × strength → top-k
+    │       └── throttle check → embed → hybrid search (Round 1)
+    │               → graph BFS expansion (Round 2)
+    │               → score = sim × strength
     │               → spatial boost (+0.08) if current_path matches context_paths
+    │               → temporal boost (+0.25) if query has time window expression
     │               → session tracking → recall_count bump on session end
     │
-    ├── store_memory(content, importance, category?, context_paths?, visibility?, api_key?)
+    ├── store_memory(content, importance, category?, context_paths?, api_key?)
     │       └── question? → reject
     │               subject-aware dedup → same entity? merge/reinforce : new
     │               embed() → INSERT → index_memory() → graph node + edges
@@ -472,16 +460,17 @@ Claude / Cline / Cursor / Any MCP client
             └── log old content → memory_history (audit trail)
                     embed(new_content) → UPDATE → refresh graph node
 
-  Vector DB (Round 1)             Graph DB (Round 2)
-  DuckDB (default)                NetworkX (default)
-    memories.duckdb                 graph.pkl
-    ├── embedding FLOAT[768]        ├── nodes: memory_id, strength
-    ├── importance FLOAT            └── edges: sim × verb_weight ≥ 0.4
+  Vector DB (Round 1)              Graph DB (Round 2)
+  DuckDB (default)                 NetworkX (default)
+    memories.duckdb                  graph.pkl
+    ├── embedding FLOAT[768]         ├── nodes: memory_id, strength
+    ├── importance FLOAT             └── edges: sim × verb_weight ≥ 0.4
     ├── recall_count INTEGER
-    ├── context_paths JSON        Neo4j (opt-in)
-    ├── visibility VARCHAR          └── bolt://localhost:7687
+    ├── context_paths JSON         Neo4j (opt-in)
+    ├── created_at TIMESTAMP         └── bolt://localhost:7687
+    ├── visibility VARCHAR
     ├── agent_id VARCHAR
-    user_activity (active days log)
+    user_activity  (active days log)
     memory_history (supersession audit)
 ```
 
@@ -489,15 +478,15 @@ Claude / Cline / Cursor / Any MCP client
 
 ## Contributing
 
-PRs are welcome. See [CONTRIBUTORS.md](CONTRIBUTORS.md) for the people who have already improved YourMemory.
+PRs are welcome. See [CONTRIBUTORS.md](CONTRIBUTORS.md) for contributors who have already improved YourMemory.
 
 ---
 
-## Dataset Reference
+## Dataset References
 
-Benchmarks use the [LoCoMo](https://github.com/snap-research/locomo) dataset by Snap Research.
-
-> Maharana et al. (2024). *LoCoMo: Long Context Multimodal Benchmark for Dialogue.* Snap Research.
+- [LoCoMo](https://github.com/snap-research/locomo) — Maharana et al. (2024). *LoCoMo: Long Context Multimodal Benchmark for Dialogue.* Snap Research.
+- [LongMemEval](https://github.com/xiaowu0162/LongMemEval) — Wu et al. (2024). *LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory.*
+- [HotpotQA](https://hotpotqa.github.io/) — Yang et al. (2018). *HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering.*
 
 ---
 
@@ -505,7 +494,7 @@ Benchmarks use the [LoCoMo](https://github.com/snap-research/locomo) dataset by 
 
 Copyright 2026 **Sachit Misra** — Licensed under [CC-BY-NC-4.0](LICENSE).
 
-**Free for:** personal use, education, academic research, open-source projects.  
+**Free for:** personal use, education, academic research, open-source projects.
 **Not permitted:** commercial use without a separate written agreement.
 
 Commercial licensing: mishrasachit1@gmail.com
