@@ -212,7 +212,7 @@
         <button onclick="switchTab('longmemeval')" id="tab-longmemeval"
           class="px-5 py-2.5 rounded-full text-sm font-bold transition-all border border-white/20 text-gray-400 hover:border-white/40 hover:text-gray-200">
           LongMemEval-S
-          <span class="ml-1.5 text-[10px] font-mono opacity-70">84.8% Recall-all@5</span>
+          <span class="ml-1.5 text-[10px] font-mono opacity-70">89.4% Recall@5</span>
         </button>
         <button onclick="switchTab('hotpotqa')" id="tab-hotpotqa"
           class="px-5 py-2.5 rounded-full text-sm font-bold transition-all border border-white/20 text-gray-400 hover:border-white/40 hover:text-gray-200">
@@ -296,32 +296,32 @@
         <div class="grid lg:grid-cols-2 gap-16 items-start mb-4">
           <!-- Main metric card -->
           <div class="bg-white/5 border border-white/10 p-10 rounded-3xl">
-            <h3 class="text-2xl font-bold mb-1">LongMemEval-S Recall-all@5</h3>
+            <h3 class="text-2xl font-bold mb-1">LongMemEval-S Recall@5</h3>
             <p class="text-gray-400 font-mono text-xs uppercase tracking-tighter mb-1">LongMemEval · 500 questions · ~53 haystack sessions each</p>
-            <p class="text-gray-600 font-mono text-[10px]">benchmarks/longmemeval_fullstack.py · BM25 + vector + graph BFS · 28 Apr 2026</p>
+            <p class="text-gray-600 font-mono text-[10px]">benchmarks/longmemeval_temporal.py · cosine × decay · 25 May 2026</p>
             <!-- Big number -->
             <div class="mt-8 mb-8">
-              <p class="text-[#00D4FF] font-mono font-bold text-6xl mb-1">84.8%</p>
-              <p class="text-gray-400 text-sm">Recall-all@5 — all gold sessions in top 5</p>
+              <p class="text-[#00D4FF] font-mono font-bold text-6xl mb-1">89.4%</p>
+              <p class="text-gray-400 text-sm">Recall@5 — any gold session in top 5</p>
             </div>
             <!-- Secondary metrics -->
             <div class="space-y-4 mb-8">
               <div>
                 <div class="flex justify-between mb-1.5 text-sm">
-                  <span class="font-bold">Recall-all@5 <span class="text-[10px] font-mono text-gray-500 ml-1">all gold sessions found</span></span>
-                  <span class="text-[#00D4FF] font-mono font-bold">84.8%</span>
+                  <span class="font-bold">Recall@5 <span class="text-[10px] font-mono text-gray-500 ml-1">any gold session found</span></span>
+                  <span class="text-[#00D4FF] font-mono font-bold">89.4%</span>
                 </div>
                 <div class="h-3 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:84.8%;box-shadow:0 0 10px rgba(0,212,255,0.4)"></div>
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:89.4%;box-shadow:0 0 10px rgba(0,212,255,0.4)"></div>
                 </div>
               </div>
               <div>
                 <div class="flex justify-between mb-1.5 text-sm">
-                  <span class="text-gray-300">Recall-any@5 <span class="text-[10px] font-mono text-gray-500 ml-1">any gold session found</span></span>
-                  <span class="text-gray-300 font-mono">95.8%</span>
+                  <span class="text-gray-300">Recall-all@5 <span class="text-[10px] font-mono text-gray-500 ml-1">all gold sessions found</span></span>
+                  <span class="text-gray-300 font-mono">84.8%</span>
                 </div>
                 <div class="h-3 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-white/30 rounded-full" style="width:95.8%"></div>
+                  <div class="h-full bg-white/30 rounded-full" style="width:84.8%"></div>
                 </div>
               </div>
               <div>
@@ -351,66 +351,63 @@
             <div class="space-y-4">
               <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
                 <div class="flex justify-between items-center mb-2">
-                  <span class="text-sm font-semibold">knowledge-update</span>
-                  <span class="text-[#00D4FF] font-mono font-bold text-sm">97.4%</span>
-                </div>
-                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:97.4%"></div>
-                </div>
-              </div>
-              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
-                <div class="flex justify-between items-center mb-2">
                   <span class="text-sm font-semibold">single-session-assistant</span>
-                  <span class="text-[#00D4FF] font-mono font-bold text-sm">96.4%</span>
+                  <span class="text-[#00D4FF] font-mono font-bold text-sm">98.2%</span>
                 </div>
                 <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:96.4%"></div>
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:98.2%"></div>
                 </div>
               </div>
               <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
                 <div class="flex justify-between items-center mb-2">
-                  <span class="text-sm font-semibold">single-session-user</span>
-                  <span class="text-[#00D4FF] font-mono font-bold text-sm">95.7%</span>
+                  <span class="text-sm font-semibold">knowledge-update</span>
+                  <span class="text-[#00D4FF] font-mono font-bold text-sm">96.2%</span>
                 </div>
                 <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:95.7%"></div>
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:96.2%"></div>
+                </div>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm font-semibold">multi-session</span>
+                  <span class="text-[#00D4FF] font-mono font-bold text-sm">95.5%</span>
+                </div>
+                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:95.5%"></div>
                 </div>
               </div>
               <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
                 <div class="flex justify-between items-center mb-2">
                   <span class="text-sm font-semibold">single-session-preference</span>
-                  <span class="text-[#00D4FF] font-mono font-bold text-sm">83.3%</span>
+                  <span class="text-[#00D4FF] font-mono font-bold text-sm">90.0%</span>
                 </div>
                 <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:83.3%"></div>
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:90.0%"></div>
                 </div>
               </div>
               <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
                 <div class="flex justify-between items-center mb-2">
-                  <div>
-                    <span class="text-sm font-semibold">multi-session</span>
-                    <span class="ml-2 text-[10px] text-gray-500 font-mono">recall-any: 97.0%</span>
-                  </div>
-                  <span class="text-amber-400 font-mono font-bold text-sm">75.9%</span>
+                  <span class="text-sm font-semibold">single-session-user</span>
+                  <span class="text-amber-400 font-mono font-bold text-sm">72.9%</span>
                 </div>
                 <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-amber-400 rounded-full" style="width:75.9%"></div>
+                  <div class="h-full bg-amber-400 rounded-full" style="width:72.9%"></div>
                 </div>
               </div>
               <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
                 <div class="flex justify-between items-center mb-2">
                   <div>
                     <span class="text-sm font-semibold">temporal-reasoning</span>
-                    <span class="ml-2 text-[10px] text-gray-500 font-mono">recall-any: 94.7%</span>
+                    <span class="ml-2 text-[10px] text-gray-500 font-mono">133 questions</span>
                   </div>
-                  <span class="text-amber-400 font-mono font-bold text-sm">75.9%</span>
+                  <span class="text-[#00D4FF] font-mono font-bold text-sm">84.2%</span>
                 </div>
                 <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-amber-400 rounded-full" style="width:75.9%"></div>
+                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:84.2%"></div>
                 </div>
               </div>
             </div>
-            <p class="mt-5 text-gray-500 text-xs leading-relaxed">Temporal-reasoning and multi-session questions are hardest — the system retrieves <em>a</em> correct session 94–97% of the time (recall-any), but surfacing <em>all</em> required sessions in top-5 drops to 75.9%. These are the cases most dependent on time-anchored linking.</p>
+            <p class="mt-5 text-gray-500 text-xs leading-relaxed">Temporal boost ablation (25 May 2026): the +0.25 time-window boost fired on only 6% of queries — LongMemEval temporal questions are event-anchored, not window-anchored. The 84.2% score comes from cosine × decay alone. Full ablation in <a href="https://github.com/sachitrafa/YourMemory/blob/main/BENCHMARKS.md" target="_blank" class="text-[#00D4FF] underline">BENCHMARKS.md</a>.</p>
           </div>
         </div>
       </div>

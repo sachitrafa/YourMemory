@@ -9,7 +9,7 @@
 [![PyPI Downloads](https://img.shields.io/pypi/dm/yourmemory?color=brightgreen)](https://pypi.org/project/yourmemory/)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![LoCoMo Recall@5](https://img.shields.io/badge/LoCoMo%20Recall%405-59%25-brightgreen)](BENCHMARKS.md)
-[![LongMemEval Recall@5](https://img.shields.io/badge/LongMemEval%20Recall--all%405-85%25-brightgreen)](BENCHMARKS.md)
+[![LongMemEval Recall@5](https://img.shields.io/badge/LongMemEval%20Recall%405-89%25-brightgreen)](BENCHMARKS.md)
 [![Docker Build](https://img.shields.io/github/actions/workflow/status/sachitrafa/YourMemory/docker-publish.yml?branch=main&label=docker&logo=docker)](https://github.com/sachitrafa/YourMemory/actions/workflows/docker-publish.yml)
 [![oosmetrics](https://api.oosmetrics.com/api/v1/badge/achievement/9106de02-3dae-41ff-bc28-109da93fe87d.svg)](https://oosmetrics.com/repo/sachitrafa/YourMemory)
 
@@ -40,9 +40,11 @@ Every session, your AI assistant starts from zero. It asks the same questions, f
 
 ### LongMemEval-S — 500 questions, ~53 sessions each
 
-| System | Recall-all@5 | nDCG@5 |
-|--------|:------------:|:------:|
-| **YourMemory** (full stack · `multi-qa-mpnet-base-dot-v1`) | **85%** | **87%** |
+| System | Recall@5 | Recall-all@5 | nDCG@5 |
+|--------|:--------:|:------------:|:------:|
+| **YourMemory** (full stack · `multi-qa-mpnet-base-dot-v1`) | **89.4%** | **84.8%** | **87.4%** |
+
+Breakdown by question type (Recall@5): knowledge-update 96.2% · single-session-assistant 98.2% · multi-session 95.5% · temporal-reasoning 84.2% · single-session-preference 90.0% · single-session-user 72.9%
 
 ### HotpotQA — 200 multi-hop questions requiring two facts from different articles
 

@@ -40,6 +40,30 @@ Graph BFS expansion adds ~+0.8pp on recall-all@5. The switch to `multi-qa-mpnet-
 
 Temporal-reasoning and multi-session questions are the hardest — the system retrieves *a* correct session 95%+ of the time (recall-any), but surfacing *all* required sessions in top-5 drops to 75.9%. These are the cases most dependent on correct time-anchored linking.
 
+### Temporal Boost Ablation — LongMemEval-S (25 May 2026)
+
+**Script:** [`benchmarks/longmemeval_temporal.py`](https://github.com/sachitrafa/YourMemory/blob/main/benchmarks/longmemeval_temporal.py)
+
+**What was tested:** Does the temporal boost in `src/services/temporal.py` improve recall on time-sensitive questions? The boost adds +0.25 to the score of memories whose `created_at` falls within a resolved time window (e.g. "last week", "recently").
+
+**Scoring:** `cosine(q, memory) × ebbinghaus_strength` (base) vs base + temporal boost. Temporal window anchored to `question_date`, not `datetime.now()`.
+
+**Metric:** Recall@5 (any) — at least one gold session in top-5.
+
+| Question Type | Base | + Temporal Boost | Δ | n |
+|---------------|:----:|:----------------:|:---:|:---:|
+| knowledge-update | 96.2% | 96.2% | 0pp | 78 |
+| single-session-assistant | 98.2% | 98.2% | 0pp | 56 |
+| multi-session | 95.5% | 95.5% | 0pp | 133 |
+| single-session-preference | 90.0% | 90.0% | 0pp | 30 |
+| **temporal-reasoning** | **84.2%** | **84.2%** | **0pp** | **133** |
+| single-session-user | 72.9% | 72.9% | 0pp | 70 |
+| **OVERALL** | **89.4%** | **89.4%** | **0pp** | **500** |
+
+**Key finding:** The temporal boost fired on only **28/500 (6%)** of queries. LongMemEval temporal-reasoning questions are event-anchored ("when did X happen?", "what changed about Y?") — not window-anchored ("what happened last week?"). The boost is designed for the latter and does not move the needle on this benchmark.
+
+**What the temporal boost *is* for:** Real-world queries like "what did we discuss recently?" or "what happened last week?" — common in Claude Code and developer workflows. The LoCoMo temporal analysis (Section 2) confirms this pattern: temporal keyword questions score 66% vs 54% for non-temporal, but the gain comes from BM25 keyword overlap, not the time-window boost.
+
 ---
 
 ## 2. Long-Context Recall Accuracy — LoCoMo-10 (20 April 2026)
@@ -88,6 +112,37 @@ Temporal-reasoning and multi-session questions are the hardest — the system re
 | **Total** | | **1,534** | **59%** | **28%** |
 
 **YourMemory leads Zep by +31 pp (111% relative) across all 10 samples.** The gap comes from architecture: YourMemory stores full session summaries and scores on BM25 + vector + graph. Zep's LLM-based extraction condenses sessions into abstract facts, losing the specific dates, names, and events that LoCoMo QA pairs target.
+
+### Temporal Question Analysis — LoCoMo-10 (25 May 2026)
+
+**Script:** [`benchmarks/locomo_temporal.py`](https://github.com/sachitrafa/YourMemory/blob/main/benchmarks/locomo_temporal.py)
+
+**What was tested:** How does YourMemory perform on temporal questions (those containing "when", "how long", "before", "after", "recently", etc.) vs non-temporal questions?
+
+**Pipeline:** Full stack — BM25 + vector + entity graph + Ebbinghaus decay + temporal boost. Historical session timestamps injected via `createdAt`.
+
+| Metric | Result | n |
+|--------|:------:|:---:|
+| All QA pairs | 54% | 1,534 |
+| Temporal questions only | **66%** | 428 |
+| Non-temporal questions | 49% | 1,106 |
+| CI95 (all) | (51%, 56%) | — |
+| CI95 (temporal) | (61%, 70%) | — |
+
+**Why temporal questions score +17 pp higher:** Temporal keyword questions (containing "when", "before", "after", etc.) naturally share vocabulary with session summaries that describe timed events. BM25 rewards this keyword overlap — the gap is largely a retrieval signal effect, not from the time-window boost (which requires relative expressions like "last week").
+
+| Sample | All QA | Temporal | Temporal n |
+|--------|:------:|:--------:|:----------:|
+| Caroline & Melanie | 60% | 83% | 47 |
+| Jon & Gina | 65% | 89% | 28 |
+| John & Maria | 53% | 66% | 41 |
+| Joanna & Nate | 40% | 44% | 54 |
+| Tim & John | 56% | 55% | 42 |
+| Audrey & Andrew | 54% | 67% | 30 |
+| James & John | 61% | 76% | 46 |
+| Deborah & Jolene | 50% | 59% | 61 |
+| Evan & Sam | 50% | 62% | 32 |
+| Calvin & Dave | 60% | 70% | 47 |
 
 ---
 
