@@ -1,15 +1,14 @@
 """
-Generate temporal_boost.gif — demonstrates the temporal reasoning boost in action.
+Generate temporal_boost.gif — demonstrates temporal reasoning boost.
 
 Scene:
-  1. 5 memories shown with creation timestamps (ranging from 2 days to 60 days ago)
-  2. Query types in: "what did we discuss recently about caching?"
-  3. Temporal window resolves: "recently → last 14 days"
-  4. Memories within the window get a +0.25 BOOST highlight
-  5. Re-ranked results surface the recent memory to top
+  1. 5 memories from a real MCP dev session (mixed ages, mixed relevance)
+  2. Query types in: "what retrieval changes did we make recently?"
+  3. Temporal window resolves: "recently -> last 14 days"
+  4. In-window memories get +0.25 boost (cyan glow + badge)
+  5. Cards animate to new ranked order — recent ones float to top
 """
 
-import math, os
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
@@ -18,25 +17,25 @@ OUT_DIR.mkdir(exist_ok=True)
 
 W, H = 900, 560
 
-NAVY     = (10,  25,  47)
-CYAN     = (0,   212, 255)
-CYAN_DIM = (0,   140, 180)
+# ── Exact colors from index.html ──────────────────────────────────────────────
+BG       = (10,  25,  47)    # #0A192F
+CYAN     = (0,   212, 255)   # #00D4FF
 WHITE    = (255, 255, 255)
-G_BG     = (13,  17,  23)
-G_CARD   = (22,  27,  34)
-G_CARD2  = (28,  34,  44)
-G_BORD   = (48,  54,  61)
-G_TEXT   = (220, 230, 242)
-G_MUTE   = (110, 120, 135)
-AMBER    = (245, 158, 11)
-GREEN    = (63,  185,  80)
-BOOST_BG = (0,   50,   60)
-BOOST_BD = (0,   180, 220)
+CARD     = (22,  37,  57)    # bg-white/5 on #0A192F
+BORD     = (35,  48,  68)    # border-white/10 on #0A192F
+GRAY4    = (156, 163, 175)   # text-gray-400
+GRAY6    = (107, 114, 128)   # text-gray-600
+AMBER    = (245, 158,  11)   # #F59E0B
+GREEN    = (16,  185, 129)   # #10B981
+BOOST_BG = (8,   35,  58)    # subtle cyan tint
+BOOST_BD = (0,   155, 195)   # muted cyan border
+
+# ── Fonts ─────────────────────────────────────────────────────────────────────
+_FONT = "/System/Library/Fonts/HelveticaNeue.ttc"
 
 def F(size, bold=False):
-    path = "/tmp/DMSans-Bold.ttf" if bold else "/tmp/DMSans-Regular.ttf"
     try:
-        return ImageFont.truetype(path, size)
+        return ImageFont.truetype(_FONT, size, index=1 if bold else 0)
     except Exception:
         return ImageFont.load_default()
 
@@ -46,8 +45,11 @@ def tw(font, text):
     except Exception:
         return len(text) * 7
 
-def rr(d, xy, r=8, fill=None, outline=None, lw=1):
-    d.rounded_rectangle(list(xy), radius=r, fill=fill, outline=outline, width=lw)
+def rr(d, x1, y1, x2, y2, r=8, fill=None, outline=None, lw=1):
+    d.rounded_rectangle([x1, y1, x2, y2], radius=r, fill=fill, outline=outline, width=lw)
+
+def lerp(a, b, t):
+    return tuple(int(a[i] + (b[i] - a[i]) * t) for i in range(3))
 
 def ease_out(t):
     return 1 - (1 - t) ** 3
@@ -55,37 +57,39 @@ def ease_out(t):
 def ease_in_out(t):
     return t * t * (3 - 2 * t)
 
-def draw_logo(d, x0, y0, size=28, bg=G_BG):
-    s  = size / 100
-    rv = max(1, round(2 * s))
+# ── Logo (matches index.html SVG) ─────────────────────────────────────────────
+def draw_logo(d, x0, y0, size=26):
     def bar(vx, vy, vw, vh, fill):
+        sc = size / 100
         d.rounded_rectangle(
-            [x0+vx*s, y0+vy*s, x0+(vx+vw)*s, y0+(vy+vh)*s],
-            radius=rv, fill=fill
+            [x0 + vx*sc, y0 + vy*sc, x0 + (vx+vw)*sc, y0 + (vy+vh)*sc],
+            radius=max(1, round(1.5)), fill=fill,
         )
     bar(10, 80, 80, 10, WHITE)
     bar(25, 60, 50, 10, WHITE)
     bar(40, 40, 15, 10, WHITE)
     bar(60, 40,  5, 10, CYAN)
-    bar(47.5,20, 5, 10, (0, 170, 210))
+    bar(47.5,20,  5, 10, (0, 170, 210))
 
 # ── Memory data ───────────────────────────────────────────────────────────────
 MEMORIES = [
-    {"text": "Redis caching failed: pickle, not JSON",       "days": 2,  "score": 0.61},
-    {"text": "Switched to Cassandra for session caching",    "days": 8,  "score": 0.74},
-    {"text": "Sachit uses DuckDB locally, Postgres in prod", "days": 21, "score": 0.55},
-    {"text": "FastAPI pagination fixed /users timeout",      "days": 35, "score": 0.48},
-    {"text": "Decided against Pinecone, DuckDB sufficient",  "days": 58, "score": 0.39},
+    # Sorted by base score descending (initial display order)
+    {"text": "DuckDB locally, Postgres in production",     "days": 22, "score": 0.71},
+    {"text": "FastAPI pagination fixed /memories timeout", "days": 35, "score": 0.65},
+    {"text": "Switched to BM25 + vector hybrid retrieval", "days":  9, "score": 0.62},
+    {"text": "Tested Pinecone, kept local embeddings",     "days": 58, "score": 0.51},
+    {"text": "Entity graph expansion added to recall",     "days":  2, "score": 0.47},
 ]
-WINDOW_DAYS = 14
-BOOST       = 0.25
-QUERY       = "what did we discuss recently about caching?"
+WINDOW = 14
+BOOST  = 0.25
+QUERY  = "what retrieval changes did we make recently?"
 
-PAD   = 28
-NAV_H = 52
-CARD_H= 66
-GAP   = 8
-ROW0  = NAV_H + 60   # first card top
+# Final order after boost
+BOOSTED = sorted(
+    range(len(MEMORIES)),
+    key=lambda i: MEMORIES[i]["score"] + (BOOST if MEMORIES[i]["days"] <= WINDOW else 0),
+    reverse=True,
+)
 
 def day_label(d):
     if d == 1:  return "1 day ago"
@@ -93,182 +97,235 @@ def day_label(d):
     if d < 30:  return f"{d//7}w ago"
     return f"{d//30}mo ago"
 
-def in_window(days):
-    return days <= WINDOW_DAYS
+# ── Layout (all in logical px at 900×560) ────────────────────────────────────
+PAD    = 26
+NAV_H  = 50
+QY     = NAV_H + 14          # 64
+QH     = 38
+BADGE_Y = QY + QH + 9        # 111
+BADGE_H = 24                 # ends at 135
+HDR_Y  = BADGE_Y + BADGE_H + 9   # 144
+ROW0   = HDR_Y + 20          # 164
+CARD_H = 66
+GAP    = 8
 
-def draw_frame(
-    query_chars=0,
-    show_window=False,
-    boost_alpha=0.0,
-    rerank_t=0.0,
-    highlight_idx=-1,
-):
-    img = Image.new("RGB", (W, H), G_BG)
+# ── Draw one frame ────────────────────────────────────────────────────────────
+def draw_frame(query_chars=0, show_window=False, boost_alpha=0.0, rerank_t=0.0):
+    img = Image.new("RGB", (W, H), BG)
     d   = ImageDraw.Draw(img)
 
-    # subtle dot grid
-    for x in range(0, W+30, 30):
-        for y in range(0, H+30, 30):
-            d.ellipse([x-1,y-1,x+1,y+1], fill=(20,26,34))
+    # Dot grid background
+    for x in range(0, W + 30, 30):
+        for y in range(0, H + 30, 30):
+            d.ellipse([x-1, y-1, x+1, y+1], fill=(16, 33, 58))
 
-    # ── Nav bar ──
-    d.rectangle([0,0,W,NAV_H], fill=G_CARD)
-    d.line([(0,NAV_H),(W,NAV_H)], fill=G_BORD, width=1)
-    draw_logo(d, PAD, 12, size=28, bg=G_CARD)
-    d.text((PAD+36, 16), "YourMemory", font=F(16, bold=True), fill=WHITE)
+    # ── Nav bar ──────────────────────────────────────────────────────────────
+    d.rectangle([0, 0, W, NAV_H], fill=CARD)
+    d.line([(0, NAV_H), (W, NAV_H)], fill=BORD, width=1)
+    draw_logo(d, PAD + 2, 12, size=26)
+    d.text((PAD + 34, 15), "YourMemory", font=F(15, bold=True), fill=WHITE)
     tag = "recall_memory"
-    tw_tag = tw(F(11), tag)
-    rr(d, [W-PAD-tw_tag-16, 16, W-PAD, NAV_H-14], r=6, fill=G_CARD2, outline=G_BORD)
-    d.text((W-PAD-tw_tag-8, 18), tag, font=F(11), fill=CYAN)
+    tf  = F(11)
+    tw_tag = tw(tf, tag)
+    rr(d, W - PAD - tw_tag - 20, 15, W - PAD, NAV_H - 14,
+       r=6, fill=(18, 32, 52), outline=BORD)
+    d.text((W - PAD - tw_tag - 12, 17), tag, font=tf, fill=CYAN)
 
-    # ── Query box ──
-    QY = NAV_H + 16
-    QH = 38
-    rr(d, [PAD, QY, W-PAD, QY+QH], r=8, fill=G_CARD2, outline=CYAN if query_chars==len(QUERY) else G_BORD, lw=2 if query_chars==len(QUERY) else 1)
+    # ── Query input ───────────────────────────────────────────────────────────
+    full = query_chars == len(QUERY)
+    rr(d, PAD, QY, W - PAD, QY + QH,
+       r=9, fill=(18, 32, 52),
+       outline=CYAN if full else BORD, lw=2 if full else 1)
     q_shown = QUERY[:query_chars]
-    d.text((PAD+14, QY+11), q_shown, font=F(13), fill=G_TEXT)
-    # blinking cursor
-    if query_chars < len(QUERY):
-        cx = PAD + 14 + tw(F(13), q_shown)
-        d.rectangle([cx+2, QY+10, cx+3, QY+28], fill=CYAN)
+    qf = F(13)
+    d.text((PAD + 14, QY + 12), q_shown, font=qf, fill=WHITE if full else GRAY4)
+    if not full:
+        cx = PAD + 14 + tw(qf, q_shown) + 1
+        d.rectangle([cx, QY + 11, cx + 2, QY + 27], fill=CYAN)
 
-    # ── Temporal window badge ──
+    # ── Window badge ──────────────────────────────────────────────────────────
     if show_window and boost_alpha > 0:
-        alpha = min(1.0, boost_alpha * 2)
-        wlabel = f"⏱  recently  →  last {WINDOW_DAYS} days"
-        ww = tw(F(12), wlabel) + 28
-        wx = W//2 - ww//2
-        wy = QY + QH + 8
-        bg_col = tuple(int(c * alpha + G_BG[i] * (1-alpha)) for i,c in enumerate(BOOST_BG))
-        bd_col = tuple(int(c * alpha + G_BG[i] * (1-alpha)) for i,c in enumerate(BOOST_BD))
-        rr(d, [wx, wy, wx+ww, wy+26], r=13, fill=bg_col, outline=bd_col)
-        txt_col = tuple(int(c * alpha + G_BG[i] * (1-alpha)) for i,c in enumerate(CYAN))
-        d.text((wx+14, wy+7), wlabel, font=F(12), fill=txt_col)
+        alpha = min(1.0, boost_alpha * 1.8)
+        label = f"recently  ->  last {WINDOW} days"
+        wf    = F(11, bold=True)
+        ww    = tw(wf, label) + 36
+        wx    = W // 2 - ww // 2
+        wy    = BADGE_Y
+        bg_c  = lerp(BG,    BOOST_BG, alpha)
+        bd_c  = lerp(BG,    BOOST_BD, alpha)
+        tc    = lerp(GRAY6, CYAN,     alpha)
+        rr(d, wx, wy, wx + ww, wy + BADGE_H, r=12, fill=bg_c, outline=bd_c)
+        # Mini clock icon
+        ic, ir = wx + 13, wy + BADGE_H // 2
+        d.ellipse([ic-5, ir-5, ic+5, ir+5], outline=tc, width=1)
+        d.line([ic, ir-3, ic, ir],    fill=tc, width=1)
+        d.line([ic, ir,   ic+3, ir],  fill=tc, width=1)
+        d.text((wx + 26, wy + 6), label, font=wf, fill=tc)
 
-    # ── Memory cards ──
-    # Compute reranked order
-    base_order = list(range(len(MEMORIES)))
-    boosted_order = sorted(
-        range(len(MEMORIES)),
-        key=lambda i: MEMORIES[i]["score"] + (BOOST if in_window(MEMORIES[i]["days"]) else 0),
-        reverse=True,
-    )
+    # ── Results header ────────────────────────────────────────────────────────
+    hf = F(10)
+    if rerank_t > 0.92:
+        hdr = "re-ranked by temporal relevance"
+        hc  = lerp(GRAY6, CYAN, min(1.0, (rerank_t - 0.92) * 12))
+    elif boost_alpha > 0.5:
+        hdr = "5 memories  |  2 in window"
+        hc  = GRAY4
+    else:
+        hdr = "5 memories"
+        hc  = GRAY6
+    d.text((PAD, HDR_Y), hdr, font=hf, fill=hc)
 
-    for rank, orig_i in enumerate(base_order):
-        t_rank = rank
+    # ── Memory cards ─────────────────────────────────────────────────────────
+    for orig_i in range(len(MEMORIES)):
+        base_rank   = orig_i
+        visual_rank = float(base_rank)
         if rerank_t > 0:
-            final_rank = boosted_order.index(orig_i)
-            t_rank = rank + (final_rank - rank) * ease_out(rerank_t)
+            final_rank  = BOOSTED.index(orig_i)
+            visual_rank = base_rank + (final_rank - base_rank) * ease_in_out(rerank_t)
 
-        y = ROW0 + t_rank * (CARD_H + GAP)
-
+        y   = ROW0 + visual_rank * (CARD_H + GAP)
         m   = MEMORIES[orig_i]
-        win = in_window(m["days"])
-        bst = BOOST if win else 0
+        win = m["days"] <= WINDOW
+        ba  = boost_alpha if win else 0.0
 
-        # card background — glow for in-window
-        if win and boost_alpha > 0:
-            glow_alpha = boost_alpha * 0.5
-            glow_col = tuple(int(c*glow_alpha + G_CARD[i]*(1-glow_alpha)) for i,c in enumerate((0,40,55)))
-            rr(d, [PAD-2, y-2, W-PAD+2, y+CARD_H+2], r=12, fill=glow_col)
+        # Card bg + border
+        card_c = lerp(CARD, BOOST_BG, ba * 0.7) if win else CARD
+        bord_c = lerp(BORD, BOOST_BD, ba)        if win else BORD
+        rr(d, PAD, y, W - PAD, y + CARD_H, r=11, fill=card_c, outline=bord_c)
 
-        border = BOOST_BD if (win and boost_alpha > 0.3) else G_BORD
-        rr(d, [PAD, y, W-PAD, y+CARD_H], r=10, fill=G_CARD, outline=border)
+        # Left accent stripe on in-window cards
+        if win and ba > 0:
+            sc = lerp(BORD, CYAN, ba)
+            d.rounded_rectangle([PAD, y + 4, PAD + 3, y + CARD_H - 4], radius=2, fill=sc)
+
+        # Rank badge
+        disp_rank = BOOSTED.index(orig_i) if rerank_t > 0.92 else base_rank
+        d.text((PAD + 10, y + 9), f"#{disp_rank + 1}",
+               font=F(10, bold=True), fill=lerp(GRAY6, CYAN, ba))
 
         # Memory text
-        d.text((PAD+16, y+12), m["text"], font=F(13), fill=G_TEXT)
+        d.text((PAD + 42, y + 9), m["text"], font=F(13, bold=True), fill=WHITE)
 
         # Timestamp
         dlbl = day_label(m["days"])
-        d.text((PAD+16, y+34), dlbl, font=F(11), fill=G_MUTE)
+        tsf  = F(11)
+        d.text((PAD + 42, y + 31), dlbl, font=tsf, fill=GRAY4)
 
-        # Window indicator dot
-        if win and boost_alpha > 0:
-            dot_alpha = min(1.0, boost_alpha * 2)
-            dot_col = tuple(int(c*dot_alpha + G_CARD[i]*(1-dot_alpha)) for i,c in enumerate(GREEN))
-            d.ellipse([PAD+16+tw(F(11),dlbl)+8, y+38, PAD+16+tw(F(11),dlbl)+15, y+45], fill=dot_col)
-            in_txt = "in window"
-            in_col = tuple(int(c*dot_alpha + G_CARD[i]*(1-dot_alpha)) for i,c in enumerate(GREEN))
-            d.text((PAD+16+tw(F(11),dlbl)+20, y+34), in_txt, font=F(11), fill=in_col)
+        # "in window" dot + label
+        if win and ba > 0:
+            dot_a = min(1.0, ba * 2)
+            gc    = lerp(GRAY4, GREEN, dot_a)
+            off   = tw(tsf, dlbl) + 10
+            dx, dy = PAD + 42 + off, y + 36
+            d.ellipse([dx, dy, dx + 6, dy + 6], fill=gc)
+            d.text((dx + 10, y + 31), "in window", font=tsf, fill=gc)
 
         # Score bar
-        score_with_boost = m["score"] + bst * min(1.0, boost_alpha)
-        BAR_X  = W - PAD - 180
-        BAR_W2 = 100
-        by     = y + CARD_H//2 - 5
-        rr(d, [BAR_X, by, BAR_X+BAR_W2, by+10], r=5, fill=G_BORD)
-        filled = int(BAR_W2 * score_with_boost)
-        bar_col2 = CYAN if score_with_boost >= 0.75 else AMBER if score_with_boost >= 0.55 else G_MUTE
-        rr(d, [BAR_X, by, BAR_X+filled, by+10], r=5, fill=bar_col2)
+        bst   = BOOST * min(1.0, ba)
+        score = m["score"] + bst
+        BX = W - PAD - 168
+        BW = 88
+        by = y + CARD_H // 2 - 5
+        rr(d, BX, by, BX + BW, by + 10, r=5, fill=BORD)
+        filled = int(BW * min(1.0, score))
+        bc = CYAN if score >= 0.75 else AMBER if score >= 0.55 else GRAY4
+        if filled > 0:
+            rr(d, BX, by, BX + filled, by + 10, r=5, fill=bc)
+        d.text((BX + BW + 8, by - 1), f"{score:.2f}", font=F(12, bold=True), fill=bc)
 
-        score_lbl = f"{score_with_boost:.2f}"
-        d.text((BAR_X + BAR_W2 + 8, by-1), score_lbl, font=F(12, bold=True), fill=bar_col2)
+        # +BOOST badge
+        if win and ba > 0.15:
+            fade = min(1.0, (ba - 0.15) / 0.85)
+            bx2  = BX - 72
+            by2  = y + CARD_H // 2 - 11
+            rr(d, bx2, by2, bx2 + 64, by2 + 22, r=11,
+               fill=lerp(card_c, BOOST_BG, fade),
+               outline=lerp(bord_c, BOOST_BD, fade))
+            d.text((bx2 + 8, by2 + 6), f"+{BOOST} boost",
+                   font=F(10, bold=True), fill=lerp(card_c, CYAN, fade))
 
-        # BOOST badge
-        if win and boost_alpha > 0.2:
-            ba = min(1.0, (boost_alpha - 0.2) / 0.8)
-            bx2 = BAR_X - 76
-            by2 = y + CARD_H//2 - 12
-            bg2 = tuple(int(c*ba + G_CARD[i]*(1-ba)) for i,c in enumerate(BOOST_BG))
-            bd2 = tuple(int(c*ba + G_CARD[i]*(1-ba)) for i,c in enumerate(BOOST_BD))
-            rr(d, [bx2, by2, bx2+66, by2+24], r=12, fill=bg2, outline=bd2)
-            bl_col = tuple(int(c*ba + G_CARD[i]*(1-ba)) for i,c in enumerate(CYAN))
-            d.text((bx2+8, by2+7), f"+{BOOST} boost", font=F(10), fill=bl_col)
-
-    # ── Footer ──
-    cap = "Temporal boost: +0.25 for memories within resolved time window"
-    d.text((W//2 - tw(F(11),cap)//2, H-18), cap, font=F(11), fill=G_MUTE)
+    # ── Footer ────────────────────────────────────────────────────────────────
+    cap = "Temporal boost: +0.25 for memories within the resolved time window"
+    cf  = F(10)
+    d.text((W // 2 - tw(cf, cap) // 2, H - 14), cap, font=cf, fill=GRAY6)
 
     return img
 
 
-def make_temporal_gif():
-    print("→ temporal_boost.gif …")
-    frames, dur = [], []
+# ── GIF save via gifsicle (avoids Pillow's 90-frame truncation bug) ───────────
+import subprocess, tempfile, os
 
+def _save_gif(path, frames, durations):
+    """Write each frame as a single-frame GIF then stitch with gifsicle."""
+    tmp = tempfile.mkdtemp(prefix="ymgif_")
+    frame_files = []
+    try:
+        for i, (frame, ms) in enumerate(zip(frames, durations)):
+            fp = os.path.join(tmp, f"f{i:04d}.gif")
+            frame.save(fp, format="GIF", optimize=False)
+            frame_files.append((fp, ms))
+
+        # Build gifsicle command: set each frame's delay (unit = 1/100s)
+        cmd = ["gifsicle", "--loop=0", "--colors=256"]
+        for fp, ms in frame_files:
+            delay = max(2, round(ms / 10))   # centiseconds
+            cmd += [f"--delay={delay}", fp]
+        cmd += ["--output", str(path)]
+
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError(f"gifsicle failed: {result.stderr}")
+    finally:
+        for fp, _ in frame_files:
+            try: os.remove(fp)
+            except OSError: pass
+        try: os.rmdir(tmp)
+        except OSError: pass
+
+
+# ── GIF assembly ──────────────────────────────────────────────────────────────
+def make_temporal_gif():
+    print("-> temporal_boost.gif ...")
+    frames, dur = [], []
     QLEN = len(QUERY)
 
-    # Phase 1: blank state hold (18 frames)
-    for _ in range(18):
+    # Phase 1: blank hold
+    for _ in range(14):
         frames.append(draw_frame(0)); dur.append(80)
 
-    # Phase 2: type query (one char per frame, ~40ms each)
+    # Phase 2: type query
     for i in range(1, QLEN + 1):
-        frames.append(draw_frame(i)); dur.append(45)
+        frames.append(draw_frame(i)); dur.append(42)
 
-    # Phase 3: hold full query (14 frames)
-    for _ in range(14):
+    # Phase 3: hold full query
+    for _ in range(10):
         frames.append(draw_frame(QLEN)); dur.append(80)
 
-    # Phase 4: fade in window badge (20 frames)
-    for i in range(20):
-        a = ease_out(i / 19)
-        frames.append(draw_frame(QLEN, show_window=True, boost_alpha=a))
-        dur.append(55)
+    # Phase 4: fade in window badge + boost highlights
+    for i in range(22):
+        frames.append(draw_frame(QLEN, show_window=True, boost_alpha=ease_out(i / 21)))
+        dur.append(50)
 
-    # Phase 5: hold with boost visible (20 frames)
-    for _ in range(20):
+    # Phase 5: hold with boost
+    for _ in range(16):
         frames.append(draw_frame(QLEN, show_window=True, boost_alpha=1.0))
         dur.append(75)
 
-    # Phase 6: rerank animation (30 frames)
-    for i in range(30):
-        t = ease_in_out(i / 29)
-        frames.append(draw_frame(QLEN, show_window=True, boost_alpha=1.0, rerank_t=t))
-        dur.append(55)
+    # Phase 6: rerank animation
+    for i in range(28):
+        frames.append(draw_frame(QLEN, show_window=True, boost_alpha=1.0,
+                                 rerank_t=ease_in_out(i / 27)))
+        dur.append(52)
 
-    # Phase 7: hold final state (30 frames)
-    for _ in range(30):
+    # Phase 7: hold final state
+    for _ in range(26):
         frames.append(draw_frame(QLEN, show_window=True, boost_alpha=1.0, rerank_t=1.0))
         dur.append(80)
 
-    p = OUT_DIR / "temporal_boost.gif"
-    frames[0].save(
-        p, save_all=True, append_images=frames[1:],
-        loop=0, duration=dur, optimize=False,
-    )
-    print(f"  ✓ {p.stat().st_size // 1024} KB, {len(frames)} frames")
-    print(f"  Saved → {p}")
+    out = OUT_DIR / "temporal_boost.gif"
+    print(f"  {len(frames)} frames, saving ...")
+    _save_gif(out, frames, dur)
+    print(f"  {out.stat().st_size // 1024} KB -> {out}")
 
 
 if __name__ == "__main__":
