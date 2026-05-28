@@ -19,6 +19,7 @@ W_BM25   = 0.4
 W_VECTOR = 0.6
 
 
+
 # ── BM25 / FTS helpers ───────────────────────────────────────────────────────
 
 def _normalize_bm25_sqlite(raw: float) -> float:
@@ -524,21 +525,6 @@ def _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id, tempora
     candidates = [dict(row) for row in cur.fetchall()]
     cur.close()
     fts_scores = _fts_search_postgres(conn, user_id, agent_id, query=query, limit=top_k * 2)
-
-    # BM25 fix: fetch FTS hits that didn't clear the cosine threshold
-    candidate_ids = {c["id"] for c in candidates}
-    extra_ids = [mid for mid in fts_scores if mid not in candidate_ids]
-    if extra_ids:
-        cur2 = conn.cursor(cursor_factory=RealDictCursor)
-        cur2.execute("""
-            SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
-                   context_paths, agent_id, visibility,
-                   1 - (embedding <=> %s::vector) AS similarity
-            FROM memories WHERE id = ANY(%s) AND user_id = %s
-        """, (embedding_str, extra_ids, user_id))
-        candidates.extend([dict(r) for r in cur2.fetchall()])
-        cur2.close()
-
     candidates = _apply_scope_filter(candidates, scope)
     return _finish(candidates, top_k, conn, backend="postgres", fts_scores=fts_scores,
                    temporal_range=temporal_range)
@@ -578,20 +564,6 @@ def _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id, temporal_
         candidates = _query(SIMILARITY_THRESHOLD_FALLBACK)
 
     fts_scores = _fts_search_duckdb(conn, user_id, agent_id, query=query, limit=top_k * 2)
-
-    # BM25 fix: fetch FTS hits that didn't clear the cosine threshold
-    candidate_ids = {c["id"] for c in candidates}
-    extra_ids = [mid for mid in fts_scores if mid not in candidate_ids]
-    if extra_ids:
-        ph = ", ".join("?" * len(extra_ids))
-        extras = duckdb_rows(conn.execute(f"""
-            SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
-                   context_paths, agent_id, visibility,
-                   array_cosine_similarity(embedding, ?::FLOAT[768]) AS similarity
-            FROM memories WHERE id IN ({ph}) AND user_id = ?
-        """, [query_embedding] + extra_ids + [user_id]))
-        candidates.extend(extras)
-
     candidates = _apply_scope_filter(candidates, scope)
     return _finish(candidates, top_k, conn, backend="duckdb", fts_scores=fts_scores,
                    temporal_range=temporal_range)
@@ -619,9 +591,6 @@ def _retrieve_sqlite(user_id, query, query_embedding, top_k, agent_id, temporal_
     rows = cur.fetchall()
     cur.close()
 
-    # Run FTS first so we can augment candidates with BM25-only hits
-    fts_scores = _fts_search_sqlite(conn, user_id, agent_id, query=query, limit=top_k * 2)
-
     def _filter(threshold):
         result = []
         for row in rows:
@@ -639,18 +608,7 @@ def _retrieve_sqlite(user_id, query, query_embedding, top_k, agent_id, temporal_
     if not candidates:
         candidates = _filter(SIMILARITY_THRESHOLD_FALLBACK)
 
-    # BM25 fix: add FTS hits that didn't clear the cosine threshold
-    candidate_ids = {c["id"] for c in candidates}
-    for row in rows:
-        row_dict = dict(row)
-        if row_dict["id"] in fts_scores and row_dict["id"] not in candidate_ids:
-            raw_emb = row_dict.get("embedding")
-            if raw_emb is None:
-                continue
-            row_dict["similarity"] = cosine(query_embedding, json.loads(raw_emb))
-            candidates.append(row_dict)
-            candidate_ids.add(row_dict["id"])
-
+    fts_scores = _fts_search_sqlite(conn, user_id, agent_id, query=query, limit=top_k * 2)
     candidates = _apply_scope_filter(candidates, scope)
     return _finish(candidates, top_k, conn, backend="sqlite", fts_scores=fts_scores,
                    temporal_range=temporal_range)
