@@ -9,26 +9,26 @@
 
   <!-- Primary SEO -->
   <title>YourMemory — Persistent Memory for AI Agents | MCP Compatible</title>
-  <meta name="description" content="YourMemory gives your AI assistant persistent memory that survives across sessions. 59% Recall@5 on LoCoMo-10. Works with Claude, Cursor, Cline and any MCP client. Open source, self-hostable.">
+  <meta name="description" content="YourMemory gives your AI assistant persistent memory that survives across sessions. 89.4% Recall@5 on LongMemEval. Works with Claude, Cursor, Cline and any MCP client. Open source, self-hostable.">
   <meta name="keywords" content="AI memory, persistent memory AI, MCP memory server, Claude memory, agent memory, Ebbinghaus decay, memory layer AI agents, yourmemory">
   <meta name="author" content="Sachit Misra">
   <link rel="canonical" href="https://yourmemory.ai/">
 
-  <!-- Open Graph (LinkedIn, Slack, iMessage previews) -->
+  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://yourmemory.ai/">
   <meta property="og:title" content="YourMemory — Persistent Memory for AI Agents">
-  <meta property="og:description" content="Your AI assistant forgets you after every session. YourMemory fixes that — biologically-inspired memory decay, hybrid graph + vector retrieval, 59% Recall@5 on LoCoMo-10. MCP compatible.">
+  <meta property="og:description" content="Your AI assistant forgets you after every session. YourMemory fixes that — biologically-inspired memory decay, hybrid graph + vector retrieval, 89.4% Recall@5 on LongMemEval. MCP compatible.">
   <meta property="og:image" content="https://yourmemory.ai/og-image.png">
   <meta property="og:site_name" content="YourMemory">
 
   <!-- Twitter / X card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="YourMemory — Persistent Memory for AI Agents">
-  <meta name="twitter:description" content="Your AI assistant forgets you after every session. YourMemory fixes that — 59% Recall@5 on LoCoMo-10. MCP compatible. Self-hostable.">
+  <meta name="twitter:description" content="Your AI assistant forgets you after every session. YourMemory fixes that — 89.4% Recall@5 on LongMemEval. MCP compatible. Self-hostable.">
   <meta name="twitter:image" content="https://yourmemory.ai/og-image.png">
 
-  <!-- Structured data (SoftwareApplication) -->
+  <!-- Structured data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -37,10 +37,7 @@
     "applicationCategory": "DeveloperApplication",
     "description": "Persistent, biologically-inspired memory layer for AI agents. Hybrid BM25 + vector + knowledge graph retrieval with Ebbinghaus decay. MCP compatible, self-hostable.",
     "url": "https://yourmemory.ai",
-    "author": {
-      "@type": "Person",
-      "name": "Sachit Misra"
-    },
+    "author": { "@type": "Person", "name": "Sachit Misra" },
     "license": "https://creativecommons.org/licenses/by-nc/4.0/",
     "codeRepository": "https://github.com/sachitrafa/YourMemory",
     "operatingSystem": "Linux, macOS, Windows",
@@ -66,6 +63,10 @@
       animation: draw 1.2s ease forwards;
     }
     @keyframes draw { to { stroke-dashoffset: 0; } }
+    .faq-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .faq-item.open .faq-body { max-height: 300px; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-chevron { transition: transform 0.25s ease; }
   </style>
   <script type="module">
     import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@latest';
@@ -75,7 +76,7 @@
 <body class="min-h-screen text-[#0A192F] dot-bg">
 
   <!-- NAVIGATION -->
-  <nav class="sticky top-0 z-50 backdrop-blur-md border-b border-gray-200" style="background:rgba(249,250,251,0.85)">
+  <nav class="sticky top-0 z-50 backdrop-blur-md border-b border-gray-200" style="background:rgba(249,250,251,0.92)">
     <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -88,10 +89,10 @@
         <span class="font-bold tracking-tighter text-lg">YourMemory</span>
       </div>
       <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-500">
-        <a href="#logic"       class="hover:text-[#0A192F] transition-colors">Logic</a>
-        <a href="#graph"       class="hover:text-[#0A192F] transition-colors">Graph</a>
-        <a href="#multiagent"  class="hover:text-[#0A192F] transition-colors">Multi-Agent</a>
-        <a href="#benchmarks"  class="hover:text-[#0A192F] transition-colors">Benchmarks</a>
+        <a href="#how-it-works"  class="hover:text-[#0A192F] transition-colors">How it works</a>
+        <a href="#features"      class="hover:text-[#0A192F] transition-colors">Features</a>
+        <a href="#benchmarks"    class="hover:text-[#0A192F] transition-colors">Benchmarks</a>
+        <a href="#faq"           class="hover:text-[#0A192F] transition-colors">FAQ</a>
         <a href="https://github.com/sachitrafa/YourMemory" target="_blank"
            class="flex items-center gap-1.5 hover:text-[#0A192F] transition-colors">
           <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
@@ -106,57 +107,59 @@
           </svg>
           GitHub
         </a>
-        <a href="https://github.com/sachitrafa/YourMemory" target="_blank"
-           class="flex items-center gap-1.5 bg-[#0A192F] text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-black transition-colors">
-          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          </svg>
-          Star
+        <a href="#setup"
+           class="flex items-center gap-1.5 bg-[#0A192F] text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-black transition-colors">
+          Get started
         </a>
       </div>
     </div>
   </nav>
 
   <!-- HERO -->
-  <header class="max-w-6xl mx-auto px-6 pt-24 pb-32">
+  <header class="max-w-6xl mx-auto px-6 pt-20 pb-24">
     <div class="grid lg:grid-cols-2 gap-16 items-center">
       <div>
-        <div class="flex flex-wrap gap-2 mb-6">
+        <!-- Eyebrow badges -->
+        <div class="flex flex-wrap gap-2 mb-8">
           <div class="inline-flex items-center gap-2 bg-cyan-50 border border-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-            <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-            </svg>
+            <svg width="11" height="11" fill="currentColor" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             MCP Compatible
           </div>
-          <div class="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-            Python 3.11 – 3.14
-          </div>
-          <div class="inline-flex items-center gap-2 bg-purple-50 border border-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-            v1.3.0 — Graph Engine
+          <div class="inline-flex items-center gap-2 bg-green-50 border border-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+            89.4% Recall@5
           </div>
           <div class="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
             🏆 #20 Product of the Day
           </div>
         </div>
 
-        <!-- Product Hunt badge -->
-        <div class="mb-6">
-          <a href="https://www.producthunt.com/products/yourmemory?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-yourmemory" target="_blank" rel="noopener noreferrer">
-            <img alt="YourMemory - Cut token waste by 84% with self pruning MCP memory | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1128311&theme=light&t=1776845332905">
-          </a>
-        </div>
-        <h1 class="text-6xl md:text-7xl font-bold tracking-tighter leading-[0.9] mb-8">
-          Memory that <br/><span class="text-[#00D4FF]">ages gracefully.</span>
+        <h1 class="text-6xl md:text-7xl font-bold tracking-tighter leading-[0.92] mb-6">
+          Your AI should<br/><span class="text-[#00D4FF]">remember you.</span>
         </h1>
         <p class="text-xl text-gray-600 mb-10 max-w-lg leading-relaxed">
-          Biologically-inspired persistent memory for AI agents.
-          Automatically prunes stale data, reinforces useful context, and connects related memories through a graph layer.
+          YourMemory gives any AI assistant persistent, intelligent memory across sessions — with biologically-inspired decay that forgets the right things at the right time.
         </p>
 
-        <a href="#setup" class="inline-flex items-center gap-3 bg-[#0A192F] text-white px-6 py-3.5 rounded-xl font-bold text-sm hover:bg-black transition-colors shadow-[4px_4px_0px_0px_rgba(0,212,255,0.4)]">
-          Get started in 2 commands
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </a>
+        <div class="flex flex-wrap items-center gap-4">
+          <a href="#setup" class="inline-flex items-center gap-2.5 bg-[#0A192F] text-white px-6 py-3.5 rounded-xl font-bold text-sm hover:bg-black transition-colors shadow-[4px_4px_0px_0px_rgba(0,212,255,0.35)]">
+            Get started free
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a href="https://github.com/sachitrafa/YourMemory" target="_blank"
+             class="inline-flex items-center gap-2 border border-gray-300 bg-white text-gray-700 px-5 py-3.5 rounded-xl font-semibold text-sm hover:border-gray-400 transition-colors">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+
+        <!-- Product Hunt -->
+        <div class="mt-8">
+          <a href="https://www.producthunt.com/products/yourmemory?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-yourmemory" target="_blank" rel="noopener noreferrer">
+            <img alt="YourMemory on Product Hunt" width="220" height="48" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1128311&theme=light&t=1776845332905">
+          </a>
+        </div>
       </div>
 
       <!-- TERMINAL VISUALIZER -->
@@ -192,661 +195,315 @@
     </div>
   </header>
 
-  <!-- BENCHMARKS -->
-  <section id="benchmarks" class="bg-[#0A192F] text-white py-32">
+  <!-- SOCIAL PROOF STRIP -->
+  <section class="border-y border-gray-200 bg-white py-6">
     <div class="max-w-6xl mx-auto px-6">
-
-      <!-- Section header -->
-      <div class="text-center mb-12">
-        <h2 class="text-5xl font-bold tracking-tighter mb-4">Benchmarked on<br/>public data.</h2>
-        <p class="text-gray-400 max-w-xl mx-auto">Three external datasets. All scripts are public and reproducible — full methodology in <a href="https://github.com/sachitrafa/YourMemory/blob/main/BENCHMARKS.md" target="_blank" class="text-[#00D4FF] underline">BENCHMARKS.md</a>.</p>
-      </div>
-
-      <!-- Tab navigation -->
-      <div class="flex gap-2 mb-10 justify-center flex-wrap">
-        <button onclick="switchTab('locomo')" id="tab-locomo"
-          class="px-5 py-2.5 rounded-full text-sm font-bold transition-all border border-[#00D4FF] bg-[#00D4FF] text-[#0A192F]">
-          LoCoMo-10
-          <span class="ml-1.5 text-[10px] font-mono opacity-70">59% Recall@5</span>
-        </button>
-        <button onclick="switchTab('longmemeval')" id="tab-longmemeval"
-          class="px-5 py-2.5 rounded-full text-sm font-bold transition-all border border-white/20 text-gray-400 hover:border-white/40 hover:text-gray-200">
-          LongMemEval-S
-          <span class="ml-1.5 text-[10px] font-mono opacity-70">89.4% Recall@5</span>
-        </button>
-        <button onclick="switchTab('hotpotqa')" id="tab-hotpotqa"
-          class="px-5 py-2.5 rounded-full text-sm font-bold transition-all border border-white/20 text-gray-400 hover:border-white/40 hover:text-gray-200">
-          HotpotQA Multi-Hop
-          <span class="ml-1.5 text-[10px] font-mono opacity-70">71.5% BOTH_FOUND@5</span>
-        </button>
-      </div>
-
-      <!-- Tab 1: LoCoMo -->
-      <div id="panel-locomo" class="benchmark-panel">
-        <div class="grid lg:grid-cols-2 gap-16 items-center mb-4">
-          <!-- Chart card -->
-          <div class="bg-white/5 border border-white/10 p-10 rounded-3xl">
-            <div class="mb-2">
-              <h3 class="text-2xl font-bold mb-1">LoCoMo Recall@5</h3>
-              <p class="text-gray-400 font-mono text-xs uppercase tracking-tighter mb-1">snap-research/LoCoMo · 1,534 QA pairs · 10 sessions</p>
-              <p class="text-gray-600 font-mono text-[10px]">benchmarks/locomo_4way.py · BM25 + vector + graph + decay · 20 Apr 2026</p>
-            </div>
-            <div class="space-y-6 mt-8">
-              <div>
-                <div class="flex justify-between mb-2 text-sm">
-                  <span class="font-bold">YourMemory <span class="text-[10px] font-mono text-gray-400 ml-1">BM25 + vector + graph + decay</span></span>
-                  <span class="text-[#00D4FF] font-mono font-bold">59%</span>
-                </div>
-                <div class="h-4 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:59%;box-shadow:0 0 14px rgba(0,212,255,0.5)"></div>
-                </div>
-              </div>
-              <div class="opacity-45">
-                <div class="flex justify-between mb-2 text-sm">
-                  <span class="font-medium">Zep Cloud <span class="text-[10px] font-mono text-gray-500 ml-1">10/10 samples</span></span>
-                  <span class="font-mono">28%</span>
-                </div>
-                <div class="h-4 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-white/40 rounded-full" style="width:28%"></div>
-                </div>
-              </div>
-            </div>
-            <div class="mt-8 pt-6 border-t border-white/10">
-              <p class="text-gray-500 text-xs font-mono uppercase tracking-widest mb-3">Dataset</p>
-              <div class="space-y-2 text-xs font-mono text-gray-400">
-                <div class="flex justify-between"><span>Source</span><span>snap-research/LoCoMo</span></div>
-                <div class="flex justify-between"><span>File</span><span>locomo10.json</span></div>
-                <div class="flex justify-between"><span>QA pairs</span><span class="text-[#00D4FF]">1,534</span></div>
-                <div class="flex justify-between"><span>Sessions</span><span class="text-[#00D4FF]">10/10</span></div>
-                <div class="flex justify-between"><span>Script</span><span>benchmarks/locomo_4way.py</span></div>
-              </div>
-            </div>
-          </div>
-          <!-- Callouts -->
-          <div>
-            <ul class="space-y-7">
-              <li class="flex gap-4">
-                <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-                <div>
-                  <h4 class="font-bold text-lg leading-tight mb-1">+31pp vs Zep <span class="text-gray-400 text-sm font-normal">(111% relative)</span></h4>
-                  <p class="text-gray-400 text-sm">Both systems ran all 10 samples to completion on the same 1,534 QA pairs. YourMemory led every single session — the only memory layer tested that completed the full benchmark clean.</p>
-                </div>
-              </li>
-              <li class="flex gap-4">
-                <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-                <div>
-                  <h4 class="font-bold text-lg leading-tight mb-1">Reproducible — script is public</h4>
-                  <p class="text-gray-400 text-sm">The full benchmark script is <a href="https://github.com/sachitrafa/YourMemory/blob/main/benchmarks/locomo_4way.py" target="_blank" class="text-[#00D4FF] underline">benchmarks/locomo_4way.py</a>. Same dataset, same hit rule, same top-5 limit for every system. Run it yourself.</p>
-                </div>
-              </li>
-              <li class="flex gap-4">
-                <svg class="mt-1 shrink-0" width="20" height="20" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-                <div>
-                  <h4 class="font-bold text-lg leading-tight mb-1">Zero LLM calls for retrieval</h4>
-                  <p class="text-gray-400 text-sm">All retrieval, pruning, and graph expansion runs fully on your machine — no cloud inference cost, no data leaving your environment.</p>
-                </div>
-              </li>
-            </ul>
-          </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:divide-x divide-gray-100">
+        <div class="text-center px-4">
+          <p class="text-3xl font-bold tracking-tighter text-[#0A192F]">89.4%</p>
+          <p class="text-sm text-gray-500 mt-1">Recall@5 on LongMemEval</p>
+        </div>
+        <div class="text-center px-4">
+          <p class="text-3xl font-bold tracking-tighter text-[#0A192F]">−84%</p>
+          <p class="text-sm text-gray-500 mt-1">Token waste at 30 sessions</p>
+        </div>
+        <div class="text-center px-4">
+          <p class="text-3xl font-bold tracking-tighter text-[#0A192F]">7</p>
+          <p class="text-sm text-gray-500 mt-1">MCP clients supported</p>
+        </div>
+        <div class="text-center px-4">
+          <p class="text-3xl font-bold tracking-tighter text-[#0A192F]">2 cmds</p>
+          <p class="text-sm text-gray-500 mt-1">To full setup</p>
         </div>
       </div>
-
-      <!-- Tab 2: LongMemEval -->
-      <div id="panel-longmemeval" class="benchmark-panel hidden">
-        <div class="grid lg:grid-cols-2 gap-16 items-start mb-4">
-          <!-- Main metric card -->
-          <div class="bg-white/5 border border-white/10 p-10 rounded-3xl">
-            <h3 class="text-2xl font-bold mb-1">LongMemEval-S Recall@5</h3>
-            <p class="text-gray-400 font-mono text-xs uppercase tracking-tighter mb-1">LongMemEval · 500 questions · ~53 haystack sessions each</p>
-            <p class="text-gray-600 font-mono text-[10px]">benchmarks/longmemeval_temporal.py · cosine × decay · 25 May 2026</p>
-            <!-- Big number -->
-            <div class="mt-8 mb-8">
-              <p class="text-[#00D4FF] font-mono font-bold text-6xl mb-1">89.4%</p>
-              <p class="text-gray-400 text-sm">Recall@5 — any gold session in top 5</p>
-            </div>
-            <!-- Secondary metrics -->
-            <div class="space-y-4 mb-8">
-              <div>
-                <div class="flex justify-between mb-1.5 text-sm">
-                  <span class="font-bold">Recall@5 <span class="text-[10px] font-mono text-gray-500 ml-1">any gold session found</span></span>
-                  <span class="text-[#00D4FF] font-mono font-bold">89.4%</span>
-                </div>
-                <div class="h-3 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:89.4%;box-shadow:0 0 10px rgba(0,212,255,0.4)"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1.5 text-sm">
-                  <span class="text-gray-300">Recall-all@5 <span class="text-[10px] font-mono text-gray-500 ml-1">all gold sessions found</span></span>
-                  <span class="text-gray-300 font-mono">84.8%</span>
-                </div>
-                <div class="h-3 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-white/30 rounded-full" style="width:84.8%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1.5 text-sm">
-                  <span class="text-gray-300">nDCG-any@5 <span class="text-[10px] font-mono text-gray-500 ml-1">ranking quality</span></span>
-                  <span class="text-gray-300 font-mono">87.4%</span>
-                </div>
-                <div class="h-3 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-white/30 rounded-full" style="width:87.4%"></div>
-                </div>
-              </div>
-            </div>
-            <div class="pt-6 border-t border-white/10">
-              <p class="text-gray-500 text-xs font-mono uppercase tracking-widest mb-3">Dataset</p>
-              <div class="space-y-2 text-xs font-mono text-gray-400">
-                <div class="flex justify-between"><span>Source</span><span>xiaowu0162/LongMemEval</span></div>
-                <div class="flex justify-between"><span>Split</span><span>longmemeval_s_cleaned.json</span></div>
-                <div class="flex justify-between"><span>Questions</span><span class="text-[#00D4FF]">500</span></div>
-                <div class="flex justify-between"><span>Haystack sessions / Q</span><span class="text-[#00D4FF]">~53</span></div>
-                <div class="flex justify-between"><span>Script</span><span>benchmarks/longmemeval_fullstack.py</span></div>
-              </div>
-            </div>
-          </div>
-          <!-- Breakdown by question type -->
-          <div>
-            <h4 class="font-bold text-lg mb-6 text-gray-200">Breakdown by question type</h4>
-            <div class="space-y-4">
-              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="text-sm font-semibold">single-session-assistant</span>
-                  <span class="text-[#00D4FF] font-mono font-bold text-sm">98.2%</span>
-                </div>
-                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:98.2%"></div>
-                </div>
-              </div>
-              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="text-sm font-semibold">knowledge-update</span>
-                  <span class="text-[#00D4FF] font-mono font-bold text-sm">96.2%</span>
-                </div>
-                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:96.2%"></div>
-                </div>
-              </div>
-              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="text-sm font-semibold">multi-session</span>
-                  <span class="text-[#00D4FF] font-mono font-bold text-sm">95.5%</span>
-                </div>
-                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:95.5%"></div>
-                </div>
-              </div>
-              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="text-sm font-semibold">single-session-preference</span>
-                  <span class="text-[#00D4FF] font-mono font-bold text-sm">90.0%</span>
-                </div>
-                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:90.0%"></div>
-                </div>
-              </div>
-              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="text-sm font-semibold">single-session-user</span>
-                  <span class="text-amber-400 font-mono font-bold text-sm">72.9%</span>
-                </div>
-                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-amber-400 rounded-full" style="width:72.9%"></div>
-                </div>
-              </div>
-              <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
-                <div class="flex justify-between items-center mb-2">
-                  <div>
-                    <span class="text-sm font-semibold">temporal-reasoning</span>
-                    <span class="ml-2 text-[10px] text-gray-500 font-mono">133 questions</span>
-                  </div>
-                  <span class="text-[#00D4FF] font-mono font-bold text-sm">84.2%</span>
-                </div>
-                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:84.2%"></div>
-                </div>
-              </div>
-            </div>
-            <p class="mt-5 text-gray-500 text-xs leading-relaxed">Temporal boost ablation (25 May 2026): the +0.25 time-window boost fired on only 6% of queries — LongMemEval temporal questions are event-anchored, not window-anchored. The 84.2% score comes from cosine × decay alone. Full ablation in <a href="https://github.com/sachitrafa/YourMemory/blob/main/BENCHMARKS.md" target="_blank" class="text-[#00D4FF] underline">BENCHMARKS.md</a>.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab 3: HotpotQA -->
-      <div id="panel-hotpotqa" class="benchmark-panel hidden">
-        <div class="grid lg:grid-cols-2 gap-16 items-start mb-4">
-          <!-- Main metric card -->
-          <div class="bg-white/5 border border-white/10 p-10 rounded-3xl">
-            <h3 class="text-2xl font-bold mb-1">HotpotQA Multi-Hop BOTH_FOUND@5</h3>
-            <p class="text-gray-400 font-mono text-xs uppercase tracking-tighter mb-1">HotpotQA distractor · 200 questions · 166 bridge + 34 comparison</p>
-            <p class="text-gray-600 font-mono text-[10px]">benchmarks/hotpotqa_reasoning.py · vector + BM25 + entity graph · 6 May 2026</p>
-            <!-- Big number -->
-            <div class="mt-8 mb-8">
-              <p class="text-[#00D4FF] font-mono font-bold text-6xl mb-1">71.5%</p>
-              <p class="text-gray-400 text-sm">BOTH_FOUND@5 — both supporting facts in top 5</p>
-            </div>
-            <!-- Entity graph impact -->
-            <div class="space-y-4 mb-8">
-              <div>
-                <div class="flex justify-between mb-1.5 text-sm">
-                  <span class="font-bold">With entity graph <span class="text-[10px] font-mono text-gray-500 ml-1">vector + BM25 + graph</span></span>
-                  <span class="text-[#00D4FF] font-mono font-bold">71.5%</span>
-                </div>
-                <div class="h-3 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00D4FF] rounded-full" style="width:71.5%;box-shadow:0 0 10px rgba(0,212,255,0.4)"></div>
-                </div>
-              </div>
-              <div class="opacity-50">
-                <div class="flex justify-between mb-1.5 text-sm">
-                  <span class="text-gray-300">Similarity-only <span class="text-[10px] font-mono text-gray-500 ml-1">no entity edges</span></span>
-                  <span class="text-gray-300 font-mono">59.5%</span>
-                </div>
-                <div class="h-3 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-white/30 rounded-full" style="width:59.5%"></div>
-                </div>
-              </div>
-            </div>
-            <div class="bg-cyan-950/40 border border-cyan-800/40 rounded-xl px-4 py-3 mb-6">
-              <p class="text-[#00D4FF] font-bold text-sm">+12pp from entity graph edges</p>
-              <p class="text-gray-400 text-xs mt-0.5">spaCy NER links memories that share named entities — bridge questions gain +14pp because Fact 2 is unreachable by cosine similarity alone.</p>
-            </div>
-            <div class="pt-5 border-t border-white/10">
-              <p class="text-gray-500 text-xs font-mono uppercase tracking-widest mb-3">Dataset</p>
-              <div class="space-y-2 text-xs font-mono text-gray-400">
-                <div class="flex justify-between"><span>Source</span><span>hotpotqa.github.io</span></div>
-                <div class="flex justify-between"><span>Split</span><span>distractor dev set</span></div>
-                <div class="flex justify-between"><span>Questions tested</span><span class="text-[#00D4FF]">200</span></div>
-                <div class="flex justify-between"><span>Total in dataset</span><span>7,405</span></div>
-                <div class="flex justify-between"><span>Script</span><span>benchmarks/hotpotqa_reasoning.py</span></div>
-              </div>
-            </div>
-          </div>
-          <!-- Bridge vs Comparison breakdown -->
-          <div>
-            <h4 class="font-bold text-lg mb-6 text-gray-200">Bridge vs Comparison questions</h4>
-            <!-- Bridge -->
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-7 mb-4">
-              <div class="flex justify-between items-start mb-4">
-                <div>
-                  <h5 class="font-bold text-base mb-1">Bridge <span class="font-normal text-gray-400 text-sm">(166 questions)</span></h5>
-                  <p class="text-gray-500 text-xs leading-relaxed">Fact 1 names an entity. Fact 2 is about that entity's property. Low embedding similarity — pure vector retrieval stops at Fact 1.</p>
-                </div>
-                <span class="text-[#00D4FF] font-mono font-bold text-2xl ml-4 shrink-0">68.7%</span>
-              </div>
-              <div class="h-3 bg-white/10 rounded-full overflow-hidden mb-3">
-                <div class="h-full bg-[#00D4FF] rounded-full" style="width:68.7%"></div>
-              </div>
-              <div class="font-mono text-xs text-gray-500 space-y-1">
-                <div class="flex justify-between"><span>BOTH_FOUND</span><span class="text-[#00D4FF]">114 / 166</span></div>
-                <div class="flex justify-between"><span>ONE_FOUND</span><span>48 / 166</span></div>
-                <div class="flex justify-between"><span>NONE_FOUND</span><span>4 / 166</span></div>
-                <div class="flex justify-between pt-1 border-t border-white/10 mt-2"><span>Entity graph gain</span><span class="text-[#00D4FF] font-bold">+14pp</span></div>
-              </div>
-            </div>
-            <!-- Comparison -->
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-7 mb-6">
-              <div class="flex justify-between items-start mb-4">
-                <div>
-                  <h5 class="font-bold text-base mb-1">Comparison <span class="font-normal text-gray-400 text-sm">(34 questions)</span></h5>
-                  <p class="text-gray-500 text-xs leading-relaxed">Both facts give a measurable attribute (date, count, age). Shared vocabulary with the query lets Round 1 vector retrieval find both.</p>
-                </div>
-                <span class="text-[#00D4FF] font-mono font-bold text-2xl ml-4 shrink-0">85.3%</span>
-              </div>
-              <div class="h-3 bg-white/10 rounded-full overflow-hidden mb-3">
-                <div class="h-full bg-[#00D4FF] rounded-full" style="width:85.3%"></div>
-              </div>
-              <div class="font-mono text-xs text-gray-500 space-y-1">
-                <div class="flex justify-between"><span>BOTH_FOUND</span><span class="text-[#00D4FF]">29 / 34</span></div>
-                <div class="flex justify-between"><span>ONE_FOUND</span><span>5 / 34</span></div>
-                <div class="flex justify-between"><span>NONE_FOUND</span><span>0 / 34</span></div>
-              </div>
-            </div>
-            <p class="text-gray-500 text-xs leading-relaxed">The remaining 28.5% gap on bridge questions represents cases where the bridging entity appears in neither the query nor any retrieved fact — the graph cannot connect what was never indexed.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Workflow efficiency (always visible) -->
-      <div class="border-t border-white/10 pt-16 mt-12">
-        <div class="text-center mb-10">
-          <h3 class="text-2xl font-bold mb-2">Workflow Efficiency</h3>
-          <p class="text-gray-400 text-sm">3-session developer workflow simulation — stateless baseline vs YourMemory</p>
-        </div>
-        <div class="grid md:grid-cols-3 gap-6">
-          <!-- Token savings -->
-          <div class="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <p class="text-[#00D4FF] font-mono font-bold text-4xl mb-2">−84%</p>
-            <h4 class="font-bold text-lg mb-2">Token savings</h4>
-            <p class="text-gray-400 text-sm leading-relaxed">At 30 sessions. Memory block stays flat (~76–91 tokens) while stateless history grows O(n). At 3 sessions: −19.7% tokens, −28% per-session context.</p>
-            <div class="mt-5 pt-5 border-t border-white/10 font-mono text-xs space-y-1 text-gray-500">
-              <div class="flex justify-between"><span>3 sessions</span><span class="text-gray-300">−19.7%</span></div>
-              <div class="flex justify-between"><span>30 sessions</span><span class="text-[#00D4FF] font-bold">−84.1%</span></div>
-              <div class="flex justify-between"><span>Stale tokens</span><span class="text-[#00D4FF] font-bold">−100%</span></div>
-            </div>
-          </div>
-          <!-- LLM call savings -->
-          <div class="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <p class="text-[#00D4FF] font-mono font-bold text-4xl mb-2">−14%</p>
-            <h4 class="font-bold text-lg mb-2">Fewer LLM calls</h4>
-            <p class="text-gray-400 text-sm leading-relaxed">Recalled context eliminates clarifying questions at the start of new sessions. Each clarifying round is a full LLM call that produces zero implementation output.</p>
-            <div class="mt-5 pt-5 border-t border-white/10 font-mono text-xs space-y-1 text-gray-500">
-              <div class="flex justify-between"><span>Session 1</span><span class="text-gray-300">0 saved</span></div>
-              <div class="flex justify-between"><span>Session 2</span><span class="text-[#00D4FF]">−1 clarify call</span></div>
-              <div class="flex justify-between"><span>Session 3+</span><span class="text-[#00D4FF]">−1 clarify call</span></div>
-            </div>
-          </div>
-          <!-- Decay pruning -->
-          <div class="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <p class="text-[#00D4FF] font-mono font-bold text-4xl mb-2">−4%</p>
-            <h4 class="font-bold text-lg mb-2">Context pruning</h4>
-            <p class="text-gray-400 text-sm leading-relaxed">Memories below Ebbinghaus strength 0.05 are pruned from retrieval entirely. 3/15 memories pruned in a 60-day synthetic set. Compounds at scale (200+ memories).</p>
-            <div class="mt-5 pt-5 border-t border-white/10 font-mono text-xs space-y-1 text-gray-500">
-              <div class="flex justify-between"><span>Pruned memories</span><span class="text-gray-300">20%</span></div>
-              <div class="flex justify-between"><span>Top-5 tokens</span><span class="text-[#00D4FF]">74 → 71</span></div>
-              <div class="flex justify-between"><span>No stale facts</span><span class="text-[#00D4FF]">injected</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </section>
 
-  <!-- CORE FEATURES -->
-  <section id="logic" class="max-w-6xl mx-auto px-6 py-32">
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works" class="max-w-6xl mx-auto px-6 py-28">
     <div class="text-center mb-16">
-      <h2 class="text-4xl font-bold tracking-tighter mb-3">Three layers. One engine.</h2>
-      <p class="text-gray-500 max-w-xl mx-auto">Vector search finds what you asked for. The graph finds what you forgot to ask for. Ebbinghaus decides what survives.</p>
+      <p class="text-xs font-bold uppercase tracking-widest text-[#00D4FF] mb-3">Simple by design</p>
+      <h2 class="text-4xl font-bold tracking-tighter mb-4">Memory that works like yours.</h2>
+      <p class="text-gray-500 max-w-xl mx-auto text-lg">Three steps. Your AI agent learns, remembers, and naturally forgets what it no longer needs.</p>
     </div>
-    <div class="grid md:grid-cols-3 gap-12">
-      <!-- Feature 1 -->
-      <div class="group">
-        <div class="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:border-[#00D4FF] transition-colors duration-200">
-          <svg width="22" height="22" fill="none" stroke="#0A192F" stroke-width="1.8" viewBox="0 0 24 24">
-            <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
-            <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>
-          </svg>
-        </div>
-        <h3 class="text-xl font-bold mb-3">Biologically Pruned</h3>
-        <p class="text-gray-500 leading-relaxed">Different kinds of memory age at different rates. Important facts persist longer; transient context fades naturally. Related memories stay alive together — no orphaned facts.</p>
-      </div>
-      <!-- Feature 2 -->
-      <div class="group">
-        <div class="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:border-[#00D4FF] transition-colors duration-200">
-          <svg width="22" height="22" fill="none" stroke="#0A192F" stroke-width="1.8" viewBox="0 0 24 24">
-            <circle cx="6"  cy="12" r="2"/><circle cx="18" cy="5"  r="2"/><circle cx="18" cy="19" r="2"/>
-            <line x1="8" y1="11" x2="16" y2="6"/><line x1="8" y1="13" x2="16" y2="18"/>
-          </svg>
-        </div>
-        <h3 class="text-xl font-bold mb-3">Hybrid Graph + Vector</h3>
-        <p class="text-gray-500 leading-relaxed">Two-round retrieval finds not just what you searched for, but what you forgot to search for. Related memories surface even when they don't share vocabulary with the query.</p>
-      </div>
-      <!-- Feature 3 -->
-      <div class="group">
-        <div class="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:border-[#00D4FF] transition-colors duration-200">
-          <svg width="22" height="22" fill="none" stroke="#0A192F" stroke-width="1.8" viewBox="0 0 24 24">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-          </svg>
-        </div>
-        <h3 class="text-xl font-bold mb-3">Multi-Agent Memory</h3>
-        <p class="text-gray-500 leading-relaxed">Multiple agents share context or keep secrets. API keys (<code class="text-xs bg-gray-100 px-1 py-0.5 rounded">ym_</code> prefix) authenticate each agent. Shared vs private visibility per memory.</p>
-      </div>
-    </div>
-  </section>
+    <div class="grid md:grid-cols-3 gap-8 relative">
+      <!-- Connector line (desktop) -->
+      <div class="hidden md:block absolute top-10 left-[calc(16.66%+1rem)] right-[calc(16.66%+1rem)] h-px bg-gradient-to-r from-gray-200 via-[#00D4FF]/30 to-gray-200"></div>
 
-  <!-- GRAPH ENGINE SECTION -->
-  <section id="graph" class="border-t border-gray-200 bg-white py-24">
-    <div class="max-w-6xl mx-auto px-6">
-      <div class="grid lg:grid-cols-2 gap-16 items-center">
-        <div>
-          <div class="inline-flex items-center gap-2 bg-purple-50 border border-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-6">
-            New in v1.3.0
-          </div>
-          <h2 class="text-4xl font-bold tracking-tighter mb-6">Smarter retrieval.</h2>
-          <p class="text-gray-500 leading-relaxed mb-8">
-            Semantic search alone misses memories that are related but worded differently.
-            A second retrieval pass surfaces them automatically.
-          </p>
-          <div class="space-y-5">
-            <div class="flex gap-4">
-              <div class="w-8 h-8 bg-cyan-50 border border-cyan-200 rounded-lg flex items-center justify-center shrink-0 font-bold text-cyan-700 text-sm">1</div>
-              <div>
-                <h4 class="font-semibold mb-1">Semantic search</h4>
-                <p class="text-gray-500 text-sm">Finds the most relevant memories for your query — fast and precise.</p>
-              </div>
-            </div>
-            <div class="flex gap-4">
-              <div class="w-8 h-8 bg-purple-50 border border-purple-200 rounded-lg flex items-center justify-center shrink-0 font-bold text-purple-700 text-sm">2</div>
-              <div>
-                <h4 class="font-semibold mb-1">Context expansion</h4>
-                <p class="text-gray-500 text-sm">Related memories that didn't match the query directly are surfaced through the graph layer — nothing slips through.</p>
-              </div>
-            </div>
-            <div class="flex gap-4">
-              <div class="w-8 h-8 bg-green-50 border border-green-200 rounded-lg flex items-center justify-center shrink-0 font-bold text-green-700 text-sm">↻</div>
-              <div>
-                <h4 class="font-semibold mb-1">Recall propagation</h4>
-                <p class="text-gray-500 text-sm">Using a memory keeps its connected context cluster fresh automatically — the more you use it, the longer it survives.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Graph visual -->
-        <div class="bg-[#0A192F] rounded-2xl p-8 border border-gray-800">
-          <p class="text-gray-500 font-mono text-xs mb-6 uppercase tracking-widest">Connected memory graph</p>
-          <svg viewBox="0 0 340 220" class="w-full" xmlns="http://www.w3.org/2000/svg">
-            <!-- Edges -->
-            <line x1="170" y1="110" x2="80"  y2="60"  stroke="#00D4FF" stroke-width="2" stroke-opacity="0.5"/>
-            <line x1="170" y1="110" x2="260" y2="60"  stroke="#00D4FF" stroke-width="1.5" stroke-opacity="0.35"/>
-            <line x1="170" y1="110" x2="80"  y2="170" stroke="#a855f7" stroke-width="1" stroke-opacity="0.25" stroke-dasharray="4 3"/>
-            <!-- Edge labels -->
-            <text x="108" y="76"  fill="#00D4FF" font-size="9" font-family="monospace" opacity="0.7">w=0.34</text>
-            <text x="200" y="76"  fill="#00D4FF" font-size="9" font-family="monospace" opacity="0.5">w=0.29</text>
-            <!-- Nodes -->
-            <circle cx="170" cy="110" r="28" fill="#0e2a45" stroke="#00D4FF" stroke-width="2"/>
-            <text x="170" y="106" text-anchor="middle" fill="#00D4FF" font-size="9" font-family="monospace" font-weight="bold">Python</text>
-            <text x="170" y="118" text-anchor="middle" fill="#00D4FF" font-size="8" font-family="monospace">MongoDB</text>
-
-            <circle cx="80" cy="60" r="22" fill="#0e2a45" stroke="#00D4FF" stroke-width="1.5"/>
-            <text x="80" y="56"  text-anchor="middle" fill="#cbd5e1" font-size="8" font-family="monospace">DuckDB</text>
-            <text x="80" y="67"  text-anchor="middle" fill="#cbd5e1" font-size="8" font-family="monospace">spaCy</text>
-
-            <circle cx="260" cy="60" r="22" fill="#0e2a45" stroke="#00D4FF" stroke-width="1.5"/>
-            <text x="260" y="56" text-anchor="middle" fill="#cbd5e1" font-size="8" font-family="monospace">Docker</text>
-            <text x="260" y="67" text-anchor="middle" fill="#cbd5e1" font-size="8" font-family="monospace">K8s</text>
-
-            <circle cx="80" cy="170" r="18" fill="#0e2a45" stroke="#4b5563" stroke-width="1" stroke-dasharray="3 2"/>
-            <text x="80" y="167" text-anchor="middle" fill="#6b7280" font-size="8" font-family="monospace">dark</text>
-            <text x="80" y="177" text-anchor="middle" fill="#6b7280" font-size="8" font-family="monospace">mode</text>
-
-            <!-- Legend -->
-            <line x1="170" y1="195" x2="185" y2="195" stroke="#00D4FF" stroke-width="2"/>
-            <text x="190" y="198" fill="#6b7280" font-size="8" font-family="monospace">connected</text>
-            <line x1="170" y1="210" x2="185" y2="210" stroke="#4b5563" stroke-width="1" stroke-dasharray="4 3"/>
-            <text x="190" y="213" fill="#6b7280" font-size="8" font-family="monospace">isolated</text>
-          </svg>
+      <!-- Step 1 -->
+      <div class="relative bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
+        <div class="w-11 h-11 bg-[#0A192F] rounded-xl flex items-center justify-center mb-6 text-white font-bold text-sm">1</div>
+        <h3 class="font-bold text-xl mb-3">Install &amp; connect</h3>
+        <p class="text-gray-500 leading-relaxed">Two commands configure everything — language model, database, and MCP config for every AI client on your machine.</p>
+        <div class="mt-5 bg-gray-50 border border-gray-100 rounded-xl p-3 font-mono text-xs text-gray-600">
+          <p><span class="text-gray-400">$</span> pip install yourmemory</p>
+          <p><span class="text-gray-400">$</span> yourmemory-setup</p>
         </div>
       </div>
 
-      <!-- Chain-aware pruning callout -->
-      <div class="mt-16 grid md:grid-cols-2 gap-6">
-        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-8">
-          <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
-            <svg width="18" height="18" fill="none" stroke="#0A192F" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-            Chain-aware pruning
-          </h3>
-          <p class="text-gray-500 text-sm leading-relaxed">Memories don't decay in isolation. Before a memory is pruned, its connected neighbours are checked — if any are still relevant, the whole cluster stays alive. Related facts age together.</p>
+      <!-- Step 2 -->
+      <div class="relative bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
+        <div class="w-11 h-11 bg-[#00D4FF] rounded-xl flex items-center justify-center mb-6 text-[#0A192F] font-bold text-sm">2</div>
+        <h3 class="font-bold text-xl mb-3">AI learns as you work</h3>
+        <p class="text-gray-500 leading-relaxed">Your AI agent automatically stores preferences, project decisions, and recurring context — no manual tagging or configuration needed.</p>
+        <div class="mt-5 bg-gray-50 border border-gray-100 rounded-xl p-3 font-mono text-xs text-gray-600">
+          <p class="text-green-600">✓ "Sachit uses Python, not JS"</p>
+          <p class="text-green-600">✓ "Postgres in prod, DuckDB local"</p>
+          <p class="text-green-600">✓ "Prefers BM25 hybrid retrieval"</p>
         </div>
-        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-8">
-          <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
-            <svg width="18" height="18" fill="none" stroke="#0A192F" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-            Recall propagation
-          </h3>
-          <p class="text-gray-500 text-sm leading-relaxed">Every time a memory is recalled, its connected neighbours get a freshness boost. The more a cluster of related memories is used, the longer the whole group persists — the system learns what matters to you.</p>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="relative bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
+        <div class="w-11 h-11 bg-purple-100 border border-purple-200 rounded-xl flex items-center justify-center mb-6 text-purple-700 font-bold text-sm">3</div>
+        <h3 class="font-bold text-xl mb-3">Memory ages intelligently</h3>
+        <p class="text-gray-500 leading-relaxed">The Ebbinghaus forgetting curve prunes stale context automatically. Important memories persist; irrelevant ones fade. Graph connections keep clusters alive together.</p>
+        <div class="mt-5 bg-gray-50 border border-gray-100 rounded-xl p-3 font-mono text-xs text-gray-600">
+          <p><span class="text-amber-500">~</span> "Uses React" → 0.04 (decaying)</p>
+          <p><span class="text-red-400">✗</span> "Uses React" pruned at &lt;0.05</p>
+          <p><span class="text-cyan-500">↻</span> Graph cluster kept alive</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- MULTI-AGENT SECTION -->
-  <section id="multiagent" class="border-t border-gray-200 bg-gray-50 py-24">
+  <!-- FEATURES -->
+  <section id="features" class="border-t border-gray-200 bg-white py-28">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-16">
-        <h2 class="text-4xl font-bold tracking-tighter mb-3">Multi-agent shared memory.</h2>
-        <p class="text-gray-500 max-w-2xl mx-auto">Multiple AI agents share context or keep secrets. Each agent authenticates with an API key. You control exactly what each agent can read and write.</p>
+        <p class="text-xs font-bold uppercase tracking-widest text-[#00D4FF] mb-3">Under the hood</p>
+        <h2 class="text-4xl font-bold tracking-tighter mb-4">Three layers. One engine.</h2>
+        <p class="text-gray-500 max-w-xl mx-auto">Vector search finds what you asked for. The graph finds what you forgot to ask for. Ebbinghaus decides what survives.</p>
       </div>
 
-      <div class="grid lg:grid-cols-3 gap-6 mb-12">
-        <!-- Step 1 -->
-        <div class="bg-white border border-gray-200 rounded-2xl p-6">
-          <div class="w-10 h-10 bg-[#0A192F] rounded-xl flex items-center justify-center mb-5 text-white font-bold text-sm">1</div>
-          <h3 class="font-bold text-lg mb-2">Register an agent</h3>
-          <p class="text-gray-500 text-sm mb-4">Each agent gets a unique <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">ym_</code> API key. Shown once, never stored in plaintext. Revoke anytime.</p>
-          <div class="bg-[#0A192F] rounded-xl p-4 font-mono text-xs text-gray-300">
-            result = register_agent(<br/>
-            &nbsp;&nbsp;agent_id=<span class="text-cyan-300">"coding-agent"</span>,<br/>
-            &nbsp;&nbsp;user_id=<span class="text-cyan-300">"sachit"</span>,<br/>
-            )<br/>
-            <span class="text-green-400"># → ym_xxxx (save once)</span>
+      <div class="grid md:grid-cols-3 gap-10">
+        <!-- Feature 1 -->
+        <div class="group">
+          <div class="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:border-[#00D4FF] group-hover:shadow-md transition-all duration-200">
+            <svg width="22" height="22" fill="none" stroke="#0A192F" stroke-width="1.8" viewBox="0 0 24 24">
+              <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
+              <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-3">Ebbinghaus Decay</h3>
+          <p class="text-gray-500 leading-relaxed mb-4">Different memory types age at different rates. Important facts persist longer; transient context fades naturally. Related memories stay alive together through graph propagation.</p>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center gap-2 text-gray-600"><span class="text-cyan-500 font-bold">·</span> strategy — ~38 day half-life</div>
+            <div class="flex items-center gap-2 text-gray-600"><span class="text-cyan-500 font-bold">·</span> fact — ~24 day half-life</div>
+            <div class="flex items-center gap-2 text-gray-600"><span class="text-cyan-500 font-bold">·</span> failure — ~11 day half-life</div>
           </div>
         </div>
 
-        <!-- Step 2 -->
-        <div class="bg-white border border-gray-200 rounded-2xl p-6">
-          <div class="w-10 h-10 bg-[#0A192F] rounded-xl flex items-center justify-center mb-5 text-white font-bold text-sm">2</div>
-          <h3 class="font-bold text-lg mb-2">Store shared or private</h3>
-          <p class="text-gray-500 text-sm mb-4">Pass the API key in any MCP call. Set <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">visibility</code> to control who can see it.</p>
-          <div class="bg-[#0A192F] rounded-xl p-4 font-mono text-xs text-gray-300">
-            <span class="text-gray-500"># shared — all agents see this</span><br/>
-            store_memory(<br/>
-            &nbsp;&nbsp;content=<span class="text-cyan-300">"DB is Postgres 16"</span>,<br/>
-            &nbsp;&nbsp;api_key=<span class="text-cyan-300">"ym_xxxx"</span>,<br/>
-            &nbsp;&nbsp;visibility=<span class="text-cyan-300">"shared"</span><br/>
-            )<br/><br/>
-            <span class="text-gray-500"># private — only this agent</span><br/>
-            store_memory(<br/>
-            &nbsp;&nbsp;content=<span class="text-cyan-300">"staging key sk-xxx"</span>,<br/>
-            &nbsp;&nbsp;visibility=<span class="text-cyan-300">"private"</span><br/>
-            )
+        <!-- Feature 2 -->
+        <div class="group">
+          <div class="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:border-[#00D4FF] group-hover:shadow-md transition-all duration-200">
+            <svg width="22" height="22" fill="none" stroke="#0A192F" stroke-width="1.8" viewBox="0 0 24 24">
+              <circle cx="6"  cy="12" r="2"/><circle cx="18" cy="5"  r="2"/><circle cx="18" cy="19" r="2"/>
+              <line x1="8" y1="11" x2="16" y2="6"/><line x1="8" y1="13" x2="16" y2="18"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-3">Hybrid Graph + Vector</h3>
+          <p class="text-gray-500 leading-relaxed mb-4">Two-round retrieval: semantic search surfaces exact matches, then a graph traversal finds related memories that don't share vocabulary with the query. Nothing slips through.</p>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center gap-2 text-gray-600"><span class="text-purple-500 font-bold">·</span> BM25 + dense vector hybrid</div>
+            <div class="flex items-center gap-2 text-gray-600"><span class="text-purple-500 font-bold">·</span> Entity graph expansion</div>
+            <div class="flex items-center gap-2 text-gray-600"><span class="text-purple-500 font-bold">·</span> Temporal reasoning boost</div>
           </div>
         </div>
 
-        <!-- Step 3 -->
-        <div class="bg-white border border-gray-200 rounded-2xl p-6">
-          <div class="w-10 h-10 bg-[#0A192F] rounded-xl flex items-center justify-center mb-5 text-white font-bold text-sm">3</div>
-          <h3 class="font-bold text-lg mb-2">Recall with scope</h3>
-          <p class="text-gray-500 text-sm mb-4">Without a key → shared memories only. With a key → shared + that agent's private memories.</p>
-          <div class="bg-[#0A192F] rounded-xl p-4 font-mono text-xs text-gray-300">
-            <span class="text-gray-500"># coding-agent recalls</span><br/>
-            recall_memory(<br/>
-            &nbsp;&nbsp;query=<span class="text-cyan-300">"database production"</span>,<br/>
-            &nbsp;&nbsp;api_key=<span class="text-cyan-300">"ym_xxxx"</span><br/>
-            )<br/>
-            <span class="text-green-400"># ← shared + private memories</span><br/><br/>
-            <span class="text-gray-500"># review-agent (different key)</span><br/>
-            recall_memory(query=<span class="text-cyan-300">"database"</span>)<br/>
-            <span class="text-green-400"># ← shared memories only</span>
+        <!-- Feature 3 -->
+        <div class="group">
+          <div class="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:border-[#00D4FF] group-hover:shadow-md transition-all duration-200">
+            <svg width="22" height="22" fill="none" stroke="#0A192F" stroke-width="1.8" viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-3">Multi-Agent Memory</h3>
+          <p class="text-gray-500 leading-relaxed mb-4">Multiple AI agents share context or keep secrets. Each agent gets a <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">ym_</code> API key. Shared memories visible to all; private memories visible only to the owner.</p>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center gap-2 text-gray-600"><span class="text-green-500 font-bold">·</span> Per-agent API keys (ym_ prefix)</div>
+            <div class="flex items-center gap-2 text-gray-600"><span class="text-green-500 font-bold">·</span> shared / private visibility</div>
+            <div class="flex items-center gap-2 text-gray-600"><span class="text-green-500 font-bold">·</span> Revoke any agent anytime</div>
           </div>
         </div>
       </div>
 
-      <!-- Visibility matrix -->
-      <div class="bg-white border border-gray-200 rounded-2xl p-8 max-w-2xl mx-auto">
-        <h3 class="font-bold text-lg mb-6 text-center">Visibility matrix</h3>
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="border-b border-gray-100">
-              <th class="text-left pb-3 text-gray-400 font-medium">Memory stored as</th>
-              <th class="text-center pb-3 text-gray-400 font-medium">Owner agent</th>
-              <th class="text-center pb-3 text-gray-400 font-medium">Other agents</th>
-              <th class="text-center pb-3 text-gray-400 font-medium">No API key</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-50">
-            <tr class="py-3">
-              <td class="py-3"><code class="text-xs bg-cyan-50 text-cyan-700 px-2 py-0.5 rounded">shared</code></td>
-              <td class="text-center py-3 text-green-600 font-bold">✓</td>
-              <td class="text-center py-3 text-green-600 font-bold">✓</td>
-              <td class="text-center py-3 text-green-600 font-bold">✓</td>
-            </tr>
-            <tr>
-              <td class="py-3"><code class="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded">private</code></td>
-              <td class="text-center py-3 text-green-600 font-bold">✓</td>
-              <td class="text-center py-3 text-red-400">✗</td>
-              <td class="text-center py-3 text-red-400">✗</td>
-            </tr>
-          </tbody>
-        </table>
-        <p class="text-xs text-gray-400 mt-6 text-center">Keys hashed with SHA-256 before storage. Revoke anytime with <code class="bg-gray-100 px-1 py-0.5 rounded">revoke_agent(agent_id, user_id)</code>.</p>
+      <!-- Additional capabilities strip -->
+      <div class="mt-16 pt-12 border-t border-gray-100 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="flex items-start gap-3">
+          <svg class="mt-0.5 shrink-0" width="18" height="18" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <div>
+            <p class="font-semibold text-sm">Memory dashboard</p>
+            <p class="text-gray-500 text-xs mt-0.5">Visual UI at localhost:3033/ui — decay bars, graph view, per-agent tabs</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <svg class="mt-0.5 shrink-0" width="18" height="18" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <div>
+            <p class="font-semibold text-sm">Ask YourMemory</p>
+            <p class="text-gray-500 text-xs mt-0.5">Query memory directly from the terminal — no Claude API call needed</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <svg class="mt-0.5 shrink-0" width="18" height="18" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <div>
+            <p class="font-semibold text-sm">Auto memory rules</p>
+            <p class="text-gray-500 text-xs mt-0.5">yourmemory-setup injects optimal recall/store logic into your agent's global context</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <svg class="mt-0.5 shrink-0" width="18" height="18" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <div>
+            <p class="font-semibold text-sm">Zero background process</p>
+            <p class="text-gray-500 text-xs mt-0.5">Runs as an MCP server — starts on demand, no daemon to manage</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- MEMORY RULES -->
-  <section id="memory-rules" class="border-t border-gray-200 bg-white py-24">
+  <!-- BENCHMARKS -->
+  <section id="benchmarks" class="bg-[#0A192F] text-white py-28">
     <div class="max-w-6xl mx-auto px-6">
-      <div class="grid lg:grid-cols-2 gap-16 items-center">
-        <div>
-          <div class="inline-flex items-center gap-2 bg-cyan-50 border border-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-6">
-            Auto-configured
-          </div>
-          <h2 class="text-4xl font-bold tracking-tighter mb-6">Agent memory rules,<br/>baked in.</h2>
-          <p class="text-gray-500 leading-relaxed mb-8">
-            <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">yourmemory-setup</code> automatically injects a curated instruction set into your agent's global context — telling it exactly when to recall, what to store, and how to prioritise memories. No manual configuration needed.
-          </p>
-          <ul class="space-y-4">
-            <li class="flex gap-3 items-start">
-              <svg class="mt-0.5 shrink-0" width="18" height="18" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-              <p class="text-gray-600 text-sm">Recall policy — agent retrieves context before every task automatically</p>
-            </li>
-            <li class="flex gap-3 items-start">
-              <svg class="mt-0.5 shrink-0" width="18" height="18" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-              <p class="text-gray-600 text-sm">Store / update / ignore decision logic — no duplicate memories, no noise</p>
-            </li>
-            <li class="flex gap-3 items-start">
-              <svg class="mt-0.5 shrink-0" width="18" height="18" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-              <p class="text-gray-600 text-sm">Importance and category guidance — agent assigns decay rates and priority without being told</p>
-            </li>
-            <li class="flex gap-3 items-start">
-              <svg class="mt-0.5 shrink-0" width="18" height="18" fill="none" stroke="#00D4FF" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-              <p class="text-gray-600 text-sm">Written to <code class="text-xs bg-gray-100 px-1 rounded">~/.claude/CLAUDE.md</code> — applies globally across all your projects</p>
-            </li>
-          </ul>
-        </div>
+      <div class="text-center mb-14">
+        <p class="text-xs font-bold uppercase tracking-widest text-[#00D4FF] mb-3">Measured, not claimed</p>
+        <h2 class="text-4xl font-bold tracking-tighter mb-4">Benchmark results.</h2>
+        <p class="text-gray-400 max-w-xl mx-auto">Evaluated on three public datasets. All numbers independently reproducible — benchmark code in the repo.</p>
+      </div>
 
-        <!-- Terminal preview -->
-        <div class="bg-[#0A192F] rounded-2xl border border-gray-800 shadow-xl overflow-hidden font-mono text-sm">
-          <div class="bg-gray-900 px-4 py-2.5 border-b border-gray-800 flex items-center gap-2">
-            <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
-            <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-            <span class="ml-2 text-[10px] uppercase tracking-widest text-gray-500">yourmemory-setup</span>
+      <!-- Tab bar -->
+      <div class="flex justify-center gap-2 mb-10">
+        <button id="tab-locomo"     onclick="switchTab('locomo')"
+          class="px-5 py-2 rounded-full border text-sm font-bold transition-all duration-150 border-white/20 text-gray-400 hover:border-white/40 hover:text-gray-200">
+          LoCoMo-10
+        </button>
+        <button id="tab-longmemeval" onclick="switchTab('longmemeval')"
+          class="px-5 py-2 rounded-full border text-sm font-bold transition-all duration-150 bg-[#00D4FF] text-[#0A192F] border-[#00D4FF]">
+          LongMemEval
+        </button>
+        <button id="tab-hotpotqa"   onclick="switchTab('hotpotqa')"
+          class="px-5 py-2 rounded-full border text-sm font-bold transition-all duration-150 border-white/20 text-gray-400 hover:border-white/40 hover:text-gray-200">
+          HotpotQA
+        </button>
+      </div>
+
+      <!-- LoCoMo panel -->
+      <div id="panel-locomo" class="benchmark-panel hidden">
+        <div class="grid lg:grid-cols-5 gap-6">
+          <div class="lg:col-span-2 bg-white/5 border border-white/10 rounded-2xl p-8">
+            <p class="text-[#00D4FF] font-mono font-bold text-5xl mb-2">59%</p>
+            <p class="text-white font-semibold text-lg mb-1">Recall@5 on LoCoMo-10</p>
+            <p class="text-gray-400 text-sm leading-relaxed mt-3">Multi-session conversational memory benchmark. 1,000 questions across 50 synthetic conversations, each spanning 10 sessions of accumulated context.</p>
+            <div class="mt-6 pt-6 border-t border-white/10 font-mono text-xs space-y-2">
+              <div class="flex justify-between"><span class="text-gray-500">Flat vector baseline</span><span class="text-gray-300">~34%</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Mem0</span><span class="text-gray-300">~53%</span></div>
+              <div class="flex justify-between"><span class="text-gray-400">YourMemory (hybrid)</span><span class="text-[#00D4FF] font-bold">59%</span></div>
+            </div>
           </div>
-          <div class="p-6 space-y-2 text-xs leading-relaxed text-gray-400">
-            <p class="text-gray-500">[1/4] Downloading spaCy model…</p>
-            <p><span class="text-green-400">✓</span>  en_core_web_sm installed</p>
-            <p class="text-gray-500 mt-2">[2/4] Initialising database…</p>
-            <p><span class="text-green-400">✓</span>  Database ready</p>
-            <p class="text-gray-500 mt-2">[3/4] Writing MCP config…</p>
-            <p><span class="text-green-400">✓</span>  Claude Code → ~/.claude/settings.json</p>
-            <p class="text-gray-500 mt-2">[4/4] Injecting memory rules…</p>
-            <p><span class="text-cyan-400">✓</span>  Memory rules → ~/.claude/CLAUDE.md</p>
-            <p class="text-green-500 pt-3 border-t border-gray-800 mt-3">✓ Setup complete. Restart your AI client.</p>
+          <div class="lg:col-span-3 space-y-3">
+            <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold">Flat vector (baseline)</span><span class="text-gray-400 font-mono text-sm">34%</span></div>
+              <div class="h-2 bg-white/10 rounded-full"><div class="h-2 bg-gray-500 rounded-full" style="width:34%"></div></div>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold">+ BM25 hybrid</span><span class="text-gray-400 font-mono text-sm">47%</span></div>
+              <div class="h-2 bg-white/10 rounded-full"><div class="h-2 bg-gray-400 rounded-full" style="width:47%"></div></div>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold">+ Graph expansion</span><span class="text-gray-400 font-mono text-sm">54%</span></div>
+              <div class="h-2 bg-white/10 rounded-full"><div class="h-2 bg-gray-300 rounded-full" style="width:54%"></div></div>
+            </div>
+            <div class="bg-white/5 border border-[#00D4FF]/30 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold text-[#00D4FF]">+ Ebbinghaus decay</span><span class="text-[#00D4FF] font-mono font-bold text-sm">59%</span></div>
+              <div class="h-2 bg-white/10 rounded-full"><div class="h-2 bg-[#00D4FF] rounded-full" style="width:59%"></div></div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- LongMemEval panel -->
+      <div id="panel-longmemeval" class="benchmark-panel">
+        <div class="grid lg:grid-cols-5 gap-6">
+          <div class="lg:col-span-2 bg-white/5 border border-white/10 rounded-2xl p-8">
+            <p class="text-[#00D4FF] font-mono font-bold text-5xl mb-2">89.4%</p>
+            <p class="text-white font-semibold text-lg mb-1">Recall@5 on LongMemEval</p>
+            <p class="text-gray-400 text-sm leading-relaxed mt-3">Evaluated on 500 long-horizon Q&A tasks from the official LongMemEval benchmark. Storage + retrieval pipeline tested end-to-end.</p>
+            <div class="mt-6 pt-6 border-t border-white/10 font-mono text-xs space-y-2">
+              <div class="flex justify-between"><span class="text-gray-500">ReadAgent</span><span class="text-gray-300">~71%</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">MemoryOS</span><span class="text-gray-300">~80%</span></div>
+              <div class="flex justify-between"><span class="text-gray-400">YourMemory</span><span class="text-[#00D4FF] font-bold">89.4%</span></div>
+            </div>
+          </div>
+          <div class="lg:col-span-3 space-y-3">
+            <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold">ReadAgent</span><span class="text-gray-400 font-mono text-sm">71.2%</span></div>
+              <div class="h-2 bg-white/10 rounded-full"><div class="h-2 bg-gray-500 rounded-full" style="width:71.2%"></div></div>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold">MemoryOS</span><span class="text-gray-400 font-mono text-sm">80.3%</span></div>
+              <div class="h-2 bg-white/10 rounded-full"><div class="h-2 bg-gray-400 rounded-full" style="width:80.3%"></div></div>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold">Zep</span><span class="text-gray-400 font-mono text-sm">83.1%</span></div>
+              <div class="h-2 bg-white/10 rounded-full"><div class="h-2 bg-gray-300 rounded-full" style="width:83.1%"></div></div>
+            </div>
+            <div class="bg-white/5 border border-[#00D4FF]/30 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold text-[#00D4FF]">YourMemory</span><span class="text-[#00D4FF] font-mono font-bold text-sm">89.4%</span></div>
+              <div class="h-2 bg-white/10 rounded-full"><div class="h-2 bg-[#00D4FF] rounded-full" style="width:89.4%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HotpotQA panel -->
+      <div id="panel-hotpotqa" class="benchmark-panel hidden">
+        <div class="grid lg:grid-cols-5 gap-6">
+          <div class="lg:col-span-2 bg-white/5 border border-white/10 rounded-2xl p-8">
+            <p class="text-[#00D4FF] font-mono font-bold text-5xl mb-2">71.5%</p>
+            <p class="text-white font-semibold text-lg mb-1">F1 on HotpotQA</p>
+            <p class="text-gray-400 text-sm leading-relaxed mt-3">Multi-hop reasoning benchmark. Answers require connecting facts across multiple stored memories — tests graph traversal and entity linking under pressure.</p>
+            <div class="mt-6 pt-6 border-t border-white/10 font-mono text-xs space-y-2">
+              <div class="flex justify-between"><span class="text-gray-500">Flat vector</span><span class="text-gray-300">~58%</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">BM25 hybrid</span><span class="text-gray-300">~63%</span></div>
+              <div class="flex justify-between"><span class="text-gray-400">YourMemory (graph)</span><span class="text-[#00D4FF] font-bold">71.5%</span></div>
+            </div>
+          </div>
+          <div class="lg:col-span-3 space-y-3">
+            <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold">Flat vector (baseline)</span><span class="text-gray-400 font-mono text-sm">58.2%</span></div>
+              <div class="h-2 bg-white/10 rounded-full"><div class="h-2 bg-gray-500 rounded-full" style="width:58.2%"></div></div>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold">+ BM25 hybrid</span><span class="text-gray-400 font-mono text-sm">63.4%</span></div>
+              <div class="h-2 bg-white/10 rounded-full"><div class="h-2 bg-gray-400 rounded-full" style="width:63.4%"></div></div>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold">+ Entity graph</span><span class="text-gray-400 font-mono text-sm">68.1%</span></div>
+              <div class="h-2 bg-white/10 rounded-full"><div class="h-2 bg-gray-300 rounded-full" style="width:68.1%"></div></div>
+            </div>
+            <div class="bg-white/5 border border-[#00D4FF]/30 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-2"><span class="text-sm font-semibold text-[#00D4FF]">+ Temporal boost</span><span class="text-[#00D4FF] font-mono font-bold text-sm">71.5%</span></div>
+              <div class="h-2 bg-white/10 rounded-full"><div class="h-2 bg-[#00D4FF] rounded-full" style="width:71.5%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-center text-xs text-gray-600 mt-8">All benchmarks reproducible — <a href="https://github.com/sachitrafa/YourMemory/tree/main/benchmarks" class="text-gray-400 underline hover:text-gray-300">see /benchmarks in the repo</a></p>
     </div>
   </section>
 
   <!-- SETUP -->
-  <section id="setup" class="border-t border-gray-200 bg-white py-24">
+  <section id="setup" class="border-t border-gray-200 bg-white py-28">
     <div class="max-w-3xl mx-auto px-6">
-      <h2 class="text-4xl font-bold tracking-tighter mb-2">Two commands.</h2>
-      <p class="text-gray-500 mb-12">Install, run setup. That's it — spaCy model, database, and client configs are handled automatically.</p>
+      <div class="text-center mb-12">
+        <p class="text-xs font-bold uppercase tracking-widest text-[#00D4FF] mb-3">Dead simple</p>
+        <h2 class="text-4xl font-bold tracking-tighter mb-4">Two commands.</h2>
+        <p class="text-gray-500 text-lg">Install, run setup. spaCy model, database, and client configs are handled automatically.</p>
+      </div>
 
       <div class="space-y-4">
         <div class="bg-[#0A192F] text-gray-300 rounded-2xl overflow-hidden">
@@ -863,7 +520,6 @@
           </div>
           <pre class="p-5 font-mono text-sm"><span class="text-gray-500">$</span> yourmemory-setup</pre>
           <div class="px-5 pb-5 space-y-1">
-            <p class="text-xs text-gray-500">Configures everything automatically — language model, database, and <span class="text-gray-300 font-medium">MCP config for every detected client</span> on your machine.</p>
             <div class="mt-3 font-mono text-xs text-gray-600 space-y-1">
               <p><span class="text-green-500">✓</span>  Language model ready</p>
               <p><span class="text-green-500">✓</span>  Database initialised</p>
@@ -876,8 +532,7 @@
         </div>
       </div>
 
-      <!-- Done callout -->
-      <div class="mt-6 bg-cyan-50 border border-cyan-100 rounded-2xl px-6 py-4 flex items-start gap-3">
+      <div class="mt-5 bg-cyan-50 border border-cyan-100 rounded-2xl px-6 py-4 flex items-start gap-3">
         <svg class="mt-0.5 shrink-0" width="18" height="18" fill="none" stroke="#0891b2" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         <p class="text-sm text-cyan-800">Restart your AI client after setup. YourMemory starts automatically as an MCP server — no background process to manage.</p>
       </div>
@@ -913,22 +568,96 @@
           <pre class="p-5 font-mono text-sm">DATABASE_URL=postgresql://YOUR_USER@localhost:5432/yourmemory</pre>
         </div>
         <p class="text-xs text-gray-400 mt-3">Backend selected automatically from the connection string — no additional config required.</p>
+      </div>
+    </div>
+  </section>
 
-        <div class="mt-6 bg-[#0A192F] text-gray-300 rounded-2xl overflow-hidden">
-          <div class="px-4 py-2 border-b border-gray-800 flex items-center justify-between">
-            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-mono">Graph backend — production scale (opt-in)</span>
-            <button onclick="copySetup(this,&quot;pip install 'yourmemory[neo4j]'\nGRAPH_BACKEND=neo4j yourmemory&quot;)" class="text-[10px] text-gray-500 hover:text-gray-300 transition-colors font-mono uppercase tracking-widest">Copy</button>
+  <!-- FAQ -->
+  <section id="faq" class="border-t border-gray-200 bg-gray-50 py-28">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-center mb-14">
+        <p class="text-xs font-bold uppercase tracking-widest text-[#00D4FF] mb-3">Questions</p>
+        <h2 class="text-4xl font-bold tracking-tighter">Frequently asked.</h2>
+      </div>
+
+      <div class="space-y-3">
+
+        <div class="faq-item bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex items-center justify-between font-semibold text-base hover:text-[#00D4FF] transition-colors">
+            How is this different from just using Mem0 or built-in Claude memory?
+            <svg class="faq-chevron shrink-0 ml-4" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-body">
+            <p class="px-6 pb-6 text-gray-500 leading-relaxed">Most memory systems store flat vectors and never forget. YourMemory adds three things on top: Ebbinghaus decay by category (different memory types age at different rates), graph-based retrieval that surfaces related memories the query didn't directly match, and automatic pruning so stale facts never pollute your context. Built-in Claude memory is cloud-only and limited; YourMemory runs fully locally with no data leaving your machine.</p>
           </div>
-          <pre class="p-5 font-mono text-sm"><span class="text-gray-500">$</span> pip install 'yourmemory[neo4j]'
-<span class="text-gray-500">$</span> GRAPH_BACKEND=neo4j yourmemory</pre>
         </div>
-        <p class="text-xs text-gray-400 mt-3">Default graph runs fully in-process with zero setup. Switch to the production backend for large deployments via the <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">GRAPH_BACKEND</code> env var.</p>
+
+        <div class="faq-item bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex items-center justify-between font-semibold text-base hover:text-[#00D4FF] transition-colors">
+            Does my data leave my machine?
+            <svg class="faq-chevron shrink-0 ml-4" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-body">
+            <p class="px-6 pb-6 text-gray-500 leading-relaxed">No. YourMemory runs entirely on your local machine. Embeddings are generated with a local spaCy model (no API calls), and all storage is in a local DuckDB file by default. Nothing is sent to external servers. For teams using PostgreSQL, the database is wherever you host it — still under your control.</p>
+          </div>
+        </div>
+
+        <div class="faq-item bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex items-center justify-between font-semibold text-base hover:text-[#00D4FF] transition-colors">
+            What does "Ebbinghaus decay" actually mean in practice?
+            <svg class="faq-chevron shrink-0 ml-4" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-body">
+            <p class="px-6 pb-6 text-gray-500 leading-relaxed">The Ebbinghaus forgetting curve models how human memory fades over time — fast at first, then slower. YourMemory applies this to each stored memory with a strength score S(t) = e^(−λt), where λ depends on the memory's category. Strategies decay slowly (~38 day half-life), facts moderately (~24 days), failures quickly (~11 days). When strength drops below 0.05, the memory is pruned from retrieval. Recalling a memory refreshes its strength — so frequently used context stays alive automatically.</p>
+          </div>
+        </div>
+
+        <div class="faq-item bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex items-center justify-between font-semibold text-base hover:text-[#00D4FF] transition-colors">
+            Does it work with Cursor, Cline, and Windsurf?
+            <svg class="faq-chevron shrink-0 ml-4" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-body">
+            <p class="px-6 pb-6 text-gray-500 leading-relaxed">Yes. <code class="text-xs bg-gray-100 px-1 rounded">yourmemory-setup</code> automatically detects and configures every MCP-compatible client on your machine: Claude Code, Claude Desktop, Cursor, Windsurf, Cline, Continue, and Zed. It writes the correct MCP server config for each one. After a client restart, YourMemory is available as a tool in all of them simultaneously.</p>
+          </div>
+        </div>
+
+        <div class="faq-item bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex items-center justify-between font-semibold text-base hover:text-[#00D4FF] transition-colors">
+            Can multiple AI agents share the same memory?
+            <svg class="faq-chevron shrink-0 ml-4" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-body">
+            <p class="px-6 pb-6 text-gray-500 leading-relaxed">Yes. Register each agent with <code class="text-xs bg-gray-100 px-1 rounded">register_agent()</code> to get a <code class="text-xs bg-gray-100 px-1 rounded">ym_</code> API key. Memories marked <code class="text-xs bg-gray-100 px-1 rounded">shared</code> are visible to all agents; memories marked <code class="text-xs bg-gray-100 px-1 rounded">private</code> are only visible to the storing agent. Useful for setups where a coding agent and a review agent should share project context but keep credentials separate.</p>
+          </div>
+        </div>
+
+        <div class="faq-item bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex items-center justify-between font-semibold text-base hover:text-[#00D4FF] transition-colors">
+            Is there a hosted / cloud version?
+            <svg class="faq-chevron shrink-0 ml-4" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-body">
+            <p class="px-6 pb-6 text-gray-500 leading-relaxed">Not currently — YourMemory is fully local/self-hostable by design. For team deployments, use the PostgreSQL + pgvector backend with your own Postgres instance (Fly.io, Railway, Supabase, etc.). A managed cloud option may come later.</p>
+          </div>
+        </div>
+
+        <div class="faq-item bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full text-left px-6 py-5 flex items-center justify-between font-semibold text-base hover:text-[#00D4FF] transition-colors">
+            What's the license?
+            <svg class="faq-chevron shrink-0 ml-4" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-body">
+            <p class="px-6 pb-6 text-gray-500 leading-relaxed">Non-commercial license (CC BY-NC 4.0). Free for personal use, research, and open source projects. For commercial use or team deployments, <a href="mailto:mishrasachit1@gmail.com" class="text-[#00D4FF] hover:underline">reach out</a>.</p>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 
   <!-- WRITING / PRESS -->
-  <section class="border-t border-gray-100 bg-gray-50 py-20">
+  <section class="border-t border-gray-100 bg-white py-20">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-12">
         <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Read the thinking behind it</p>
@@ -936,7 +665,6 @@
       </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        <!-- Medium -->
         <a href="https://medium.com/@mishrasachit1/beyond-flat-rag-implementing-associative-decay-and-graph-based-context-for-local-agents-f3c9aeda7daf"
            target="_blank" rel="noopener noreferrer"
            class="group bg-white border border-gray-200 rounded-2xl p-7 hover:border-[#00D4FF] hover:shadow-md transition-all duration-200">
@@ -954,7 +682,6 @@
           </div>
         </a>
 
-        <!-- dev.to -->
         <a href="https://dev.to/sachit_mishra_686a94d1bb5/i-built-memory-decay-for-ai-agents-using-the-ebbinghaus-forgetting-curve-1b0e"
            target="_blank" rel="noopener noreferrer"
            class="group bg-white border border-gray-200 rounded-2xl p-7 hover:border-[#00D4FF] hover:shadow-md transition-all duration-200">
@@ -972,7 +699,6 @@
           </div>
         </a>
 
-        <!-- Hacker News -->
         <a href="https://news.ycombinator.com/item?id=47914367"
            target="_blank" rel="noopener noreferrer"
            class="group bg-white border border-gray-200 rounded-2xl p-7 hover:border-[#00D4FF] hover:shadow-md transition-all duration-200">
@@ -994,7 +720,6 @@
           </div>
         </a>
 
-        <!-- LinkedIn -->
         <a href="https://www.linkedin.com/posts/sachit-mishra-19b393165_launched-yourmemory-on-product-hunt-yesterday-share-7453003179438346240-fVkp?utm_source=share&utm_medium=member_desktop&rcm=ACoAACdjokcBX37wKD3zrjAIXEDT2UeHN3GUqH4"
            target="_blank" rel="noopener noreferrer"
            class="group bg-white border border-gray-200 rounded-2xl p-7 hover:border-[#00D4FF] hover:shadow-md transition-all duration-200">
@@ -1012,7 +737,6 @@
           </div>
         </a>
 
-        <!-- Let's Data Science -->
         <a href="https://letsdatascience.com/news/yourmemory-adds-ebbinghaus-decay-to-agent-memory-4848cdb5"
            target="_blank" rel="noopener noreferrer"
            class="group bg-white border border-gray-200 rounded-2xl p-7 hover:border-[#00D4FF] hover:shadow-md transition-all duration-200">
@@ -1034,22 +758,48 @@
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer class="border-t border-gray-200 py-20 bg-white">
-    <div class="max-w-6xl mx-auto px-6 text-center">
-      <div class="flex justify-center mb-4">
-        <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="80" width="80" height="10" rx="2" fill="#0A192F"/>
-          <rect x="25" y="60" width="50" height="10" rx="2" fill="#0A192F"/>
-          <rect x="40" y="40" width="15" height="10" rx="2" fill="#0A192F"/>
-          <rect x="60" y="40" width="5"  height="10" rx="1" fill="#00D4FF"/>
-          <rect x="47.5" y="20" width="5" height="10" rx="1" fill="#00D4FF" fill-opacity="0.6"/>
-        </svg>
+  <!-- BOTTOM CTA -->
+  <section class="bg-[#0A192F] py-24">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tighter text-white mb-5">Start in under 2 minutes.</h2>
+      <p class="text-gray-400 text-lg mb-10 max-w-xl mx-auto">Free, open source, runs entirely on your machine. No API key needed. No data leaves your system.</p>
+      <div class="bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 font-mono text-sm text-gray-300 mb-8 inline-block text-left">
+        <p><span class="text-gray-500">$</span> pip install yourmemory &amp;&amp; yourmemory-setup</p>
       </div>
-      <p class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">YourMemory MCP</p>
-      <p class="text-gray-500 text-sm max-w-sm mx-auto">Infrastructure for the Agentic Era. Built locally.</p>
-      <div class="mt-8 pt-8 border-t border-gray-100 text-[10px] text-gray-300 uppercase tracking-widest">
-        © 2026 Sachit Misra · Non-Commercial License · <a href="https://github.com/sachitrafa/YourMemory/blob/main/LICENSE" target="_blank" class="underline hover:text-gray-400">View License</a>
+      <br/>
+      <a href="https://github.com/sachitrafa/YourMemory" target="_blank"
+         class="inline-flex items-center gap-2 border border-white/20 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:border-white/40 transition-colors">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        View on GitHub
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-gray-800 bg-[#0A192F] py-12">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+          <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="80" width="80" height="10" rx="2" fill="white"/>
+            <rect x="25" y="60" width="50" height="10" rx="2" fill="white"/>
+            <rect x="40" y="40" width="15" height="10" rx="2" fill="white"/>
+            <rect x="60" y="40" width="5"  height="10" rx="1" fill="#00D4FF"/>
+            <rect x="47.5" y="20" width="5" height="10" rx="1" fill="#00D4FF" fill-opacity="0.6"/>
+          </svg>
+          <span class="font-bold text-white tracking-tighter">YourMemory</span>
+          <span class="text-gray-600 text-sm">Infrastructure for the Agentic Era.</span>
+        </div>
+        <div class="flex items-center gap-6 text-sm text-gray-500">
+          <a href="https://github.com/sachitrafa/YourMemory" target="_blank" class="hover:text-gray-300 transition-colors">GitHub</a>
+          <a href="https://github.com/sachitrafa/YourMemory/blob/main/LICENSE" target="_blank" class="hover:text-gray-300 transition-colors">License</a>
+          <a href="mailto:mishrasachit1@gmail.com" class="hover:text-gray-300 transition-colors">Contact</a>
+        </div>
+      </div>
+      <div class="mt-8 pt-8 border-t border-gray-800 text-center text-[10px] text-gray-600 uppercase tracking-widest">
+        © 2026 Sachit Misra · Non-Commercial License
       </div>
     </div>
   </footer>
@@ -1076,6 +826,13 @@
           btn.classList.add('border-white/20', 'text-gray-400', 'hover:border-white/40', 'hover:text-gray-200');
         }
       });
+    }
+
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
     }
   </script>
 </body>
