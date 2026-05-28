@@ -144,7 +144,8 @@ SPATIAL_BOOST = 0.08   # score bonus when memory context_paths overlap current p
 
 
 def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None,
-             current_path: str | None = None, no_graph: bool = False) -> dict:
+             current_path: str | None = None, no_graph: bool = False,
+             score_threshold: float | None = None) -> dict:
     """
     Round 1 — vector search (cosine similarity):
        - DuckDB:   native array_cosine_similarity
@@ -170,6 +171,9 @@ def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None,
 
     if current_path and result.get("memories"):
         result = _apply_spatial_boost(result, current_path, top_k)
+
+    if score_threshold is not None:
+        result["memories"] = [m for m in result.get("memories", []) if m.get("score", 0) >= score_threshold]
 
     seed_ids = [m["id"] for m in result.get("memories", [])]
     if seed_ids and not no_graph:

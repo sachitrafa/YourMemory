@@ -13,11 +13,12 @@ start_watchdog()   # idempotent — safe to call on import
 
 
 class RetrieveRequest(BaseModel):
-    userId:      str
-    query:       str
-    topK:        int            = Field(5, ge=1, le=500)
-    currentPath: Optional[str] = None   # spatial boost: current file/dir path
-    noGraph:     bool          = False  # ablation: skip graph expansion (BEAM baseline)
+    userId:         str
+    query:          str
+    topK:           int            = Field(5, ge=1, le=500)
+    scoreThreshold: Optional[float] = None  # if set, drop memories scoring below this
+    currentPath:    Optional[str]  = None   # spatial boost: current file/dir path
+    noGraph:        bool           = False  # ablation: skip graph expansion (BEAM baseline)
 
 
 @router.post("/retrieve")
@@ -29,7 +30,8 @@ def retrieve_memories(req: RetrieveRequest):
     if cached is not None:
         return cached
 
-    result = retrieve(user_id, req.query, req.topK, current_path=req.currentPath, no_graph=req.noGraph)
+    result = retrieve(user_id, req.query, req.topK, current_path=req.currentPath, no_graph=req.noGraph,
+                      score_threshold=req.scoreThreshold)
 
     # ── Session wrap-up tracking ───────────────────────────────────────────
     session_track(user_id, [m["id"] for m in result.get("memories", [])])

@@ -2,10 +2,10 @@
 Semantic deduplication for POST /memories.
 
 Detects near-duplicate memories via cosine similarity and applies one of:
-  - reinforce : sim ≥ 0.85  — paraphrase, bump recall_count only
-  - replace   : 0.65–0.85 + contradiction detected — overwrite with incoming
-  - merge     : 0.65–0.85 + no contradiction — entity-append to existing
-  - new       : sim < 0.65  — genuinely distinct, plain INSERT
+  - reinforce : sim ≥ 0.92  — paraphrase, bump recall_count only
+  - replace   : 0.85–0.92 + contradiction detected — overwrite with incoming
+  - merge     : 0.85–0.92 + no contradiction — entity-append to existing
+  - new       : sim < 0.85  — genuinely distinct, plain INSERT
 """
 
 import json
@@ -13,8 +13,8 @@ from src.services.extract import _nlp
 from src.services.utils import cosine as _cosine
 from src.db.connection import get_backend
 
-DEDUP_THRESHOLD     = 0.65   # below → always new memory
-REINFORCE_THRESHOLD = 0.85   # at or above → reinforce (near-identical paraphrase)
+DEDUP_THRESHOLD     = 0.85   # below → always new memory
+REINFORCE_THRESHOLD = 0.92   # at or above → reinforce (near-identical paraphrase)
 SUBJECT_SIM_THRESHOLD = 0.60  # subject spans below this → different entities → new
 SUBJECT_WORDS = 2             # leading words used as subject proxy (1 = subject noun, 2 = noun+verb pair)
 
