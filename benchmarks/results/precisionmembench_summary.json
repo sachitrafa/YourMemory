@@ -1,0 +1,23 @@
+{
+  "provider": "yourmemory",
+  "runAt": "2026-05-28T07:11:40.114472+00:00",
+  "retrieval": {
+    "activePasses": 31,
+    "totalPassed": "38/77",
+    "meanPrecision": 0.6541,
+    "meanRecall": 0.953,
+    "p50LatencyMs": 243.63
+  },
+  "session": {
+    "turnsPassed": "5/12",
+    "passRate": 0.4167,
+    "meanDrift": 0.4595,
+    "noiseIsolation": 0.5405,
+    "meanPrecision": 0.4571,
+    "p50LatencyMs": 368.8
+  },
+  "parameters": {
+    "topK": 8,
+    "scoreThresh": 0.5
+  }
+}

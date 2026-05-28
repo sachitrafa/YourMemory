@@ -1,0 +1,259 @@
+{
+  "provider": "yourmemory",
+  "retrieval": {
+    "meanLatencyMs": 347.45055224872584,
+    "p50LatencyMs": 368.80216699501034,
+    "p95LatencyMs": 425.01566700229887,
+    "caseCount": 2,
+    "meanPrecision": 0.45714285714285713,
+    "meanRecall": 0.0,
+    "totalPassed": 5,
+    "totalCases": 12,
+    "passRate": 0.4166666666666667,
+    "activeRetrievalPasses": 0,
+    "passTypes": {
+      "activeRetrieval": 0,
+      "structural": 0,
+      "triviallyEmpty": 0
+    },
+    "categories": [
+      {
+        "category": "Session-level noise isolation",
+        "caseCount": 12,
+        "passed": 5,
+        "failed": 7,
+        "meanPrecision": 0.45714285714285713,
+        "meanRecall": 0.0
+      }
+    ],
+    "turnCount": 12
+  },
+  "cases": [
+    {
+      "caseId": "session-drift-noise-10-turns-implicit-redis",
+      "turnIndex": 0,
+      "label": "establishes_topic",
+      "retrievedBeliefIds": [
+        "b-redis-code"
+      ],
+      "pinnedBeliefIds": [],
+      "noiseBeliefIds": [],
+      "driftScore": 0.0,
+      "passed": true,
+      "failures": [],
+      "retrievalLatencyMs": 272.7503749920288
+    },
+    {
+      "caseId": "session-drift-noise-10-turns-implicit-redis",
+      "turnIndex": 1,
+      "label": "drift",
+      "retrievedBeliefIds": [
+        "b-kubernetes-entity",
+        "b-auth-depends-redis"
+      ],
+      "pinnedBeliefIds": [
+        "b-auth-open-q"
+      ],
+      "noiseBeliefIds": [
+        "b-auth-depends-redis"
+      ],
+      "driftScore": 0.5,
+      "passed": false,
+      "failures": [
+        "shouldOnlyInclude: noise ['b-auth-depends-redis']"
+      ],
+      "retrievalLatencyMs": 411.0747079976136
+    },
+    {
+      "caseId": "session-drift-noise-10-turns-implicit-redis",
+      "turnIndex": 2,
+      "label": "drift",
+      "retrievedBeliefIds": [
+        "b-react-entity",
+        "b-react-expertise"
+      ],
+      "pinnedBeliefIds": [
+        "b-auth-open-q"
+      ],
+      "noiseBeliefIds": [
+        "b-react-expertise"
+      ],
+      "driftScore": 0.5,
+      "passed": false,
+      "failures": [
+        "shouldOnlyInclude: noise ['b-react-expertise']"
+      ],
+      "retrievalLatencyMs": 414.9481670028763
+    },
+    {
+      "caseId": "session-drift-noise-10-turns-implicit-redis",
+      "turnIndex": 3,
+      "label": "drift",
+      "retrievedBeliefIds": [
+        "b-error-handling"
+      ],
+      "pinnedBeliefIds": [],
+      "noiseBeliefIds": [],
+      "driftScore": 0.0,
+      "passed": true,
+      "failures": [],
+      "retrievalLatencyMs": 254.83758299378678
+    },
+    {
+      "caseId": "session-drift-noise-10-turns-implicit-redis",
+      "turnIndex": 4,
+      "label": "drift",
+      "retrievedBeliefIds": [
+        "b-ci-gha-entity"
+      ],
+      "pinnedBeliefIds": [],
+      "noiseBeliefIds": [],
+      "driftScore": 0.0,
+      "passed": true,
+      "failures": [],
+      "retrievalLatencyMs": 284.6941669995431
+    },
+    {
+      "caseId": "session-drift-noise-10-turns-implicit-redis",
+      "turnIndex": 5,
+      "label": "drift",
+      "retrievedBeliefIds": [],
+      "pinnedBeliefIds": [
+        "b-auth-open-q"
+      ],
+      "noiseBeliefIds": [],
+      "driftScore": 0.0,
+      "passed": true,
+      "failures": [],
+      "retrievalLatencyMs": 298.5559170047054
+    },
+    {
+      "caseId": "session-drift-noise-10-turns-implicit-redis",
+      "turnIndex": 6,
+      "label": "drift",
+      "retrievedBeliefIds": [
+        "b-functional-pipeline"
+      ],
+      "pinnedBeliefIds": [],
+      "noiseBeliefIds": [],
+      "driftScore": 0.0,
+      "passed": true,
+      "failures": [],
+      "retrievalLatencyMs": 288.1314590049442
+    },
+    {
+      "caseId": "session-drift-noise-10-turns-implicit-redis",
+      "turnIndex": 7,
+      "label": "drift",
+      "retrievedBeliefIds": [
+        "b-ts-pref",
+        "b-linting-v1",
+        "b-linting-v0",
+        "b-error-handling",
+        "b-vitest-pref",
+        "b-react-expertise",
+        "b-dead-letter-queue"
+      ],
+      "pinnedBeliefIds": [
+        "b-linting-current"
+      ],
+      "noiseBeliefIds": [
+        "b-linting-v1",
+        "b-linting-v0",
+        "b-vitest-pref",
+        "b-react-expertise",
+        "b-dead-letter-queue"
+      ],
+      "driftScore": 0.7142857142857143,
+      "passed": false,
+      "failures": [
+        "shouldOnlyInclude: noise ['b-dead-letter-queue', 'b-linting-v0', 'b-linting-v1', 'b-react-expertise', 'b-vitest-pref']"
+      ],
+      "retrievalLatencyMs": 425.01566700229887
+    },
+    {
+      "caseId": "session-drift-noise-10-turns-implicit-redis",
+      "turnIndex": 8,
+      "label": "drift",
+      "retrievedBeliefIds": [
+        "b-composition-inheritance",
+        "b-comm-recommendation",
+        "b-linting-v1",
+        "b-redis-code",
+        "b-linting-v0"
+      ],
+      "pinnedBeliefIds": [
+        "b-pinned-resolved-interaction",
+        "b-db-decision"
+      ],
+      "noiseBeliefIds": [
+        "b-comm-recommendation",
+        "b-linting-v1",
+        "b-redis-code",
+        "b-linting-v0"
+      ],
+      "driftScore": 0.8,
+      "passed": false,
+      "failures": [
+        "shouldOnlyInclude: noise ['b-comm-recommendation', 'b-linting-v0', 'b-linting-v1', 'b-redis-code']"
+      ],
+      "retrievalLatencyMs": 410.7579999981681
+    },
+    {
+      "caseId": "session-drift-noise-10-turns-implicit-redis",
+      "turnIndex": 9,
+      "label": "implicit_continuation",
+      "retrievedBeliefIds": [
+        "b-dead-letter-queue"
+      ],
+      "pinnedBeliefIds": [],
+      "noiseBeliefIds": [
+        "b-dead-letter-queue"
+      ],
+      "driftScore": 1.0,
+      "passed": false,
+      "failures": [
+        "shouldOnlyInclude: noise ['b-dead-letter-queue']"
+      ],
+      "retrievalLatencyMs": 361.03570798877627
+    },
+    {
+      "caseId": "session-drift-noise-10-turns-implicit-redis",
+      "turnIndex": 10,
+      "label": "re_entry",
+      "retrievedBeliefIds": [
+        "b-comm-recommendation"
+      ],
+      "pinnedBeliefIds": [],
+      "noiseBeliefIds": [
+        "b-comm-recommendation"
+      ],
+      "driftScore": 1.0,
+      "passed": false,
+      "failures": [
+        "shouldOnlyInclude: noise ['b-comm-recommendation']"
+      ],
+      "retrievalLatencyMs": 378.80270900495816
+    },
+    {
+      "caseId": "cross-session-formative-turn-surfaces-via-belief-join",
+      "turnIndex": 0,
+      "label": "implicit_continuation",
+      "retrievedBeliefIds": [
+        "b-linting-v1"
+      ],
+      "pinnedBeliefIds": [
+        "b-other-user-leak-check"
+      ],
+      "noiseBeliefIds": [
+        "b-linting-v1"
+      ],
+      "driftScore": 1.0,
+      "passed": false,
+      "failures": [
+        "shouldOnlyInclude: noise ['b-linting-v1']"
+      ],
+      "retrievalLatencyMs": 368.80216699501034
+    }
+  ]
+}
