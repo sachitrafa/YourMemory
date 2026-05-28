@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0A192F">
+  <meta name="robots" content="index, follow">
 
   <!-- Smithery verification -->
   <meta name="smithery-verification" content="c50f8dc447365cbfb0bcf6cef19473d719ad5e83656c1054a5973ff7784d9d78">
@@ -20,6 +22,9 @@
   <meta property="og:title" content="YourMemory — Persistent Memory for AI Agents">
   <meta property="og:description" content="Your AI assistant forgets you after every session. YourMemory fixes that — biologically-inspired memory decay, hybrid graph + vector retrieval, 89.4% Recall@5 on LongMemEval. MCP compatible.">
   <meta property="og:image" content="https://yourmemory.ai/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="YourMemory — Persistent Memory for AI Agents">
   <meta property="og:site_name" content="YourMemory">
 
   <!-- Twitter / X card -->
@@ -28,7 +33,7 @@
   <meta name="twitter:description" content="Your AI assistant forgets you after every session. YourMemory fixes that — 89.4% Recall@5 on LongMemEval. MCP compatible. Self-hostable.">
   <meta name="twitter:image" content="https://yourmemory.ai/og-image.png">
 
-  <!-- Structured data -->
+  <!-- Structured data: SoftwareApplication -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -37,15 +42,99 @@
     "applicationCategory": "DeveloperApplication",
     "description": "Persistent, biologically-inspired memory layer for AI agents. Hybrid BM25 + vector + knowledge graph retrieval with Ebbinghaus decay. MCP compatible, self-hostable.",
     "url": "https://yourmemory.ai",
-    "author": { "@type": "Person", "name": "Sachit Misra" },
+    "author": {
+      "@type": "Person",
+      "name": "Sachit Misra",
+      "url": "https://www.linkedin.com/in/sachit-mishra-19b393165/"
+    },
     "license": "https://creativecommons.org/licenses/by-nc/4.0/",
     "codeRepository": "https://github.com/sachitrafa/YourMemory",
     "operatingSystem": "Linux, macOS, Windows",
-    "programmingLanguage": "Python"
+    "programmingLanguage": "Python",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "sameAs": [
+      "https://github.com/sachitrafa/YourMemory",
+      "https://pypi.org/project/yourmemory/"
+    ]
+  }
+  </script>
+
+  <!-- Structured data: FAQPage (enables Google FAQ rich results) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How is YourMemory different from Mem0 or built-in Claude memory?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Most memory systems store flat vectors and never forget. YourMemory adds Ebbinghaus decay by category (different memory types age at different rates), graph-based retrieval that surfaces related memories the query didn't directly match, and automatic pruning so stale facts never pollute your context. Built-in Claude memory is cloud-only and limited; YourMemory runs fully locally with no data leaving your machine."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does my data leave my machine with YourMemory?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. YourMemory runs entirely on your local machine. Embeddings are generated with a local spaCy model (no API calls), and all storage is in a local DuckDB file by default. Nothing is sent to external servers."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does Ebbinghaus decay mean for AI memory?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "YourMemory applies the Ebbinghaus forgetting curve to each stored memory with a strength score S(t) = e^(−λt), where λ depends on the memory category. Strategies decay slowly (~38 day half-life), facts moderately (~24 days), failures quickly (~11 days). When strength drops below 0.05, the memory is pruned from retrieval automatically."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does YourMemory work with Cursor, Cline, and Windsurf?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. yourmemory-setup automatically detects and configures every MCP-compatible client on your machine: Claude Code, Claude Desktop, Cursor, Windsurf, Cline, Continue, and Zed. After a client restart, YourMemory is available as a tool in all of them simultaneously."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can multiple AI agents share the same YourMemory?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Register each agent with register_agent() to get a ym_ API key. Memories marked shared are visible to all agents; memories marked private are only visible to the storing agent."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is there a hosted or cloud version of YourMemory?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Not currently. YourMemory is fully local and self-hostable. For team deployments, use the PostgreSQL + pgvector backend with your own Postgres instance. A managed cloud option may come later."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the license for YourMemory?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Non-commercial license (CC BY-NC 4.0). Free for personal use, research, and open source projects. Contact mishrasachit1@gmail.com for commercial use."
+        }
+      }
+    ]
   }
   </script>
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='10' y='80' width='80' height='10' rx='2' fill='%230A192F'/%3E%3Crect x='25' y='60' width='50' height='10' rx='2' fill='%230A192F'/%3E%3Crect x='40' y='40' width='15' height='10' rx='2' fill='%230A192F'/%3E%3Crect x='60' y='40' width='5' height='10' rx='1' fill='%2300D4FF'/%3E%3Crect x='47.5' y='20' width='5' height='10' rx='1' fill='%2300D4FF' fill-opacity='0.6'/%3E%3C/svg%3E">
+  <!-- Preconnect for faster font loading (LCP improvement) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
@@ -228,7 +317,7 @@
         <!-- Product Hunt -->
         <div class="mt-8">
           <a href="https://www.producthunt.com/products/yourmemory?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-yourmemory" target="_blank" rel="noopener noreferrer">
-            <img alt="YourMemory on Product Hunt" width="220" height="48" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1128311&theme=light&t=1776845332905">
+            <img alt="YourMemory on Product Hunt" width="220" height="48" loading="lazy" decoding="async" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1128311&theme=light&t=1776845332905">
           </a>
         </div>
       </div>
