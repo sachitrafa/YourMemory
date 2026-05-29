@@ -333,24 +333,7 @@
             <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
             <span class="ml-2 text-[10px] uppercase tracking-widest text-gray-500">yourmemory · recall</span>
           </div>
-          <div class="p-6 space-y-3 leading-relaxed">
-            <p class="text-gray-500"># recall("Python backend services")</p>
-            <p class="text-gray-600 text-xs">── Round 1: vector search ──</p>
-            <div class="flex justify-between items-center bg-cyan-950/30 border-l-2 border-cyan-400 px-3 py-2 rounded-r">
-              <span class="text-cyan-100">"Sachit uses Python at MongoDB"</span>
-              <span class="text-cyan-400 font-bold ml-4">sim 0.61</span>
-            </div>
-            <p class="text-gray-600 text-xs mt-1">── Round 2: graph expansion ──</p>
-            <div class="flex justify-between items-center bg-purple-950/30 border-l-2 border-purple-400 px-3 py-2 rounded-r">
-              <span class="text-purple-200">"Docker + K8s production deploys"</span>
-              <span class="text-purple-400 font-bold ml-4">via graph</span>
-            </div>
-            <div class="flex justify-between items-center opacity-40 italic px-3 py-2">
-              <span>"Uses React"</span>
-              <span class="text-red-400 ml-4">0.04 (Decayed)</span>
-            </div>
-            <p class="text-green-500 pt-3 border-t border-gray-800">✓ 1 stale fact pruned · 1 graph neighbour surfaced</p>
-          </div>
+          <div id="terminal-output" class="p-6 space-y-3 leading-relaxed min-h-[200px]"></div>
         </div>
       </div>
     </div>
@@ -362,11 +345,11 @@
     <div class="max-w-6xl mx-auto px-6">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:divide-x divide-gray-100">
         <div class="fade-up delay-1 text-center px-4">
-          <p class="font-display stat-num text-4xl text-[#0A192F]" style="animation-delay:0.1s">89.4%</p>
+          <p class="font-display stat-num text-4xl text-[#0A192F]" data-target="89.4%" style="animation-delay:0.1s">89.4%</p>
           <p class="text-sm text-gray-500 mt-1">Recall@5 on LongMemEval</p>
         </div>
         <div class="fade-up delay-2 text-center px-4">
-          <p class="font-display stat-num text-4xl text-[#0A192F]" style="animation-delay:0.2s">−84%</p>
+          <p class="font-display stat-num text-4xl text-[#0A192F]" data-target="-84%" style="animation-delay:0.2s">−84%</p>
           <p class="text-sm text-gray-500 mt-1">Token waste at 30 sessions</p>
         </div>
         <div class="fade-up delay-2 text-center px-4">
@@ -440,7 +423,7 @@
 
       <div class="grid md:grid-cols-3 gap-10">
         <!-- Feature 1 -->
-        <div class="fade-up delay-1 group">
+        <div class="fade-up delay-1 group tilt-card cursor-default">
           <div class="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:border-[#00D4FF] group-hover:shadow-md transition-all duration-200">
             <svg width="22" height="22" fill="none" stroke="#0A192F" stroke-width="1.8" viewBox="0 0 24 24">
               <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
@@ -457,7 +440,7 @@
         </div>
 
         <!-- Feature 2 -->
-        <div class="fade-up delay-2 group">
+        <div class="fade-up delay-2 group tilt-card cursor-default">
           <div class="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:border-[#00D4FF] group-hover:shadow-md transition-all duration-200">
             <svg width="22" height="22" fill="none" stroke="#0A192F" stroke-width="1.8" viewBox="0 0 24 24">
               <circle cx="6"  cy="12" r="2"/><circle cx="18" cy="5"  r="2"/><circle cx="18" cy="19" r="2"/>
@@ -474,7 +457,7 @@
         </div>
 
         <!-- Feature 3 -->
-        <div class="fade-up delay-3 group">
+        <div class="fade-up delay-3 group tilt-card cursor-default">
           <div class="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:border-[#00D4FF] group-hover:shadow-md transition-all duration-200">
             <svg width="22" height="22" fill="none" stroke="#0A192F" stroke-width="1.8" viewBox="0 0 24 24">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -491,6 +474,12 @@
             <div class="flex items-center gap-2 text-gray-600"><span class="text-green-500 font-bold">·</span> Revoke any agent anytime</div>
           </div>
         </div>
+      </div>
+
+      <!-- Live decay visualizer -->
+      <div class="mt-12 fade-up bg-gray-50 border border-gray-200 rounded-2xl p-6">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Live — memory strength over time</p>
+        <canvas id="decay-canvas" class="w-full" style="height:80px"></canvas>
       </div>
 
       <!-- Additional capabilities strip -->
@@ -1203,11 +1192,187 @@
       if (!isOpen) item.classList.add('open');
     }
 
-    // Scroll-reveal
+    // ── Scroll-reveal ──────────────────────────────────────────────────────────
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
     }, { threshold: 0.12 });
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // ── Cursor spotlight ──────────────────────────────────────────────────────
+    const spotlight = document.createElement('div');
+    spotlight.style.cssText = `
+      position:fixed;pointer-events:none;z-index:9999;
+      width:400px;height:400px;border-radius:50%;
+      background:radial-gradient(circle,rgba(0,212,255,0.06) 0%,transparent 70%);
+      transform:translate(-50%,-50%);transition:opacity 0.3s;
+      left:-999px;top:-999px;
+    `;
+    document.body.appendChild(spotlight);
+    document.addEventListener('mousemove', e => {
+      spotlight.style.left = e.clientX + 'px';
+      spotlight.style.top  = e.clientY + 'px';
+    });
+    document.addEventListener('mouseleave', () => spotlight.style.opacity = '0');
+    document.addEventListener('mouseenter', () => spotlight.style.opacity = '1');
+
+    // ── Animated counters ─────────────────────────────────────────────────────
+    function animateCounter(el) {
+      const target = el.dataset.target;
+      const isPercent = target.includes('%');
+      const isMinus   = target.startsWith('-');
+      const isPlus    = target.endsWith('+');
+      const raw = parseFloat(target.replace(/[^0-9.]/g, ''));
+      const duration = 1400;
+      const start = performance.now();
+      const prefix = isMinus ? '−' : '';
+      const suffix = isPercent ? '%' : isPlus ? '+' : '';
+      const decimals = target.includes('.') ? (target.split('.')[1]?.replace(/[^0-9]/g,'').length || 0) : 0;
+      function tick(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const value = (raw * eased).toFixed(decimals);
+        el.textContent = prefix + value + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+        else el.textContent = prefix + raw.toFixed(decimals) + suffix;
+      }
+      requestAnimationFrame(tick);
+    }
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          animateCounter(e.target);
+          counterObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-target]').forEach(el => counterObserver.observe(el));
+
+    // ── Typewriter terminal ──────────────────────────────────────────────────
+    const terminal = document.getElementById('terminal-output');
+    if (terminal) {
+      const lines = [
+        { text: '# recall("Python backend services")',      cls: 'text-gray-500',   delay: 0 },
+        { text: '── Round 1: vector search ──',            cls: 'text-gray-600 text-xs', delay: 600 },
+        { text: null, type: 'card-cyan',                   delay: 900 },
+        { text: '── Round 2: graph expansion ──',          cls: 'text-gray-600 text-xs', delay: 1500 },
+        { text: null, type: 'card-purple',                 delay: 1800 },
+        { text: null, type: 'card-faded',                  delay: 2100 },
+        { text: '✓ 1 stale fact pruned · 1 graph neighbour surfaced', cls: 'text-green-500 pt-3 border-t border-gray-800', delay: 2600 },
+      ];
+      const cards = {
+        'card-cyan':   `<div class="flex justify-between items-center bg-cyan-950/30 border-l-2 border-cyan-400 px-3 py-2 rounded-r"><span class="text-cyan-100">"Sachit uses Python at MongoDB"</span><span class="text-cyan-400 font-bold ml-4">sim 0.61</span></div>`,
+        'card-purple': `<div class="flex justify-between items-center bg-purple-950/30 border-l-2 border-purple-400 px-3 py-2 rounded-r"><span class="text-purple-200">"Docker + K8s production deploys"</span><span class="text-purple-400 font-bold ml-4">via graph</span></div>`,
+        'card-faded':  `<div class="flex justify-between items-center opacity-40 italic px-3 py-2"><span>"Uses React"</span><span class="text-red-400 ml-4">0.04 (Decayed)</span></div>`,
+      };
+
+      function typewriterLine(el, text, cb) {
+        let i = 0;
+        el.textContent = '';
+        const cursor = document.createElement('span');
+        cursor.textContent = '▋';
+        cursor.style.cssText = 'animation:blink 0.7s step-end infinite;opacity:1';
+        el.appendChild(cursor);
+        function type() {
+          if (i < text.length) {
+            cursor.before(text[i++]);
+            setTimeout(type, 18 + Math.random() * 12);
+          } else {
+            cursor.remove();
+            if (cb) cb();
+          }
+        }
+        type();
+      }
+
+      function runTerminal() {
+        terminal.innerHTML = '';
+        lines.forEach(({ text, cls, type, delay }) => {
+          setTimeout(() => {
+            if (type) {
+              const div = document.createElement('div');
+              div.innerHTML = cards[type];
+              div.style.opacity = '0';
+              div.style.transform = 'translateX(-6px)';
+              div.style.transition = 'opacity 0.3s, transform 0.3s';
+              terminal.appendChild(div);
+              requestAnimationFrame(() => { div.style.opacity='1'; div.style.transform='translateX(0)'; });
+            } else {
+              const el = document.createElement('p');
+              el.className = cls;
+              terminal.appendChild(el);
+              typewriterLine(el, text);
+            }
+          }, delay);
+        });
+        // Loop after all lines done
+        setTimeout(runTerminal, 5500);
+      }
+
+      // Start after short delay so page has settled
+      setTimeout(runTerminal, 800);
+    }
+
+    // ── 3D card tilt ─────────────────────────────────────────────────────────
+    document.querySelectorAll('.tilt-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width  - 0.5;
+        const y = (e.clientY - r.top)  / r.height - 0.5;
+        card.style.transform = `perspective(600px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) scale(1.02)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(600px) rotateY(0deg) rotateX(0deg) scale(1)';
+      });
+      card.style.transition = 'transform 0.15s ease';
+    });
+
+    // ── Memory decay animation ────────────────────────────────────────────────
+    const decayCanvas = document.getElementById('decay-canvas');
+    if (decayCanvas) {
+      const ctx = decayCanvas.getContext('2d');
+      const W = decayCanvas.width = decayCanvas.offsetWidth;
+      const H = decayCanvas.height = 80;
+      let t = 0;
+      const memories = [
+        { label: 'Python preference', strength: 0.95, color: '#00d4ff' },
+        { label: 'Uses K8s',          strength: 0.72, color: '#a78bfa' },
+        { label: 'Old framework',     strength: 0.18, color: '#4a5568' },
+      ];
+      function drawDecay() {
+        ctx.clearRect(0, 0, W, H);
+        memories.forEach((m, i) => {
+          const y = 16 + i * 22;
+          const decay = m.strength * (0.85 + 0.15 * Math.sin(t * 0.3 + i));
+          const barW = decay * (W - 120);
+          // Track
+          ctx.fillStyle = 'rgba(255,255,255,0.05)';
+          ctx.beginPath(); ctx.roundRect(100, y - 6, W - 120, 12, 3); ctx.fill();
+          // Bar
+          const grad = ctx.createLinearGradient(100, 0, 100 + barW, 0);
+          grad.addColorStop(0, m.color); grad.addColorStop(1, m.color + '44');
+          ctx.fillStyle = grad;
+          ctx.beginPath(); ctx.roundRect(100, y - 6, barW, 12, 3); ctx.fill();
+          // Label
+          ctx.fillStyle = '#9ca3af';
+          ctx.font = '11px Inter, sans-serif';
+          ctx.textAlign = 'right';
+          ctx.fillText(m.label, 92, y + 4);
+          // Value
+          ctx.fillStyle = m.color;
+          ctx.textAlign = 'left';
+          ctx.fillText((decay * 100).toFixed(0) + '%', 106 + barW, y + 4);
+        });
+        t += 0.02;
+        requestAnimationFrame(drawDecay);
+      }
+      const decayObs = new IntersectionObserver(([e]) => { if(e.isIntersecting) drawDecay(); }, { threshold: 0.3 });
+      decayObs.observe(decayCanvas);
+    }
+
+    // CSS for cursor blink
+    const blinkStyle = document.createElement('style');
+    blinkStyle.textContent = '@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }';
+    document.head.appendChild(blinkStyle);
   </script>
 </body>
 </html>
