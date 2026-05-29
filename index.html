@@ -272,6 +272,8 @@
   <div class="relative overflow-hidden">
     <!-- Animated grid overlay -->
     <div class="hero-grid"></div>
+    <!-- Particle canvas -->
+    <canvas id="hero-particles" class="absolute inset-0 w-full h-full pointer-events-none" style="opacity:0.5"></canvas>
     <!-- Floating orbs -->
     <div class="orb orb-1" style="width:520px;height:520px;background:radial-gradient(circle,rgba(0,212,255,0.13) 0%,transparent 70%);top:-160px;left:-120px;filter:blur(1px)"></div>
     <div class="orb orb-2" style="width:420px;height:420px;background:radial-gradient(circle,rgba(139,92,246,0.10) 0%,transparent 70%);top:80px;right:-100px;filter:blur(1px)"></div>
@@ -333,7 +335,7 @@
             <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
             <span class="ml-2 text-[10px] uppercase tracking-widest text-gray-500">yourmemory · recall</span>
           </div>
-          <div id="terminal-output" class="p-6 space-y-3 leading-relaxed min-h-[200px]"></div>
+          <div id="terminal-output" class="p-5 space-y-2.5 leading-relaxed min-h-[220px] overflow-hidden text-xs"></div>
         </div>
       </div>
     </div>
@@ -1215,6 +1217,64 @@
     document.addEventListener('mouseleave', () => spotlight.style.opacity = '0');
     document.addEventListener('mouseenter', () => spotlight.style.opacity = '1');
 
+    // ── Hero particles ────────────────────────────────────────────────────────
+    const heroCanvas = document.getElementById('hero-particles');
+    if (heroCanvas) {
+      const pc = heroCanvas.getContext('2d');
+      function resizeHero() {
+        heroCanvas.width  = heroCanvas.offsetWidth;
+        heroCanvas.height = heroCanvas.offsetHeight;
+      }
+      resizeHero();
+      window.addEventListener('resize', resizeHero);
+
+      const NUM = 55;
+      const pts = Array.from({ length: NUM }, () => ({
+        x:  Math.random() * heroCanvas.width,
+        y:  Math.random() * heroCanvas.height,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r:  Math.random() * 1.5 + 0.5,
+        a:  Math.random(),
+      }));
+
+      function drawParticles() {
+        pc.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
+        pts.forEach(p => {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0) p.x = heroCanvas.width;
+          if (p.x > heroCanvas.width)  p.x = 0;
+          if (p.y < 0) p.y = heroCanvas.height;
+          if (p.y > heroCanvas.height) p.y = 0;
+
+          // Dot
+          pc.beginPath();
+          pc.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          pc.fillStyle = `rgba(0,212,255,${p.a * 0.6})`;
+          pc.fill();
+        });
+
+        // Connections
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const dx = pts[i].x - pts[j].x;
+            const dy = pts[i].y - pts[j].y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 120) {
+              pc.beginPath();
+              pc.moveTo(pts[i].x, pts[i].y);
+              pc.lineTo(pts[j].x, pts[j].y);
+              pc.strokeStyle = `rgba(0,212,255,${(1 - dist/120) * 0.12})`;
+              pc.lineWidth = 0.8;
+              pc.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(drawParticles);
+      }
+      drawParticles();
+    }
+
     // ── Animated counters ─────────────────────────────────────────────────────
     function animateCounter(el) {
       const target = el.dataset.target;
@@ -1251,18 +1311,20 @@
     const terminal = document.getElementById('terminal-output');
     if (terminal) {
       const lines = [
-        { text: '# recall("Python backend services")',      cls: 'text-gray-500',   delay: 0 },
-        { text: '── Round 1: vector search ──',            cls: 'text-gray-600 text-xs', delay: 600 },
-        { text: null, type: 'card-cyan',                   delay: 900 },
-        { text: '── Round 2: graph expansion ──',          cls: 'text-gray-600 text-xs', delay: 1500 },
-        { text: null, type: 'card-purple',                 delay: 1800 },
-        { text: null, type: 'card-faded',                  delay: 2100 },
-        { text: '✓ 1 stale fact pruned · 1 graph neighbour surfaced', cls: 'text-green-500 pt-3 border-t border-gray-800', delay: 2600 },
+        { text: '> recall("Python backend services")', cls: 'text-cyan-400',  delay: 0 },
+        { text: '  Round 1  vector search',            cls: 'text-gray-600',  delay: 700 },
+        { text: null, type: 'card-cyan',               delay: 1000 },
+        { text: null, type: 'card-cyan2',              delay: 1300 },
+        { text: '  Round 2  graph expansion',          cls: 'text-gray-600',  delay: 1800 },
+        { text: null, type: 'card-purple',             delay: 2100 },
+        { text: null, type: 'card-faded',              delay: 2400 },
+        { text: '✓ 2 results  ·  1 pruned (decayed)', cls: 'text-green-400 border-t border-gray-800 pt-2', delay: 2900 },
       ];
       const cards = {
-        'card-cyan':   `<div class="flex justify-between items-center bg-cyan-950/30 border-l-2 border-cyan-400 px-3 py-2 rounded-r"><span class="text-cyan-100">"Sachit uses Python at MongoDB"</span><span class="text-cyan-400 font-bold ml-4">sim 0.61</span></div>`,
-        'card-purple': `<div class="flex justify-between items-center bg-purple-950/30 border-l-2 border-purple-400 px-3 py-2 rounded-r"><span class="text-purple-200">"Docker + K8s production deploys"</span><span class="text-purple-400 font-bold ml-4">via graph</span></div>`,
-        'card-faded':  `<div class="flex justify-between items-center opacity-40 italic px-3 py-2"><span>"Uses React"</span><span class="text-red-400 ml-4">0.04 (Decayed)</span></div>`,
+        'card-cyan':   `<div class="flex justify-between gap-2 bg-cyan-950/40 border-l-2 border-cyan-400 px-3 py-1.5 rounded-r"><span class="text-cyan-100 truncate">"Prefers Python for backend"</span><span class="text-cyan-400 font-bold shrink-0">0.91</span></div>`,
+        'card-cyan2':  `<div class="flex justify-between gap-2 bg-cyan-950/30 border-l-2 border-cyan-500/60 px-3 py-1.5 rounded-r"><span class="text-cyan-200/80 truncate">"Uses FastAPI + async patterns"</span><span class="text-cyan-500 font-bold shrink-0">0.74</span></div>`,
+        'card-purple': `<div class="flex justify-between gap-2 bg-purple-950/30 border-l-2 border-purple-400 px-3 py-1.5 rounded-r"><span class="text-purple-200 truncate">"Docker + K8s in prod"</span><span class="text-purple-400 font-bold shrink-0">graph</span></div>`,
+        'card-faded':  `<div class="flex justify-between gap-2 opacity-35 px-3 py-1.5"><span class="italic truncate">"Used React two years ago"</span><span class="text-red-400 shrink-0">decayed</span></div>`,
       };
 
       function typewriterLine(el, text, cb) {
@@ -1305,7 +1367,7 @@
           }, delay);
         });
         // Loop after all lines done
-        setTimeout(runTerminal, 5500);
+        setTimeout(runTerminal, 6500);
       }
 
       // Start after short delay so page has settled
