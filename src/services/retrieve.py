@@ -19,6 +19,48 @@ W_BM25   = 0.4
 W_VECTOR = 0.6
 
 
+def _user_has_memories(user_id: str) -> bool:
+    """Return False when the user has no stored memories — prevents cold-start cross-user leakage."""
+    backend = get_backend()
+    conn = get_conn()
+    try:
+        if backend == "postgres":
+            cur = conn.cursor()
+            cur.execute("SELECT 1 FROM memories WHERE user_id = %s LIMIT 1", (user_id,))
+            found = cur.fetchone() is not None
+            cur.close()
+        elif backend == "duckdb":
+            result = conn.execute("SELECT 1 FROM memories WHERE user_id = ? LIMIT 1", [user_id])
+            found = result.fetchone() is not None
+        else:
+            cur = conn.cursor()
+            cur.execute("SELECT 1 FROM memories WHERE user_id = ? LIMIT 1", (user_id,))
+            found = cur.fetchone() is not None
+            cur.close()
+        return found
+    except Exception:
+        return True  # on error, let retrieval proceed normally
+    finally:
+        conn.close()
+
+
+def _scope_fragment(scope: list[str] | None, param_style: str = "qmark") -> tuple[str, list]:
+    """
+    Build a SQL WHERE fragment that hard-filters candidates by context_paths scope.
+    Memories with context_paths IS NULL or containing 'user:universal' always pass.
+    param_style: 'qmark' for SQLite/DuckDB (?), 'format' for Postgres (%s).
+    """
+    if not scope:
+        return "", []
+    ph   = "?" if param_style == "qmark" else "%s"
+    func = "instr" if param_style == "qmark" else "strpos"
+    parts  = ["context_paths IS NULL", f"{func}(context_paths, {ph}) > 0"]
+    params = ['"user:universal"']
+    for s in scope:
+        parts.append(f"{func}(context_paths, {ph}) > 0")
+        params.append(f'"{s}"')
+    return "AND (" + " OR ".join(parts) + ")", params
+
 
 # ── BM25 / FTS helpers ───────────────────────────────────────────────────────
 
@@ -182,6 +224,9 @@ def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None,
 
     no_graph=True: skip graph expansion — used for BEAM ablation benchmark.
     """
+    if not _user_has_memories(user_id):
+        return {"memoriesFound": 0, "context": "", "memories": []}
+
     query_embedding = embed(query)
     backend = get_backend()
     temporal_range = detect_temporal_range(query)
@@ -494,10 +539,11 @@ def _bump_recall_count(ids: list, backend: str) -> None:
 def _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id, temporal_range=None, scope=None):
     from psycopg2.extras import RealDictCursor
     embedding_str = f"[{','.join(str(x) for x in query_embedding)}]"
+    scope_sql, scope_params = _scope_fragment(scope, param_style="format")
     conn = get_conn()
     cur  = conn.cursor(cursor_factory=RealDictCursor)
     if agent_id:
-        cur.execute("""
+        cur.execute(f"""
             SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
                    context_paths, agent_id, visibility,
                    1 - (embedding <=> %s::vector) AS similarity
@@ -505,12 +551,13 @@ def _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id, tempora
             WHERE user_id = %s
               AND (visibility = 'shared' OR (visibility = 'private' AND agent_id = %s))
               AND 1 - (embedding <=> %s::vector) >= %s
+              {scope_sql}
             ORDER BY embedding <=> %s::vector
             LIMIT %s
         """, (embedding_str, user_id, agent_id, embedding_str,
-              SIMILARITY_THRESHOLD, embedding_str, top_k * 2))
+              SIMILARITY_THRESHOLD, *scope_params, embedding_str, top_k * 2))
     else:
-        cur.execute("""
+        cur.execute(f"""
             SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
                    context_paths, agent_id, visibility,
                    1 - (embedding <=> %s::vector) AS similarity
@@ -518,10 +565,11 @@ def _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id, tempora
             WHERE user_id = %s
               AND visibility = 'shared'
               AND 1 - (embedding <=> %s::vector) >= %s
+              {scope_sql}
             ORDER BY embedding <=> %s::vector
             LIMIT %s
         """, (embedding_str, user_id, embedding_str,
-              SIMILARITY_THRESHOLD, embedding_str, top_k * 2))
+              SIMILARITY_THRESHOLD, *scope_params, embedding_str, top_k * 2))
     candidates = [dict(row) for row in cur.fetchall()]
     cur.close()
     fts_scores = _fts_search_postgres(conn, user_id, agent_id, query=query, limit=top_k * 2)
@@ -534,11 +582,12 @@ def _retrieve_postgres(user_id, query, query_embedding, top_k, agent_id, tempora
 
 def _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id, temporal_range=None, scope=None):
     from src.db.connection import duckdb_rows
+    scope_sql, scope_params = _scope_fragment(scope, param_style="qmark")
     conn = get_conn()
 
     def _query(threshold):
         if agent_id:
-            return duckdb_rows(conn.execute("""
+            return duckdb_rows(conn.execute(f"""
                 SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
                        context_paths, agent_id, visibility,
                        array_cosine_similarity(embedding, ?::FLOAT[768]) AS similarity
@@ -546,9 +595,10 @@ def _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id, temporal_
                 WHERE user_id = ?
                   AND (visibility = 'shared' OR (visibility = 'private' AND agent_id = ?))
                   AND array_cosine_similarity(embedding, ?::FLOAT[768]) >= ?
+                  {scope_sql}
                 ORDER BY similarity DESC LIMIT ?
-            """, [query_embedding, user_id, agent_id, query_embedding, threshold, top_k * 2]))
-        return duckdb_rows(conn.execute("""
+            """, [query_embedding, user_id, agent_id, query_embedding, threshold] + scope_params + [top_k * 2]))
+        return duckdb_rows(conn.execute(f"""
             SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
                    context_paths, agent_id, visibility,
                    array_cosine_similarity(embedding, ?::FLOAT[768]) AS similarity
@@ -556,8 +606,9 @@ def _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id, temporal_
             WHERE user_id = ?
               AND visibility = 'shared'
               AND array_cosine_similarity(embedding, ?::FLOAT[768]) >= ?
+              {scope_sql}
             ORDER BY similarity DESC LIMIT ?
-        """, [query_embedding, user_id, query_embedding, threshold, top_k * 2]))
+        """, [query_embedding, user_id, query_embedding, threshold] + scope_params + [top_k * 2]))
 
     candidates = _query(SIMILARITY_THRESHOLD)
     if not candidates:
@@ -573,21 +624,24 @@ def _retrieve_duckdb(user_id, query, query_embedding, top_k, agent_id, temporal_
 
 def _retrieve_sqlite(user_id, query, query_embedding, top_k, agent_id, temporal_range=None, scope=None):
     from .utils import cosine
+    scope_sql, scope_params = _scope_fragment(scope, param_style="qmark")
     conn = get_conn()
     cur  = conn.cursor()
     if agent_id:
-        cur.execute("""
+        cur.execute(f"""
             SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
                    context_paths, agent_id, visibility, embedding
             FROM memories
             WHERE user_id = ? AND (visibility = 'shared' OR (visibility = 'private' AND agent_id = ?))
-        """, (user_id, agent_id))
+            {scope_sql}
+        """, (user_id, agent_id) + tuple(scope_params))
     else:
-        cur.execute("""
+        cur.execute(f"""
             SELECT id, content, category, importance, recall_count, created_at, last_accessed_at,
                    context_paths, agent_id, visibility, embedding
             FROM memories WHERE user_id = ? AND visibility = 'shared'
-        """, (user_id,))
+            {scope_sql}
+        """, (user_id,) + tuple(scope_params))
     rows = cur.fetchall()
     cur.close()
 
