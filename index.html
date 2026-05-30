@@ -136,19 +136,10 @@
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
     .font-mono, code, pre { font-family: 'JetBrains Mono', monospace; }
-    .font-display { font-family: 'DM Serif Display', serif; }
-
-    /* ── Dot grid background ─────────────────────────────────────── */
-    .dot-bg {
-      background-color: #F9FAFB;
-      background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-      background-size: 40px 40px;
-    }
-
     ::selection { background: #cffafe; }
 
     /* ── SVG draw animation ──────────────────────────────────────── */
@@ -164,33 +155,6 @@
     .faq-item.open .faq-body { max-height: 320px; }
     .faq-item.open .faq-chevron { transform: rotate(180deg); }
     .faq-chevron { transition: transform 0.25s ease; }
-
-    /* ── Floating orbs ───────────────────────────────────────────── */
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      pointer-events: none;
-      will-change: transform;
-    }
-    .orb-1 { animation: orb-float-1 14s ease-in-out infinite; }
-    .orb-2 { animation: orb-float-2 18s ease-in-out infinite; }
-    .orb-3 { animation: orb-float-3 22s ease-in-out infinite; }
-    .orb-4 { animation: orb-float-1 16s ease-in-out infinite reverse; }
-
-    @keyframes orb-float-1 {
-      0%, 100% { transform: translate(0px, 0px) scale(1); }
-      33%       { transform: translate(44px, -64px) scale(1.06); }
-      66%       { transform: translate(-32px, 28px) scale(0.94); }
-    }
-    @keyframes orb-float-2 {
-      0%, 100% { transform: translate(0px, 0px) scale(1); }
-      40%       { transform: translate(-56px, 48px) scale(1.08); }
-      75%       { transform: translate(36px, -40px) scale(0.92); }
-    }
-    @keyframes orb-float-3 {
-      0%, 100% { transform: translate(0px, 0px); }
-      50%       { transform: translate(28px, 56px); }
-    }
 
     /* ── Scroll-reveal fade-up ───────────────────────────────────── */
     .fade-up {
@@ -209,23 +173,13 @@
       to   { opacity: 1; transform: translateY(0); }
     }
     .stat-num { animation: stat-in 0.6s ease both; }
-
-    /* ── Hero grid overlay ───────────────────────────────────────── */
-    .hero-grid {
-      position: absolute; inset: 0; pointer-events: none;
-      background-image:
-        linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
-    }
   </style>
   <script type="module">
     import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@latest';
     inject();
   </script>
 </head>
-<body class="min-h-screen text-[#0A192F] dot-bg">
+<body class="min-h-screen text-[#0A192F] bg-white">
 
   <!-- NAVIGATION -->
   <nav class="sticky top-0 z-50 backdrop-blur-md border-b border-gray-200" style="background:rgba(249,250,251,0.92)">
@@ -244,7 +198,7 @@
         <a href="#how-it-works"  class="hover:text-[#0A192F] transition-colors">How it works</a>
         <a href="#features"      class="hover:text-[#0A192F] transition-colors">Features</a>
         <a href="#benchmarks"    class="hover:text-[#0A192F] transition-colors">Benchmarks</a>
-        <a href="#enterprise"    class="hover:text-cyan-600 transition-colors font-semibold text-cyan-600">Enterprise</a>
+        <a href="#enterprise"    class="hover:text-[#0A192F] transition-colors">Enterprise</a>
         <a href="#faq"           class="hover:text-[#0A192F] transition-colors">FAQ</a>
         <a href="https://github.com/sachitrafa/YourMemory" target="_blank"
            class="flex items-center gap-1.5 hover:text-[#0A192F] transition-colors">
@@ -269,47 +223,35 @@
   </nav>
 
   <!-- HERO -->
-  <div class="relative overflow-hidden">
-    <!-- Animated grid overlay -->
-    <div class="hero-grid"></div>
-    <!-- Particle canvas -->
-    <canvas id="hero-particles" class="absolute inset-0 w-full h-full pointer-events-none" style="opacity:0.5"></canvas>
-    <!-- Floating orbs -->
-    <div class="orb orb-1" style="width:520px;height:520px;background:radial-gradient(circle,rgba(0,212,255,0.13) 0%,transparent 70%);top:-160px;left:-120px;filter:blur(1px)"></div>
-    <div class="orb orb-2" style="width:420px;height:420px;background:radial-gradient(circle,rgba(139,92,246,0.10) 0%,transparent 70%);top:80px;right:-100px;filter:blur(1px)"></div>
-    <div class="orb orb-3" style="width:300px;height:300px;background:radial-gradient(circle,rgba(0,212,255,0.08) 0%,transparent 70%);bottom:0;left:40%;filter:blur(1px)"></div>
-
+  <div class="bg-[#0A192F]">
   <header class="max-w-6xl mx-auto px-6 pt-20 pb-24 relative">
     <div class="grid lg:grid-cols-2 gap-16 items-center">
       <div>
-        <!-- Eyebrow badges -->
+        <!-- Eyebrow badge -->
         <div class="flex flex-wrap gap-2 mb-8">
-          <div class="inline-flex items-center gap-2 bg-cyan-50 border border-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+          <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-gray-300 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
             <svg width="11" height="11" fill="currentColor" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             MCP Compatible
           </div>
-          <div class="inline-flex items-center gap-2 bg-green-50 border border-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+          <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-gray-300 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
             89.4% Recall@5
-          </div>
-          <div class="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-            🏆 #20 Product of the Day
           </div>
         </div>
 
-        <h1 class="font-display text-6xl md:text-7xl leading-[0.92] mb-6">
+        <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6 text-white">
           Your AI should<br/><span class="text-[#00D4FF]">remember you.</span>
         </h1>
-        <p class="text-xl text-gray-600 mb-10 max-w-lg leading-relaxed">
+        <p class="text-lg text-gray-400 mb-10 max-w-lg leading-relaxed">
           YourMemory gives any AI assistant persistent, intelligent memory across sessions — with biologically-inspired decay that forgets the right things at the right time.
         </p>
 
         <div class="flex flex-wrap items-center gap-4">
-          <a href="#setup" class="inline-flex items-center gap-2.5 bg-[#0A192F] text-white px-6 py-3.5 rounded-xl font-bold text-sm hover:bg-black transition-colors shadow-[4px_4px_0px_0px_rgba(0,212,255,0.35)]">
+          <a href="#setup" class="inline-flex items-center gap-2.5 bg-[#00D4FF] text-[#0A192F] px-6 py-3.5 rounded-xl font-bold text-sm hover:bg-cyan-300 transition-colors">
             Get started free
             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
           <a href="https://github.com/sachitrafa/YourMemory" target="_blank"
-             class="inline-flex items-center gap-2 border border-gray-300 bg-white text-gray-700 px-5 py-3.5 rounded-xl font-semibold text-sm hover:border-gray-400 transition-colors">
+             class="inline-flex items-center gap-2 border border-white/25 text-gray-300 px-5 py-3.5 rounded-xl font-semibold text-sm hover:border-white/50 transition-colors">
             <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
             </svg>
@@ -317,18 +259,11 @@
           </a>
         </div>
 
-        <!-- Product Hunt -->
-        <div class="mt-8">
-          <a href="https://www.producthunt.com/products/yourmemory?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-yourmemory" target="_blank" rel="noopener noreferrer">
-            <img alt="YourMemory on Product Hunt" width="220" height="48" loading="lazy" decoding="async" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1128311&theme=light&t=1776845332905">
-          </a>
-        </div>
       </div>
 
       <!-- TERMINAL VISUALIZER -->
       <div class="relative">
-        <div class="absolute -inset-4 bg-gradient-to-tr from-cyan-100 to-purple-100 rounded-3xl blur-2xl opacity-50 pointer-events-none"></div>
-        <div class="relative bg-[#0A192F] rounded-2xl border border-gray-800 shadow-2xl overflow-hidden font-mono text-sm text-gray-400">
+        <div class="bg-[#111827] rounded-2xl border border-white/10 overflow-hidden font-mono text-sm text-gray-400">
           <div class="bg-gray-900 px-4 py-2.5 border-b border-gray-800 flex items-center gap-2">
             <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
             <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
@@ -347,19 +282,19 @@
     <div class="max-w-6xl mx-auto px-6">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:divide-x divide-gray-100">
         <div class="fade-up delay-1 text-center px-4">
-          <p class="font-display stat-num text-4xl text-[#0A192F]" data-target="89.4%" style="animation-delay:0.1s">89.4%</p>
+          <p class="font-bold stat-num text-4xl text-[#0A192F]" data-target="89.4%" style="animation-delay:0.1s">89.4%</p>
           <p class="text-sm text-gray-500 mt-1">Recall@5 on LongMemEval</p>
         </div>
         <div class="fade-up delay-2 text-center px-4">
-          <p class="font-display stat-num text-4xl text-[#0A192F]" data-target="-84%" style="animation-delay:0.2s">−84%</p>
+          <p class="font-bold stat-num text-4xl text-[#0A192F]" data-target="-84%" style="animation-delay:0.2s">−84%</p>
           <p class="text-sm text-gray-500 mt-1">Token waste at 30 sessions</p>
         </div>
         <div class="fade-up delay-2 text-center px-4">
-          <p class="font-display stat-num text-4xl text-[#0A192F]" style="animation-delay:0.3s">7</p>
+          <p class="font-bold stat-num text-4xl text-[#0A192F]" style="animation-delay:0.3s">7</p>
           <p class="text-sm text-gray-500 mt-1">MCP clients supported</p>
         </div>
         <div class="fade-up delay-3 text-center px-4">
-          <p class="font-display stat-num text-4xl text-[#0A192F]" style="animation-delay:0.4s">2 cmds</p>
+          <p class="font-bold stat-num text-4xl text-[#0A192F]" style="animation-delay:0.4s">2 cmds</p>
           <p class="text-sm text-gray-500 mt-1">To full setup</p>
         </div>
       </div>
@@ -369,8 +304,8 @@
   <!-- HOW IT WORKS -->
   <section id="how-it-works" class="max-w-6xl mx-auto px-6 py-28">
     <div class="text-center mb-16">
-      <p class="text-xs font-bold uppercase tracking-widest text-[#00D4FF] mb-3">Simple by design</p>
-      <h2 class="font-display text-4xl md:text-5xl mb-4">Memory that works like yours.</h2>
+      <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Simple by design</p>
+      <h2 class="font-bold text-4xl md:text-5xl mb-4">Memory that works like yours.</h2>
       <p class="text-gray-500 max-w-xl mx-auto text-lg">Three steps. Your AI agent learns, remembers, and naturally forgets what it no longer needs.</p>
     </div>
     <div class="grid md:grid-cols-3 gap-8 relative">
@@ -418,14 +353,14 @@
   <section id="features" class="border-t border-gray-200 bg-white py-28">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-16">
-        <p class="text-xs font-bold uppercase tracking-widest text-[#00D4FF] mb-3">Under the hood</p>
-        <h2 class="font-display text-4xl md:text-5xl mb-4">Three layers. One engine.</h2>
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Under the hood</p>
+        <h2 class="font-bold text-4xl md:text-5xl mb-4">Three layers. One engine.</h2>
         <p class="text-gray-500 max-w-xl mx-auto">Vector search finds what you asked for. The graph finds what you forgot to ask for. Ebbinghaus decides what survives.</p>
       </div>
 
       <div class="grid md:grid-cols-3 gap-10">
         <!-- Feature 1 -->
-        <div class="fade-up delay-1 group tilt-card cursor-default">
+        <div class="fade-up delay-1 group cursor-default">
           <div class="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:border-[#00D4FF] group-hover:shadow-md transition-all duration-200">
             <svg width="22" height="22" fill="none" stroke="#0A192F" stroke-width="1.8" viewBox="0 0 24 24">
               <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
@@ -442,7 +377,7 @@
         </div>
 
         <!-- Feature 2 -->
-        <div class="fade-up delay-2 group tilt-card cursor-default">
+        <div class="fade-up delay-2 group cursor-default">
           <div class="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:border-[#00D4FF] group-hover:shadow-md transition-all duration-200">
             <svg width="22" height="22" fill="none" stroke="#0A192F" stroke-width="1.8" viewBox="0 0 24 24">
               <circle cx="6"  cy="12" r="2"/><circle cx="18" cy="5"  r="2"/><circle cx="18" cy="19" r="2"/>
@@ -459,7 +394,7 @@
         </div>
 
         <!-- Feature 3 -->
-        <div class="fade-up delay-3 group tilt-card cursor-default">
+        <div class="fade-up delay-3 group cursor-default">
           <div class="w-12 h-12 bg-white border border-gray-200 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:border-[#00D4FF] group-hover:shadow-md transition-all duration-200">
             <svg width="22" height="22" fill="none" stroke="#0A192F" stroke-width="1.8" viewBox="0 0 24 24">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -522,8 +457,8 @@
   <section id="benchmarks" class="bg-[#0A192F] text-white py-28">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-14">
-        <p class="text-xs font-bold uppercase tracking-widest text-[#00D4FF] mb-3">Measured, not claimed</p>
-        <h2 class="font-display text-4xl md:text-5xl mb-4">Benchmark results.</h2>
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Measured, not claimed</p>
+        <h2 class="font-bold text-4xl md:text-5xl mb-4">Benchmark results.</h2>
         <p class="text-gray-400 max-w-xl mx-auto">Evaluated on three public datasets. All numbers independently reproducible — benchmark code in the repo.</p>
       </div>
 
@@ -653,8 +588,8 @@
   <section id="setup" class="border-t border-gray-200 bg-white py-28">
     <div class="max-w-3xl mx-auto px-6">
       <div class="text-center mb-12">
-        <p class="text-xs font-bold uppercase tracking-widest text-[#00D4FF] mb-3">Dead simple</p>
-        <h2 class="font-display text-4xl md:text-5xl mb-4">Two commands.</h2>
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Dead simple</p>
+        <h2 class="font-bold text-4xl md:text-5xl mb-4">Two commands.</h2>
         <p class="text-gray-500 text-lg">Install, run setup. spaCy model, database, and client configs are handled automatically.</p>
       </div>
 
@@ -729,8 +664,8 @@
   <section id="faq" class="border-t border-gray-200 bg-gray-50 py-28">
     <div class="max-w-3xl mx-auto px-6">
       <div class="text-center mb-14">
-        <p class="text-xs font-bold uppercase tracking-widest text-[#00D4FF] mb-3">Questions</p>
-        <h2 class="font-display text-4xl md:text-5xl">Frequently asked.</h2>
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Questions</p>
+        <h2 class="font-bold text-4xl md:text-5xl">Frequently asked.</h2>
       </div>
 
       <div class="space-y-3">
@@ -814,7 +749,7 @@
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-12">
         <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Read the thinking behind it</p>
-        <h2 class="font-display text-3xl md:text-4xl text-[#0A192F]">Written about YourMemory</h2>
+        <h2 class="font-bold text-3xl md:text-4xl text-[#0A192F]">Written about YourMemory</h2>
       </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
@@ -912,21 +847,13 @@
   </section>
 
   <!-- ENTERPRISE + CTA — single continuous dark section -->
-  <section id="enterprise" class="bg-[#0A192F] pt-28 pb-0 relative overflow-hidden">
-
-    <!-- Background grid -->
-    <div class="hero-grid" style="opacity:0.4"></div>
-
-    <!-- Orbs -->
-    <div class="orb orb-2" style="width:700px;height:700px;background:radial-gradient(circle,rgba(139,92,246,0.10) 0%,transparent 65%);top:-200px;right:-200px;filter:blur(2px)"></div>
-    <div class="orb orb-3" style="width:500px;height:500px;background:radial-gradient(circle,rgba(0,212,255,0.08) 0%,transparent 65%);bottom:-100px;left:-100px;filter:blur(2px)"></div>
-
-    <div class="max-w-6xl mx-auto px-6 relative">
+  <section id="enterprise" class="bg-[#0A192F] pt-28 pb-0">
+    <div class="max-w-6xl mx-auto px-6">
 
       <!-- Header -->
       <div class="text-center mb-20 fade-up">
         <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 text-xs font-semibold text-cyan-400 tracking-widest uppercase mb-6">Enterprise</div>
-        <h2 class="font-display text-4xl md:text-5xl text-white mb-5">Memory that works<br class="hidden md:block"/> across your whole team.</h2>
+        <h2 class="font-bold text-4xl md:text-5xl text-white mb-5">Memory that works<br class="hidden md:block"/> across your whole team.</h2>
         <p class="text-gray-400 text-lg max-w-2xl mx-auto">Your team accumulates deep knowledge every day — customer quirks, solved problems, architectural decisions. Right now it evaporates when the session closes. Enterprise gives it a permanent home.</p>
       </div>
 
@@ -1101,7 +1028,7 @@
 
       <!-- CTA -->
       <div class="text-center fade-up">
-        <h3 class="text-white font-display text-3xl mb-4">Ready to give your team a shared brain?</h3>
+        <h3 class="text-white font-bold text-3xl mb-4">Ready to give your team a shared brain?</h3>
         <p class="text-gray-400 mb-8">Enterprise is distributed as a private build. Reach out to get started.</p>
         <a href="mailto:mishrasachit1@gmail.com?subject=YourMemory Enterprise Pilot"
            class="inline-flex items-center gap-2 bg-cyan-400 text-[#0A192F] px-8 py-4 rounded-xl font-bold text-sm hover:bg-cyan-300 transition-colors">
@@ -1114,13 +1041,9 @@
   </section>
 
   <!-- BOTTOM CTA — same bg, seamless continuation -->
-  <section class="bg-[#0A192F] pt-16 pb-24 relative overflow-hidden" style="margin-top:-1px">
-    <!-- Orbs -->
-    <div class="orb orb-1" style="width:600px;height:600px;background:radial-gradient(circle,rgba(0,212,255,0.09) 0%,transparent 65%);top:-200px;left:-150px;filter:blur(2px)"></div>
-    <div class="orb orb-2" style="width:400px;height:400px;background:radial-gradient(circle,rgba(139,92,246,0.08) 0%,transparent 65%);bottom:-100px;right:-100px;filter:blur(2px)"></div>
-    <div class="orb orb-3" style="width:280px;height:280px;background:radial-gradient(circle,rgba(0,212,255,0.06) 0%,transparent 65%);top:50%;left:60%;filter:blur(2px)"></div>
-    <div class="max-w-3xl mx-auto px-6 text-center relative">
-      <h2 class="font-display text-4xl md:text-5xl text-white mb-5">Start in under 2 minutes.</h2>
+  <section class="bg-[#0A192F] pt-16 pb-24" style="margin-top:-1px">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h2 class="font-bold text-4xl md:text-5xl text-white mb-5">Start in under 2 minutes.</h2>
       <p class="text-gray-400 text-lg mb-10 max-w-xl mx-auto">Free, open source, runs entirely on your machine. No API key needed. No data leaves your system.</p>
       <div class="bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 font-mono text-sm text-gray-300 mb-8 inline-block text-left">
         <p><span class="text-gray-500">$</span> pip install yourmemory &amp;&amp; yourmemory-setup</p>
@@ -1199,81 +1122,6 @@
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
     }, { threshold: 0.12 });
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-
-    // ── Cursor spotlight ──────────────────────────────────────────────────────
-    const spotlight = document.createElement('div');
-    spotlight.style.cssText = `
-      position:fixed;pointer-events:none;z-index:9999;
-      width:400px;height:400px;border-radius:50%;
-      background:radial-gradient(circle,rgba(0,212,255,0.06) 0%,transparent 70%);
-      transform:translate(-50%,-50%);transition:opacity 0.3s;
-      left:-999px;top:-999px;
-    `;
-    document.body.appendChild(spotlight);
-    document.addEventListener('mousemove', e => {
-      spotlight.style.left = e.clientX + 'px';
-      spotlight.style.top  = e.clientY + 'px';
-    });
-    document.addEventListener('mouseleave', () => spotlight.style.opacity = '0');
-    document.addEventListener('mouseenter', () => spotlight.style.opacity = '1');
-
-    // ── Hero particles ────────────────────────────────────────────────────────
-    const heroCanvas = document.getElementById('hero-particles');
-    if (heroCanvas) {
-      const pc = heroCanvas.getContext('2d');
-      function resizeHero() {
-        heroCanvas.width  = heroCanvas.offsetWidth;
-        heroCanvas.height = heroCanvas.offsetHeight;
-      }
-      resizeHero();
-      window.addEventListener('resize', resizeHero);
-
-      const NUM = 55;
-      const pts = Array.from({ length: NUM }, () => ({
-        x:  Math.random() * heroCanvas.width,
-        y:  Math.random() * heroCanvas.height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        r:  Math.random() * 1.5 + 0.5,
-        a:  Math.random(),
-      }));
-
-      function drawParticles() {
-        pc.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
-        pts.forEach(p => {
-          p.x += p.vx; p.y += p.vy;
-          if (p.x < 0) p.x = heroCanvas.width;
-          if (p.x > heroCanvas.width)  p.x = 0;
-          if (p.y < 0) p.y = heroCanvas.height;
-          if (p.y > heroCanvas.height) p.y = 0;
-
-          // Dot
-          pc.beginPath();
-          pc.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          pc.fillStyle = `rgba(0,212,255,${p.a * 0.6})`;
-          pc.fill();
-        });
-
-        // Connections
-        for (let i = 0; i < pts.length; i++) {
-          for (let j = i + 1; j < pts.length; j++) {
-            const dx = pts[i].x - pts[j].x;
-            const dy = pts[i].y - pts[j].y;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            if (dist < 120) {
-              pc.beginPath();
-              pc.moveTo(pts[i].x, pts[i].y);
-              pc.lineTo(pts[j].x, pts[j].y);
-              pc.strokeStyle = `rgba(0,212,255,${(1 - dist/120) * 0.12})`;
-              pc.lineWidth = 0.8;
-              pc.stroke();
-            }
-          }
-        }
-        requestAnimationFrame(drawParticles);
-      }
-      drawParticles();
-    }
 
     // ── Animated counters ─────────────────────────────────────────────────────
     function animateCounter(el) {
@@ -1373,20 +1221,6 @@
       // Start after short delay so page has settled
       setTimeout(runTerminal, 800);
     }
-
-    // ── 3D card tilt ─────────────────────────────────────────────────────────
-    document.querySelectorAll('.tilt-card').forEach(card => {
-      card.addEventListener('mousemove', e => {
-        const r = card.getBoundingClientRect();
-        const x = (e.clientX - r.left) / r.width  - 0.5;
-        const y = (e.clientY - r.top)  / r.height - 0.5;
-        card.style.transform = `perspective(600px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) scale(1.02)`;
-      });
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = 'perspective(600px) rotateY(0deg) rotateX(0deg) scale(1)';
-      });
-      card.style.transition = 'transform 0.15s ease';
-    });
 
     // ── Memory decay animation ────────────────────────────────────────────────
     const decayCanvas = document.getElementById('decay-canvas');
