@@ -108,10 +108,18 @@ Entity graph edges add **+12 pp** — they traverse from Fact 1 to Fact 2 even w
 
 **Supports Python 3.11–3.14. No Docker, no database setup, no external services.**
 
-### 1 — Install
+### 1 — Register
 
 ```bash
 pip install yourmemory
+yourmemory register your@email.com
+```
+
+Registration takes 5 seconds and gets you setup tips, release notes, and early enterprise access.
+
+### 2 — Install & wire up
+
+```bash
 yourmemory-setup
 ```
 

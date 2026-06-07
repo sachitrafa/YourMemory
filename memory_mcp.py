@@ -292,8 +292,27 @@ async def list_tools() -> list[types.Tool]:
     ]
 
 
+def _check_registration() -> types.TextContent | None:
+    """Return a registration prompt if email is not registered, else None."""
+    if not os.path.exists(_EMAIL_PATH):
+        return types.TextContent(
+            type="text",
+            text=(
+                "⚠️  YourMemory requires registration before use.\n\n"
+                "Run this command in your terminal:\n\n"
+                "    yourmemory register\n\n"
+                "Then restart your AI client to continue."
+            ),
+        )
+    return None
+
+
 @server.call_tool()
 async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
+    gate = _check_registration()
+    if gate:
+        return [gate]
+
     _load_services()
     retrieve         = _services["retrieve"]
     embed            = _services["embed"]
@@ -949,6 +968,86 @@ def _write_mcp_config(path: str, mcp_entry: dict, client_name: str) -> bool:
 _TELEMETRY_ENDPOINT = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run"
 
 
+_EMAIL_PATH = os.path.join(os.path.expanduser("~"), ".yourmemory", "user_email")
+_REGISTER_ENDPOINT = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run/register"
+
+
+def _save_email(email: str) -> bool:
+    """Save email locally and POST to backend. Returns True on success."""
+    try:
+        os.makedirs(os.path.dirname(_EMAIL_PATH), exist_ok=True)
+        with open(_EMAIL_PATH, "w") as f:
+            f.write(email.strip())
+    except Exception:
+        pass
+    try:
+        import urllib.request, urllib.error
+        id_path = os.path.join(os.path.expanduser("~"), ".yourmemory", "instance_id")
+        instance_id = open(id_path).read().strip() if os.path.exists(id_path) else ""
+        payload = json.dumps({"email": email.strip(), "instance_id": instance_id}).encode()
+        req = urllib.request.Request(
+            _REGISTER_ENDPOINT,
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            result = json.loads(resp.read())
+            return result.get("ok", False)
+    except urllib.error.HTTPError as e:
+        try:
+            result = json.loads(e.read())
+            print(result.get("reason", "Invalid email — please try again."))
+        except Exception:
+            print("Invalid email — please try again.")
+        # Remove locally saved email so we don't store an invalid one
+        try:
+            os.remove(_EMAIL_PATH)
+        except Exception:
+            pass
+        return False
+    except Exception:
+        return True  # network error — accept locally anyway
+
+
+def register():
+    """yourmemory register [email] — capture email for updates and feedback."""
+    import sys as _sys
+    cli_email = _sys.argv[1] if len(_sys.argv) > 1 else None
+
+    if os.path.exists(_EMAIL_PATH) and not cli_email:
+        existing = open(_EMAIL_PATH).read().strip()
+        print(f"Already registered as: {existing}")
+        overwrite = input("Update email? (y/N): ").strip().lower()
+        if overwrite != "y":
+            return
+
+    print("\nYourMemory — Register your install")
+    print("Get setup tips, release notes, and early enterprise access.\n")
+
+    if cli_email:
+        email = cli_email.strip()
+        if not email or "@" not in email or "." not in email.split("@")[-1]:
+            print(f"Invalid email: {email}")
+            _sys.exit(1)
+        if _save_email(email):
+            print(f"\nRegistered. Thanks {email.split('@')[0]}!")
+        return
+
+    while True:
+        email = input("Email: ").strip()
+        if not email:
+            print("Email is required — please enter your email address.")
+            continue
+        if "@" not in email or "." not in email.split("@")[-1]:
+            print("That doesn't look like a valid email — please try again.")
+            continue
+        if _save_email(email):
+            print(f"\nRegistered. Thanks {email.split('@')[0]}!")
+            break
+        # _save_email already printed the reason from the server
+
+
 def _ping_install() -> None:
     """Fire a one-time anonymous install ping.
 
@@ -1252,6 +1351,8 @@ def _first_run_setup() -> None:
     threading.Thread(target=_download_spacy, daemon=True, name="spacy-dl").start()
 
     print("  [YourMemory] Setup complete. Memory rules injected into your AI client.", file=sys.stderr)
+    if not os.path.exists(_EMAIL_PATH):
+        print("  [YourMemory] Run `yourmemory register` to get updates and share feedback.", file=sys.stderr)
 
 
 def run():
@@ -1263,6 +1364,17 @@ def run():
     from src.db.migrate import migrate
     migrate()
     _first_run_setup()
+    if not os.path.exists(_EMAIL_PATH):
+        print("", file=sys.stderr)
+        print("  ┌─────────────────────────────────────────────────────┐", file=sys.stderr)
+        print("  │  YourMemory: Registration required                  │", file=sys.stderr)
+        print("  │  Run in your terminal:                               │", file=sys.stderr)
+        print("  │                                                      │", file=sys.stderr)
+        print("  │      yourmemory register                             │", file=sys.stderr)
+        print("  │                                                      │", file=sys.stderr)
+        print("  │  Then restart your AI client to continue.           │", file=sys.stderr)
+        print("  └─────────────────────────────────────────────────────┘", file=sys.stderr)
+        print("", file=sys.stderr)
     # Fire telemetry in background — never block MCP server startup
     threading.Thread(target=_ping_install, daemon=True, name="ping").start()
     _start_decay_scheduler()

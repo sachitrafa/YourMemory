@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "yourmemory"
-version = "1.4.30"
+version = "1.4.34"
 description = "Persistent memory for Claude — Ebbinghaus forgetting curve, semantic deduplication, MCP-native"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -46,6 +46,7 @@ yourmemory = "memory_mcp:run"
 yourmemory-path = "memory_mcp:print_path"
 yourmemory-setup = "memory_mcp:setup"
 yourmemory-ask = "memory_mcp:ask"
+yourmemory-register = "memory_mcp:register"
 
 [project.urls]
 Homepage = "https://yourmemory.ai"
