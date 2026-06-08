@@ -299,34 +299,8 @@ recall_memory("staging SSL", api_key="ym_xxxx")
 | **spaCy** | Local NLP for deduplication and entity extraction |
 | **APScheduler** | Automatic 24h decay and pruning job |
 | **PostgreSQL + pgvector** | Optional — for teams or large datasets |
-| **Neo4j** | Optional graph backend — `pip install 'yourmemory[neo4j]'` |
+| **Neo4j** | Optional graph backend |
 
-<details>
-<summary><strong>PostgreSQL setup (optional)</strong></summary>
-
-```bash
-pip install yourmemory[postgres]
-```
-
-Create a `.env` file:
-
-```bash
-DATABASE_URL=postgresql://YOUR_USER@localhost:5432/yourmemory
-```
-
-**macOS**
-```bash
-brew install postgresql@16 pgvector && brew services start postgresql@16
-createdb yourmemory
-```
-
-**Ubuntu / Debian**
-```bash
-sudo apt install postgresql postgresql-contrib postgresql-16-pgvector
-createdb yourmemory
-```
-
-</details>
 
 ---
 
