@@ -178,6 +178,7 @@
     import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@latest';
     inject();
   </script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body class="min-h-screen text-[#0A192F] bg-white">
 
@@ -594,6 +595,41 @@
         <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Dead simple</p>
         <h2 class="font-bold text-4xl md:text-5xl mb-4">Two commands.</h2>
         <p class="text-gray-500 text-lg">Install, run setup. spaCy model, database, and client configs are handled automatically.</p>
+      </div>
+
+      <!-- Google Sign-In card -->
+      <div id="google-signin-card" class="mb-8 bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-2xl px-6 py-6">
+        <p class="font-semibold text-[#0A192F] mb-1">Get your personalized install command</p>
+        <p class="text-sm text-gray-500 mb-4">Sign in with Google to pre-fill your email — skips the separate <code class="font-mono text-xs bg-white px-1 py-0.5 rounded border border-gray-200">yourmemory register</code> step.</p>
+        <div id="g_id_onload"
+             data-client_id="684696859750-30icqmkt7ha0a71qrld5qedqfu58o9rb.apps.googleusercontent.com"
+             data-callback="handleGoogleSignIn"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="outline"
+             data-text="signin_with"
+             data-size="large"
+             data-logo_alignment="left">
+        </div>
+      </div>
+
+      <!-- Personalized command (shown after Google sign-in) -->
+      <div id="personalized-command" class="mb-8 hidden">
+        <div class="flex items-center gap-2 mb-3">
+          <svg width="16" height="16" fill="none" stroke="#059669" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <p class="text-sm font-semibold text-gray-700">Registered! Your one-liner:</p>
+        </div>
+        <div class="bg-[#0A192F] text-gray-300 rounded-2xl overflow-hidden">
+          <div class="px-4 py-2 border-b border-gray-800 flex items-center justify-between">
+            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-mono">Install + register in one step</span>
+            <button id="copy-personalized" onclick="copyPersonalized(this)" class="text-[10px] text-gray-500 hover:text-gray-300 transition-colors font-mono uppercase tracking-widest">Copy</button>
+          </div>
+          <pre class="p-5 font-mono text-sm whitespace-pre-wrap break-all" id="personalized-cmd-text"></pre>
+        </div>
+        <p class="text-xs text-gray-400 mt-2">Run this in your terminal — installs and registers in one step.</p>
       </div>
 
       <div class="space-y-4">
@@ -1130,6 +1166,37 @@
       btn.textContent = 'Copied!';
       btn.classList.add('text-green-400');
       setTimeout(() => { btn.textContent = orig; btn.classList.remove('text-green-400'); }, 2000);
+    }
+
+    function handleGoogleSignIn(response) {
+      try {
+        const base64 = response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(atob(base64));
+        const email = payload.email;
+        const cmd = `pip install yourmemory && yourmemory register ${email}`;
+
+        fetch('https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, instance_id: 'web-' + Date.now() })
+        }).catch(() => {});
+
+        document.getElementById('personalized-cmd-text').textContent = '$ ' + cmd;
+        document.getElementById('copy-personalized').setAttribute('data-cmd', cmd);
+        document.getElementById('google-signin-card').classList.add('hidden');
+        document.getElementById('personalized-command').classList.remove('hidden');
+      } catch(e) {}
+    }
+
+    function copyPersonalized(btn) {
+      const cmd = btn.getAttribute('data-cmd') ||
+        document.getElementById('personalized-cmd-text').textContent.replace(/^\$ /, '');
+      navigator.clipboard.writeText(cmd).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('text-green-400');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('text-green-400'); }, 2000);
+      }).catch(() => {});
     }
 
     function switchTab(id) {

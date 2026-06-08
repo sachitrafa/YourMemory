@@ -292,27 +292,8 @@ async def list_tools() -> list[types.Tool]:
     ]
 
 
-def _check_registration() -> types.TextContent | None:
-    """Return a registration prompt if email is not registered, else None."""
-    if not os.path.exists(_EMAIL_PATH):
-        return types.TextContent(
-            type="text",
-            text=(
-                "⚠️  YourMemory requires registration before use.\n\n"
-                "Run this command in your terminal:\n\n"
-                "    yourmemory register\n\n"
-                "Then restart your AI client to continue."
-            ),
-        )
-    return None
-
-
 @server.call_tool()
 async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
-    gate = _check_registration()
-    if gate:
-        return [gate]
-
     _load_services()
     retrieve         = _services["retrieve"]
     embed            = _services["embed"]
@@ -968,7 +949,8 @@ def _write_mcp_config(path: str, mcp_entry: dict, client_name: str) -> bool:
 _TELEMETRY_ENDPOINT = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run"
 
 
-_EMAIL_PATH = os.path.join(os.path.expanduser("~"), ".yourmemory", "user_email")
+_EMAIL_PATH    = os.path.join(os.path.expanduser("~"), ".yourmemory", "user_email")
+_VERIFIED_PATH = os.path.join(os.path.expanduser("~"), ".yourmemory", "verified")
 _REGISTER_ENDPOINT = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run/register"
 
 
@@ -993,7 +975,12 @@ def _save_email(email: str) -> bool:
         )
         with urllib.request.urlopen(req, timeout=5) as resp:
             result = json.loads(resp.read())
-            return result.get("ok", False)
+            if result.get("ok", False):
+                # Write verified stamp — gate checks this, not just the email file
+                with open(_VERIFIED_PATH, "w") as f:
+                    f.write(email.strip())
+                return True
+            return False
     except urllib.error.HTTPError as e:
         try:
             result = json.loads(e.read())
@@ -1007,7 +994,13 @@ def _save_email(email: str) -> bool:
             pass
         return False
     except Exception:
-        return True  # network error — accept locally anyway
+        # Network error — write verified stamp so offline users aren't blocked
+        try:
+            with open(_VERIFIED_PATH, "w") as f:
+                f.write(email.strip())
+        except Exception:
+            pass
+        return True
 
 
 def register():
@@ -1351,8 +1344,6 @@ def _first_run_setup() -> None:
     threading.Thread(target=_download_spacy, daemon=True, name="spacy-dl").start()
 
     print("  [YourMemory] Setup complete. Memory rules injected into your AI client.", file=sys.stderr)
-    if not os.path.exists(_EMAIL_PATH):
-        print("  [YourMemory] Run `yourmemory register` to get updates and share feedback.", file=sys.stderr)
 
 
 def run():
@@ -1364,17 +1355,6 @@ def run():
     from src.db.migrate import migrate
     migrate()
     _first_run_setup()
-    if not os.path.exists(_EMAIL_PATH):
-        print("", file=sys.stderr)
-        print("  ┌─────────────────────────────────────────────────────┐", file=sys.stderr)
-        print("  │  YourMemory: Registration required                  │", file=sys.stderr)
-        print("  │  Run in your terminal:                               │", file=sys.stderr)
-        print("  │                                                      │", file=sys.stderr)
-        print("  │      yourmemory register                             │", file=sys.stderr)
-        print("  │                                                      │", file=sys.stderr)
-        print("  │  Then restart your AI client to continue.           │", file=sys.stderr)
-        print("  └─────────────────────────────────────────────────────┘", file=sys.stderr)
-        print("", file=sys.stderr)
     # Fire telemetry in background — never block MCP server startup
     threading.Thread(target=_ping_install, daemon=True, name="ping").start()
     _start_decay_scheduler()

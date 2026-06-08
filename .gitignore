@@ -35,6 +35,9 @@ build/
 Passport_image.png
 USER_INFO_TO_STORE.md
 
+# Val Town tracking script — contains hardcoded secret
+valtown_tracking.ts
+
 # Large media / temp files
 *.mov
 *.mp4
