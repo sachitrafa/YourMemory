@@ -108,7 +108,7 @@ Entity graph edges add **+12 pp** — they traverse from Fact 1 to Fact 2 even w
 
 **Supports Python 3.11–3.14. No Docker, no database setup, no external services.**
 
-For installation and setup instructions, visit **[yourmemory.ai](https://yourmemory.ai)**.
+For installation and setup instructions, visit **[yourmemoryai.xyz](https://yourmemoryai.xyz/)**.
 
 Sign in with Google to get your personalized install command — installs and wires up your AI client in one step.
 
