@@ -678,10 +678,11 @@
       <div class="space-y-4">
         <div class="bg-[#0A192F] text-gray-300 rounded-2xl overflow-hidden">
           <div class="px-4 py-2 border-b border-gray-800 flex items-center justify-between">
-            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-mono">1. Install</span>
+            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-mono">1. Install the package</span>
             <button onclick="copySetup(this,'pip install yourmemory')" class="text-[10px] text-gray-500 hover:text-gray-300 transition-colors font-mono uppercase tracking-widest">Copy</button>
           </div>
           <pre class="p-5 font-mono text-sm"><span class="text-gray-500">$</span> pip install yourmemory</pre>
+          <p class="px-5 pb-4 text-xs text-gray-600">Downloads YourMemory and registers the CLI commands on your machine.</p>
         </div>
         <div class="bg-[#0A192F] text-gray-300 rounded-2xl overflow-hidden">
           <div class="px-4 py-2 border-b border-gray-800 flex items-center justify-between">
@@ -689,22 +690,21 @@
             <button onclick="copySetup(this,'yourmemory-register &lt;your-token&gt;')" class="text-[10px] text-gray-500 hover:text-gray-300 transition-colors font-mono uppercase tracking-widest">Copy</button>
           </div>
           <pre class="p-5 font-mono text-sm"><span class="text-gray-500">$</span> yourmemory-register &lt;your-token&gt;</pre>
-          <p class="px-5 pb-4 text-xs text-gray-600">Token was sent to your email after sign-in.</p>
+          <p class="px-5 pb-4 text-xs text-gray-600">Verifies your token and unlocks the memory tools. Token was sent to your email after sign-in above.</p>
         </div>
         <div class="bg-[#0A192F] text-gray-300 rounded-2xl overflow-hidden">
           <div class="px-4 py-2 border-b border-gray-800 flex items-center justify-between">
-            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-mono">3. Setup (run once)</span>
+            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-mono">3. Connect to your AI clients (run once)</span>
             <button onclick="copySetup(this,'yourmemory-setup')" class="text-[10px] text-gray-500 hover:text-gray-300 transition-colors font-mono uppercase tracking-widest">Copy</button>
           </div>
           <pre class="p-5 font-mono text-sm"><span class="text-gray-500">$</span> yourmemory-setup</pre>
+          <p class="px-5 pt-0 pb-2 text-xs text-gray-600">Downloads the language model, initialises the database, and writes the MCP config into every AI client it finds on your machine.</p>
           <div class="px-5 pb-5 space-y-1">
-            <div class="mt-3 font-mono text-xs text-gray-600 space-y-1">
-              <p><span class="text-green-500">✓</span>  Language model ready</p>
+            <div class="mt-2 font-mono text-xs text-gray-600 space-y-1">
+              <p><span class="text-green-500">✓</span>  Language model downloaded</p>
               <p><span class="text-green-500">✓</span>  Database initialised</p>
-              <p><span class="text-green-500">✓</span>  Claude Code , ~/.claude/settings.json</p>
-              <p><span class="text-green-500">✓</span>  Claude Desktop , auto-detected if installed</p>
-              <p><span class="text-green-500">✓</span>  Cursor / Windsurf / Cline , auto-detected if installed</p>
-              <p><span class="text-cyan-400">✓</span>  Memory rules , injected into global agent context</p>
+              <p><span class="text-green-500">✓</span>  Claude Code, Claude Desktop, Cursor, Windsurf, Cline — auto-detected</p>
+              <p><span class="text-cyan-400">✓</span>  Memory rules injected into global agent context</p>
             </div>
           </div>
         </div>

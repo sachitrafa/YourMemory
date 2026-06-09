@@ -1117,7 +1117,7 @@ def setup():
     }
 
     # ── 1. spaCy language model ─────────────────────────────────────────────
-    print("\n[1/3] Downloading spaCy language model…")
+    print("\n[1/4] Downloading spaCy language model…")
     r = subprocess.run(
         [sys.executable, "-m", "spacy", "download", "en_core_web_sm"],
         check=False, capture_output=True,
@@ -1139,14 +1139,14 @@ def setup():
             print("     To install manually: python -m spacy download en_core_web_sm")
 
     # ── 2. Database migration ───────────────────────────────────────────────
-    print("\n[2/3] Initialising database…")
+    print("\n[2/4] Initialising database…")
     from src.db.migrate import migrate
     migrate()
     print("  ✓  Database ready.")
     _ping_install()
 
     # ── 3. Client config auto-detection ────────────────────────────────────
-    print("\n[3/3] Writing MCP config to detected clients…")
+    print("\n[3/4] Writing MCP config to detected clients…")
 
     home = os.path.expanduser("~")
     wrote_any = False
