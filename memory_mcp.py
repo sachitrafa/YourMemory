@@ -292,8 +292,26 @@ async def list_tools() -> list[types.Tool]:
     ]
 
 
+def _check_registration() -> types.TextContent | None:
+    if not os.path.exists(_TOKEN_PATH):
+        return types.TextContent(
+            type="text",
+            text=(
+                "⚠️  YourMemory requires activation.\n\n"
+                "1. Visit https://yourmemoryai.xyz/ and sign in with Google\n"
+                "2. Check your email for your access token\n"
+                "3. Run: yourmemory register <your-token>\n"
+                "4. Restart your AI client"
+            ),
+        )
+    return None
+
+
 @server.call_tool()
 async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
+    gate = _check_registration()
+    if gate:
+        return [gate]
     _load_services()
     retrieve         = _services["retrieve"]
     embed            = _services["embed"]
@@ -949,9 +967,11 @@ def _write_mcp_config(path: str, mcp_entry: dict, client_name: str) -> bool:
 _TELEMETRY_ENDPOINT = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run"
 
 
-_EMAIL_PATH    = os.path.join(os.path.expanduser("~"), ".yourmemory", "user_email")
-_VERIFIED_PATH = os.path.join(os.path.expanduser("~"), ".yourmemory", "verified")
+_EMAIL_PATH      = os.path.join(os.path.expanduser("~"), ".yourmemory", "user_email")
+_VERIFIED_PATH   = os.path.join(os.path.expanduser("~"), ".yourmemory", "verified")
+_TOKEN_PATH      = os.path.join(os.path.expanduser("~"), ".yourmemory", "token")
 _REGISTER_ENDPOINT = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run/register"
+_VERIFY_ENDPOINT   = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run/verify-token"
 
 
 def _save_email(email: str) -> bool:
@@ -1004,41 +1024,40 @@ def _save_email(email: str) -> bool:
 
 
 def register():
-    """yourmemory register [email] — capture email for updates and feedback."""
+    """yourmemory register <token> — activate YourMemory with your access token."""
     import sys as _sys
-    cli_email = _sys.argv[1] if len(_sys.argv) > 1 else None
+    token = _sys.argv[1].strip() if len(_sys.argv) > 1 else None
 
-    if os.path.exists(_EMAIL_PATH) and not cli_email:
-        existing = open(_EMAIL_PATH).read().strip()
-        print(f"Already registered as: {existing}")
-        overwrite = input("Update email? (y/N): ").strip().lower()
-        if overwrite != "y":
-            return
-
-    print("\nYourMemory — Register your install")
-    print("Get setup tips, release notes, and early enterprise access.\n")
-
-    if cli_email:
-        email = cli_email.strip()
-        if not email or "@" not in email or "." not in email.split("@")[-1]:
-            print(f"Invalid email: {email}")
-            _sys.exit(1)
-        if _save_email(email):
-            print(f"\nRegistered. Thanks {email.split('@')[0]}!")
+    if not token:
+        print("\nYourMemory — Activation required")
+        print("\nTo get your access token:")
+        print("  1. Visit https://yourmemoryai.xyz/")
+        print("  2. Sign in with Google")
+        print("  3. Check your email for the token")
+        print("  4. Run: yourmemory register <your-token>\n")
         return
 
-    while True:
-        email = input("Email: ").strip()
-        if not email:
-            print("Email is required — please enter your email address.")
-            continue
-        if "@" not in email or "." not in email.split("@")[-1]:
-            print("That doesn't look like a valid email — please try again.")
-            continue
-        if _save_email(email):
-            print(f"\nRegistered. Thanks {email.split('@')[0]}!")
-            break
-        # _save_email already printed the reason from the server
+    import urllib.request as _ureq, json as _json
+    try:
+        with _ureq.urlopen(f"{_VERIFY_ENDPOINT}?token={token}", timeout=10) as resp:
+            data = _json.loads(resp.read())
+        if data.get("valid"):
+            os.makedirs(os.path.dirname(_TOKEN_PATH), exist_ok=True)
+            with open(_TOKEN_PATH, "w") as f:
+                f.write(token)
+            print("\n✓ Token verified. YourMemory is activated!")
+            print("Restart your AI client to start using memory.\n")
+        else:
+            print("\n✗ Invalid token.")
+            print("Visit https://yourmemoryai.xyz/ to get a valid token.\n")
+            _sys.exit(1)
+    except Exception:
+        # Network error — store token so offline users aren't blocked
+        os.makedirs(os.path.dirname(_TOKEN_PATH), exist_ok=True)
+        with open(_TOKEN_PATH, "w") as f:
+            f.write(token)
+        print("\n✓ Token saved (offline). YourMemory is activated!")
+        print("Restart your AI client to start using memory.\n")
 
 
 def _ping_install() -> None:

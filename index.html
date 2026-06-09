@@ -654,19 +654,23 @@
         </div>
       </div>
 
-      <!-- Personalized command (shown after Google sign-in) -->
+      <!-- Email sent confirmation (shown after Google sign-in) -->
       <div id="personalized-command" class="mb-8 hidden">
         <div class="rounded-2xl border border-green-500/30 bg-[#0A192F] overflow-hidden">
-          <div class="px-6 py-4 border-b border-gray-800 flex items-center gap-3">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20">
-              <svg width="12" height="12" fill="none" stroke="#22c55e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </span>
-            <span class="text-sm font-semibold text-white">You're registered! Here's your one-liner:</span>
-            <button id="copy-personalized" onclick="copyPersonalized(this)" class="ml-auto text-[10px] text-gray-500 hover:text-gray-300 transition-colors font-mono uppercase tracking-widest">Copy</button>
+          <div class="px-6 py-5">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20">
+                <svg width="12" height="12" fill="none" stroke="#22c55e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <span class="text-sm font-semibold text-white">Token sent to <span id="email-sent-to" class="text-[#00D4FF]"></span></span>
+            </div>
+            <p class="text-gray-400 text-sm mb-4">Check your inbox and run this command with your token:</p>
+            <div class="bg-black/30 rounded-xl px-5 py-3 font-mono text-sm text-gray-300">
+              $ yourmemory register &lt;your-token&gt;
+            </div>
           </div>
-          <pre class="px-6 py-5 font-mono text-sm text-gray-300 whitespace-pre-wrap break-all" id="personalized-cmd-text"></pre>
         </div>
-        <p class="text-xs text-gray-400 mt-2 pl-1">Paste this in your terminal , installs and registers in one step.</p>
+        <p class="text-xs text-gray-400 mt-2 pl-1">Didn't receive it? Check your spam folder or sign in again.</p>
       </div>
 
       <div id="generic-commands" class="hidden">
@@ -1195,7 +1199,6 @@
         const base64 = response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
         const payload = JSON.parse(atob(base64));
         const email = payload.email;
-        const cmd = `pip install yourmemory && yourmemory register ${email}`;
 
         fetch('https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run/register', {
           method: 'POST',
@@ -1203,8 +1206,7 @@
           body: JSON.stringify({ email: email, instance_id: 'web-' + Date.now() })
         }).catch(() => {});
 
-        document.getElementById('personalized-cmd-text').textContent = '$ ' + cmd;
-        document.getElementById('copy-personalized').setAttribute('data-cmd', cmd);
+        document.getElementById('email-sent-to').textContent = email;
         document.getElementById('google-signin-card').classList.add('hidden');
         document.getElementById('personalized-command').classList.remove('hidden');
         document.getElementById('generic-commands').classList.remove('hidden');
