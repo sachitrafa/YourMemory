@@ -1299,9 +1299,6 @@ def _first_run_setup() -> None:
         f.write(user_id)
     print(f"  [YourMemory] user_id → {user_id}", file=sys.stderr)
 
-    # Inject memory rules into detected client instruction files
-    _inject_memory_rules(home, user_id)
-
     # Fire install ping in background — never block MCP server startup
     threading.Thread(target=_ping_install, daemon=True, name="ping-first-run").start()
 
