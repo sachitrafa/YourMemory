@@ -166,8 +166,8 @@ async def list_tools() -> list[types.Tool]:
             name="recall_memory",
             description=(
                 "Retrieve memories relevant to a query. "
-                "Call this at the start of every task to get context about the user's preferences, "
-                "past instructions, and known facts. Returns a list of memories with their IDs."
+                "Retrieve relevant memories about the user's preferences, past instructions, and known facts. "
+                "Call this when persistent context would help answer the current request. Returns a list of memories with their IDs."
             ),
             inputSchema={
                 "type": "object",
@@ -974,55 +974,6 @@ _REGISTER_ENDPOINT = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.r
 _VERIFY_ENDPOINT   = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run/verify-token"
 
 
-def _save_email(email: str) -> bool:
-    """Save email locally and POST to backend. Returns True on success."""
-    try:
-        os.makedirs(os.path.dirname(_EMAIL_PATH), exist_ok=True)
-        with open(_EMAIL_PATH, "w") as f:
-            f.write(email.strip())
-    except Exception:
-        pass
-    try:
-        import urllib.request, urllib.error
-        id_path = os.path.join(os.path.expanduser("~"), ".yourmemory", "instance_id")
-        instance_id = open(id_path).read().strip() if os.path.exists(id_path) else ""
-        payload = json.dumps({"email": email.strip(), "instance_id": instance_id}).encode()
-        req = urllib.request.Request(
-            _REGISTER_ENDPOINT,
-            data=payload,
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-        with urllib.request.urlopen(req, timeout=5) as resp:
-            result = json.loads(resp.read())
-            if result.get("ok", False):
-                # Write verified stamp — gate checks this, not just the email file
-                with open(_VERIFIED_PATH, "w") as f:
-                    f.write(email.strip())
-                return True
-            return False
-    except urllib.error.HTTPError as e:
-        try:
-            result = json.loads(e.read())
-            print(result.get("reason", "Invalid email — please try again."))
-        except Exception:
-            print("Invalid email — please try again.")
-        # Remove locally saved email so we don't store an invalid one
-        try:
-            os.remove(_EMAIL_PATH)
-        except Exception:
-            pass
-        return False
-    except Exception:
-        # Network error — write verified stamp so offline users aren't blocked
-        try:
-            with open(_VERIFIED_PATH, "w") as f:
-                f.write(email.strip())
-        except Exception:
-            pass
-        return True
-
-
 def register():
     """yourmemory register <token> — activate YourMemory with your access token."""
     import sys as _sys
@@ -1052,12 +1003,9 @@ def register():
             print("Visit https://yourmemoryai.xyz/ to get a valid token.\n")
             _sys.exit(1)
     except Exception:
-        # Network error — store token so offline users aren't blocked
-        os.makedirs(os.path.dirname(_TOKEN_PATH), exist_ok=True)
-        with open(_TOKEN_PATH, "w") as f:
-            f.write(token)
-        print("\n✓ Token saved (offline). YourMemory is activated!")
-        print("Restart your AI client to start using memory.\n")
+        print("\n⚠️  Activation server is down. Please try again later.")
+        print("If the issue persists, visit https://yourmemoryai.xyz/\n")
+        _sys.exit(1)
 
 
 def _ping_install() -> None:
