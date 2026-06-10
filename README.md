@@ -115,7 +115,7 @@ Entity graph edges add **+12 pp** — they traverse from Fact 1 to Fact 2 even w
 | **Activation** | Requires a one-time token. Visit [yourmemoryai.xyz](https://yourmemoryai.xyz/), enter your email, verify with a 6-digit code, and copy your token. |
 | **Global rule injection** | `yourmemory-setup` writes memory instructions into `~/.cursor/rules/memory.mdc` and other detected AI client config files (Claude, VS Code, etc.) so the assistant can call memory tools automatically. You can remove these files at any time. |
 | **MCP tool behavior** | The `recall_memory` tool can be called by your AI assistant when persistent context would help. The assistant decides when to call it based on the request. |
-| **Telemetry** | A UUID (no personal data) is sent to `val.run` on first setup only. Opt out: `YOURMEMORY_TELEMETRY=off` |
+| **Telemetry** | A UUID (no personal data) is sent on first setup only. Opt out: `YOURMEMORY_TELEMETRY=off` |
 
 **Activation steps:**
 1. Visit [yourmemoryai.xyz](https://yourmemoryai.xyz/) and enter your email
