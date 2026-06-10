@@ -1109,6 +1109,14 @@ def setup():
     """
     import subprocess, shutil, json as _json
 
+    if not os.path.exists(_TOKEN_PATH):
+        print("\n⚠️  Activation required before setup.\n")
+        print("  1. Visit https://yourmemoryai.xyz/ and sign in with Google")
+        print("  2. Check your email for your access token")
+        print("  3. Run: yourmemory-register <your-token>")
+        print("  4. Then run yourmemory-setup again\n")
+        return
+
     exe = shutil.which("yourmemory") or sys.executable.replace("python", "yourmemory")
 
     mcp_entry = {
