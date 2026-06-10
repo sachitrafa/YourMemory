@@ -178,7 +178,6 @@
     import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@latest';
     inject();
   </script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body class="min-h-screen text-[#0A192F] bg-white">
 
@@ -605,57 +604,65 @@
         <p class="text-gray-500 text-lg">Install, run setup. spaCy model, database, and client configs are handled automatically.</p>
       </div>
 
-      <!-- Google Sign-In card -->
-      <div id="google-signin-card" class="mb-8 relative overflow-hidden rounded-2xl border border-[#00D4FF]/30 bg-[#0A192F]">
-        <!-- glow accent -->
+      <!-- Email + OTP Sign-In card -->
+      <div id="signin-card" class="mb-8 relative overflow-hidden rounded-2xl border border-[#00D4FF]/30 bg-[#0A192F]">
         <div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-[#00D4FF]/10 blur-2xl pointer-events-none"></div>
         <div class="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-indigo-500/10 blur-2xl pointer-events-none"></div>
 
-        <div class="relative px-7 py-7 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-          <div>
-            <!-- eyebrow -->
-            <div class="inline-flex items-center gap-1.5 bg-[#00D4FF]/10 border border-[#00D4FF]/20 text-[#00D4FF] text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-3">
-              <svg width="9" height="9" fill="currentColor" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              One-click setup
-            </div>
-            <h3 class="text-white font-bold text-lg leading-snug mb-1">Set up in 30 seconds.</h3>
-            <p class="text-gray-400 text-sm max-w-xs">Sign in to get started.</p>
+        <div class="relative px-7 py-7">
+          <div class="inline-flex items-center gap-1.5 bg-[#00D4FF]/10 border border-[#00D4FF]/20 text-[#00D4FF] text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-3">
+            <svg width="9" height="9" fill="currentColor" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Free activation
+          </div>
+          <h3 class="text-white font-bold text-lg leading-snug mb-1">Get your activation token.</h3>
 
-            <!-- trust hints -->
-            <div class="flex flex-wrap gap-3 mt-4">
-              <span class="flex items-center gap-1.5 text-xs text-gray-500">
-                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                No password stored
-              </span>
-              <span class="flex items-center gap-1.5 text-xs text-gray-500">
-                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                Takes 3 seconds
-              </span>
+          <!-- Step 1: Email -->
+          <div id="step-email">
+            <p class="text-gray-400 text-sm mb-4">Enter your email — we'll send a 6-digit code to verify.</p>
+            <div class="flex gap-3">
+              <input id="email-input" type="email" placeholder="you@example.com"
+                     class="flex-1 bg-black/30 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#00D4FF]/50"
+                     onkeydown="if(event.key==='Enter') sendOtp()"/>
+              <button onclick="sendOtp()" id="send-otp-btn"
+                      class="px-5 py-2.5 bg-[#00D4FF] text-[#0A192F] font-bold text-sm rounded-xl hover:bg-[#00D4FF]/90 transition-colors whitespace-nowrap">
+                Send code
+              </button>
             </div>
+            <p id="email-error" class="text-red-400 text-xs mt-2 hidden"></p>
           </div>
 
-          <!-- Sign-in button column -->
-          <div class="shrink-0 flex flex-col items-start sm:items-end gap-3">
-            <div id="g_id_onload"
-                 data-client_id="684696859750-30icqmkt7ha0a71qrld5qedqfu58o9rb.apps.googleusercontent.com"
-                 data-callback="handleGoogleSignIn"
-                 data-auto_prompt="false">
+          <!-- Step 2: OTP -->
+          <div id="step-otp" class="hidden">
+            <p class="text-gray-400 text-sm mb-4">We sent a code to <span id="otp-email-display" class="text-[#00D4FF]"></span>. Enter it below — expires in 10 minutes.</p>
+            <div class="flex gap-3 items-center">
+              <input id="otp-input" type="text" placeholder="123456" maxlength="6"
+                     class="w-36 bg-black/30 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#00D4FF]/50 font-mono tracking-[0.3em] text-center"
+                     onkeydown="if(event.key==='Enter') verifyOtp()"/>
+              <button onclick="verifyOtp()" id="verify-otp-btn"
+                      class="px-5 py-2.5 bg-[#00D4FF] text-[#0A192F] font-bold text-sm rounded-xl hover:bg-[#00D4FF]/90 transition-colors">
+                Verify
+              </button>
+              <button onclick="backToEmail()" class="text-gray-500 text-sm hover:text-gray-300 transition-colors">
+                Back
+              </button>
             </div>
-            <div class="g_id_signin"
-                 data-type="standard"
-                 data-shape="rectangular"
-                 data-theme="filled_blue"
-                 data-text="signin_with"
-                 data-size="large"
-                 data-logo_alignment="left"
-                 data-width="240">
-            </div>
-            <p class="text-[11px] text-gray-600">Sign in to reveal your install command</p>
+            <p id="otp-error" class="text-red-400 text-xs mt-2 hidden"></p>
+          </div>
+
+          <div class="flex flex-wrap gap-3 mt-5">
+            <span class="flex items-center gap-1.5 text-xs text-gray-500">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              No password stored
+            </span>
+            <span class="flex items-center gap-1.5 text-xs text-gray-500">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Takes 30 seconds
+            </span>
           </div>
         </div>
       </div>
 
-      <!-- Email sent confirmation (shown after Google sign-in) -->
+      <!-- Token revealed (shown after OTP verified) -->
       <div id="personalized-command" class="mb-8 hidden">
         <div class="rounded-2xl border border-green-500/30 bg-[#0A192F] overflow-hidden">
           <div class="px-6 py-5">
@@ -663,15 +670,16 @@
               <span class="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20">
                 <svg width="12" height="12" fill="none" stroke="#22c55e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
               </span>
-              <span class="text-sm font-semibold text-white">Token sent to <span id="email-sent-to" class="text-[#00D4FF]"></span></span>
+              <span class="text-sm font-semibold text-white">Verified — token ready for <span id="email-sent-to" class="text-[#00D4FF]"></span></span>
             </div>
-            <p class="text-gray-400 text-sm mb-4">Check your inbox and run this command with your token:</p>
-            <div class="bg-black/30 rounded-xl px-5 py-3 font-mono text-sm text-gray-300">
-              $ yourmemory-register &lt;your-token&gt;
+            <p class="text-gray-400 text-sm mb-3">Run this command to activate:</p>
+            <div class="bg-black/30 rounded-xl px-5 py-3 font-mono text-sm text-[#00D4FF] flex items-center justify-between gap-3">
+              <span>$ yourmemory-register <span id="token-display"></span></span>
+              <button onclick="copyToken(this)" class="text-[10px] text-gray-500 hover:text-gray-300 uppercase tracking-widest font-mono transition-colors shrink-0">Copy</button>
             </div>
           </div>
         </div>
-        <p class="text-xs text-gray-400 mt-2 pl-1">Didn't receive it? Check your spam folder or sign in again.</p>
+        <p class="text-xs text-gray-400 mt-2 pl-1">Token also sent to your email as backup.</p>
       </div>
 
       <div id="generic-commands" class="hidden">
@@ -1199,23 +1207,86 @@
       setTimeout(() => { btn.textContent = orig; btn.classList.remove('text-green-400'); }, 2000);
     }
 
-    function handleGoogleSignIn(response) {
+    const VAL_BASE = 'https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run';
+    let _otpEmail = '';
+
+    async function sendOtp() {
+      const email = document.getElementById('email-input').value.trim();
+      const errorEl = document.getElementById('email-error');
+      const btn = document.getElementById('send-otp-btn');
+      errorEl.classList.add('hidden');
+      if (!email) { errorEl.textContent = 'Please enter your email.'; errorEl.classList.remove('hidden'); return; }
+      btn.textContent = 'Sending…'; btn.disabled = true;
       try {
-        const base64 = response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-        const payload = JSON.parse(atob(base64));
-        const email = payload.email;
+        const res = await fetch(`${VAL_BASE}/send-otp`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          _otpEmail = email;
+          document.getElementById('otp-email-display').textContent = email;
+          document.getElementById('step-email').classList.add('hidden');
+          document.getElementById('step-otp').classList.remove('hidden');
+          setTimeout(() => document.getElementById('otp-input').focus(), 100);
+        } else {
+          errorEl.textContent = data.reason || 'Something went wrong. Try again.';
+          errorEl.classList.remove('hidden');
+          btn.textContent = 'Send code'; btn.disabled = false;
+        }
+      } catch {
+        errorEl.textContent = 'Network error. Check your connection and try again.';
+        errorEl.classList.remove('hidden');
+        btn.textContent = 'Send code'; btn.disabled = false;
+      }
+    }
 
-        fetch('https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email, instance_id: 'web-' + Date.now() })
-        }).catch(() => {});
+    async function verifyOtp() {
+      const code = document.getElementById('otp-input').value.trim();
+      const errorEl = document.getElementById('otp-error');
+      const btn = document.getElementById('verify-otp-btn');
+      errorEl.classList.add('hidden');
+      if (!code || code.length !== 6) { errorEl.textContent = 'Enter the 6-digit code from your email.'; errorEl.classList.remove('hidden'); return; }
+      btn.textContent = 'Verifying…'; btn.disabled = true;
+      try {
+        const res = await fetch(`${VAL_BASE}/verify-otp`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: _otpEmail, code })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          document.getElementById('email-sent-to').textContent = _otpEmail;
+          document.getElementById('token-display').textContent = data.token;
+          document.getElementById('signin-card').classList.add('hidden');
+          document.getElementById('personalized-command').classList.remove('hidden');
+          document.getElementById('generic-commands').classList.remove('hidden');
+        } else {
+          errorEl.textContent = data.reason || 'Invalid code. Try again.';
+          errorEl.classList.remove('hidden');
+          btn.textContent = 'Verify'; btn.disabled = false;
+        }
+      } catch {
+        errorEl.textContent = 'Network error. Check your connection and try again.';
+        errorEl.classList.remove('hidden');
+        btn.textContent = 'Verify'; btn.disabled = false;
+      }
+    }
 
-        document.getElementById('email-sent-to').textContent = email;
-        document.getElementById('google-signin-card').classList.add('hidden');
-        document.getElementById('personalized-command').classList.remove('hidden');
-        document.getElementById('generic-commands').classList.remove('hidden');
-      } catch(e) {}
+    function backToEmail() {
+      document.getElementById('step-otp').classList.add('hidden');
+      document.getElementById('step-email').classList.remove('hidden');
+      const btn = document.getElementById('send-otp-btn');
+      btn.textContent = 'Send code'; btn.disabled = false;
+    }
+
+    function copyToken(btn) {
+      const token = document.getElementById('token-display').textContent;
+      const cmd = `yourmemory-register ${token}`;
+      navigator.clipboard.writeText(cmd).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!'; btn.classList.add('text-green-400');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('text-green-400'); }, 2000);
+      }).catch(() => {});
     }
 
     function copyPersonalized(btn) {
