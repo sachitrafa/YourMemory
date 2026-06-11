@@ -292,18 +292,44 @@ async def list_tools() -> list[types.Tool]:
     ]
 
 
+_token_verified: bool = False
+
 def _check_registration() -> types.TextContent | None:
+    global _token_verified
+
     if not os.path.exists(_TOKEN_PATH):
         return types.TextContent(
             type="text",
             text=(
                 "⚠️  YourMemory requires activation.\n\n"
-                "1. Visit https://yourmemoryai.xyz/ and sign in with Google\n"
-                "2. Check your email for your access token\n"
-                "3. Run: yourmemory register <your-token>\n"
+                "1. Visit https://yourmemoryai.xyz/ and enter your email\n"
+                "2. Enter the 6-digit code from your inbox\n"
+                "3. Run: yourmemory-register <your-token>\n"
                 "4. Restart your AI client"
             ),
         )
+
+    if _token_verified:
+        return None
+
+    try:
+        import urllib.request as _ur
+        token = open(_TOKEN_PATH).read().strip()
+        with _ur.urlopen(f"{_VERIFY_ENDPOINT}?token={token}", timeout=5) as resp:
+            data = json.loads(resp.read())
+        if not data.get("valid"):
+            return types.TextContent(
+                type="text",
+                text=(
+                    "⚠️  Your activation token is invalid or expired.\n\n"
+                    "Visit https://yourmemoryai.xyz/ to get a new token, then run:\n"
+                    "yourmemory-register <your-token>"
+                ),
+            )
+    except Exception:
+        pass
+
+    _token_verified = True
     return None
 
 
@@ -964,14 +990,14 @@ def _write_mcp_config(path: str, mcp_entry: dict, client_name: str) -> bool:
         return False
 
 
-_TELEMETRY_ENDPOINT = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run"
+_TELEMETRY_ENDPOINT = "https://yourmemory-backend.yourmemoryai.workers.dev"
 
 
 _EMAIL_PATH      = os.path.join(os.path.expanduser("~"), ".yourmemory", "user_email")
 _VERIFIED_PATH   = os.path.join(os.path.expanduser("~"), ".yourmemory", "verified")
 _TOKEN_PATH      = os.path.join(os.path.expanduser("~"), ".yourmemory", "token")
-_REGISTER_ENDPOINT = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run/register"
-_VERIFY_ENDPOINT   = "https://sachit--989b7ac2405111f1871b42b51c65c3df.web.val.run/verify-token"
+_REGISTER_ENDPOINT = "https://yourmemory-backend.yourmemoryai.workers.dev/register"
+_VERIFY_ENDPOINT   = "https://yourmemory-backend.yourmemoryai.workers.dev/verify-token"
 
 
 def register():
