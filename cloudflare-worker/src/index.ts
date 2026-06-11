@@ -19,7 +19,6 @@ const CORS = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
-const GMAIL_USER = "yourmemoryai@gmail.com";
 
 let tableReady = false;
 
@@ -61,7 +60,7 @@ async function sendEmail(
   subject: string,
   html: string,
 ): Promise<void> {
-  await fetch("https://api.resend.com/emails", {
+  const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${env.RESEND_API_KEY}`,
@@ -74,6 +73,11 @@ async function sendEmail(
       html,
     }),
   });
+  if (!res.ok) {
+    const body = await res.text();
+    console.error(`Resend error ${res.status}: ${body}`);
+    throw new Error(`Resend ${res.status}: ${body}`);
+  }
 }
 
 function tokenEmailHtml(token: string): string {
@@ -155,6 +159,7 @@ export default {
       return json(raw.results);
     }
 
+
     // ── GET /emails
     if (req.method === "GET" && url.pathname === "/emails") {
       if (url.searchParams.get("token") !== env.EMAILS_SECRET)
@@ -217,7 +222,12 @@ export default {
       const code = Math.floor(100000 + Math.random() * 900000).toString();
       await env.DB.prepare("INSERT INTO otp (email, code) VALUES (?, ?)").bind(email, code).run();
 
-      sendEmail(env, email, `${code} is your YourMemory verification code`, otpEmailHtml(code)).catch(() => {});
+      try {
+        await sendEmail(env, email, `${code} is your YourMemory verification code`, otpEmailHtml(code));
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : String(e);
+        return json({ ok: false, reason: `Email failed: ${msg}` }, 500);
+      }
 
       return json({ ok: true });
     }
