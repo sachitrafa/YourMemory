@@ -44,6 +44,7 @@ Zero infrastructure required. SQLite by default, Postgres for teams.
 - [Quick Start](#quick-start)
 - [Memory Dashboard](#memory-dashboard)
 - [Ask Without an LLM Call](#ask-without-calling-the-api)
+- [API Proxy — Guaranteed Memory](#api-proxy--guaranteed-memory)
 - [MCP Tools](#mcp-tools)
 - [How It Works](#how-it-works)
 - [Multi-Agent Memory](#multi-agent-memory)
@@ -185,6 +186,69 @@ When memory is strong enough, it answers instantly — zero tokens, zero cloud c
 | "What database does this project use?" | Full LLM API call | Instant, $0 |
 | "How do I fix a k8s deployment?" | Full LLM API call | Declines → Claude |
 | Privacy | Query sent to cloud | Never leaves your machine |
+
+---
+
+## API Proxy — Guaranteed Memory
+
+MCP tools are called at the AI's discretion. The API proxy removes that uncertainty — it intercepts every LLM call, injects relevant memories automatically, and handles `store_memory` / `update_memory` without any model configuration.
+
+Start the YourMemory server (`yourmemory`), then point your LLM client at `localhost:3033`:
+
+### OpenAI
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-...",
+    base_url="http://localhost:3033/proxy/openai"
+)
+
+# Memory is injected automatically — no other changes needed
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "What database do I use?"}]
+)
+```
+
+### Anthropic
+
+```python
+from anthropic import Anthropic
+
+client = Anthropic(
+    api_key="sk-ant-...",
+    base_url="http://localhost:3033/proxy/anthropic"
+)
+
+response = client.messages.create(
+    model="claude-opus-4-8",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "What database do I use?"}]
+)
+```
+
+### Per-user memory
+
+Pass `X-YourMemory-User` to isolate memory per person:
+
+```python
+client = OpenAI(
+    api_key="sk-...",
+    base_url="http://localhost:3033/proxy/openai",
+    default_headers={"X-YourMemory-User": "sachit"}
+)
+```
+
+### How it works
+
+On every request the proxy:
+1. **Recalls** relevant memories and injects them into the system prompt — guaranteed, no tool call needed
+2. **Adds** `store_memory` and `update_memory` as tools — the model calls them when it learns something new
+3. **Executes** those tool calls locally and returns the final response transparently
+
+> **Streaming note:** recall injection works for all requests. Tool call interception (store/update) works for non-streaming requests only — streaming passes through and tools execute on the next turn.
 
 ---
 

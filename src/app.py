@@ -7,7 +7,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from src.routes import memories, retrieve, agents, ui, graph_viz
+from src.routes import memories, retrieve, agents, ui, graph_viz, proxy
 from src.jobs.decay_job import run as run_decay
 from src.db.migrate import migrate
 
@@ -31,6 +31,7 @@ app.include_router(retrieve.router)
 app.include_router(agents.router)
 app.include_router(ui.router)
 app.include_router(graph_viz.router)
+app.include_router(proxy.router)
 
 
 @app.get("/health")
