@@ -66,7 +66,7 @@ def _run_sse(port: int):
         from src.routes.graph_viz import graph_viz
         return await graph_viz(
             memoryId=int(request.query_params.get("memoryId", 0)),
-            userId=request.query_params.get("userId", "sachit"),
+            userId=request.query_params.get("userId", DEFAULT_USER),
             depth=int(request.query_params.get("depth", 2)),
         )
 
@@ -74,7 +74,7 @@ def _run_sse(port: int):
         from src.routes.graph_viz import graph_data
         return graph_data(
             memoryId=int(request.query_params.get("memoryId", 0)),
-            userId=request.query_params.get("userId", "sachit"),
+            userId=request.query_params.get("userId", DEFAULT_USER),
             depth=int(request.query_params.get("depth", 2)),
         )
 
@@ -105,7 +105,7 @@ def _load_services():
         return
     from src.services.retrieve import retrieve as _retrieve
     from src.services.embed import embed
-    from src.services.extract import is_question, categorize
+    from src.services.extract import is_question, categorize, should_store_llm
     from src.services.api_keys import validate_api_key
     from src.services.resolve import resolve
     from src.db.connection import get_backend, get_conn, emb_to_db
@@ -113,6 +113,7 @@ def _load_services():
     _services["embed"]            = embed
     _services["is_question"]      = is_question
     _services["categorize"]       = categorize
+    _services["should_store_llm"] = should_store_llm
     _services["validate_api_key"] = validate_api_key
     _services["resolve"]          = resolve
     _services["get_backend"]      = get_backend
@@ -315,7 +316,8 @@ def _check_registration() -> types.TextContent | None:
     try:
         import urllib.request as _ur
         token = open(_TOKEN_PATH).read().strip()
-        with _ur.urlopen(f"{_VERIFY_ENDPOINT}?token={token}", timeout=5) as resp:
+        _vreq = _ur.Request(f"{_VERIFY_ENDPOINT}?token={token}", headers={"User-Agent": _HTTP_UA})
+        with _ur.urlopen(_vreq, timeout=5) as resp:
             data = json.loads(resp.read())
         if not data.get("valid"):
             return types.TextContent(
@@ -420,9 +422,13 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
 
         content = arguments["content"]
 
-        if is_question(content):
+        if _services["is_question"](content):
             return [types.TextContent(type="text", text=json.dumps(
                 {"error": "Questions are not stored as memories."}))]
+
+        if not _services["should_store_llm"](content):
+            return [types.TextContent(type="text", text=json.dumps(
+                {"skipped": True, "reason": "Local LLM determined this is not worth storing as a long-term memory.", "content": content}))]
 
         if "importance" not in arguments:
             return [types.TextContent(type="text", text=json.dumps(
@@ -990,6 +996,11 @@ def _write_mcp_config(path: str, mcp_entry: dict, client_name: str) -> bool:
         return False
 
 
+# Cloudflare blocks the default "Python-urllib" User-Agent with a 403, which the
+# client previously mislabelled as "Activation server is down". Any non-default UA
+# passes — set one on every request to the backend.
+_HTTP_UA = "YourMemory-Client/1.0"
+
 _TELEMETRY_ENDPOINT = "https://yourmemory-backend.yourmemoryai.workers.dev"
 
 
@@ -1016,7 +1027,8 @@ def register():
 
     import urllib.request as _ureq, json as _json
     try:
-        with _ureq.urlopen(f"{_VERIFY_ENDPOINT}?token={token}", timeout=10) as resp:
+        _vreq = _ureq.Request(f"{_VERIFY_ENDPOINT}?token={token}", headers={"User-Agent": _HTTP_UA})
+        with _ureq.urlopen(_vreq, timeout=10) as resp:
             data = _json.loads(resp.read())
         if data.get("valid"):
             os.makedirs(os.path.dirname(_TOKEN_PATH), exist_ok=True)
@@ -1066,7 +1078,7 @@ def _ping_install() -> None:
         req = urllib.request.Request(
             _TELEMETRY_ENDPOINT,
             data=payload,
-            headers={"Content-Type": "application/json"},
+            headers={"Content-Type": "application/json", "User-Agent": _HTTP_UA},
             method="POST",
         )
         urllib.request.urlopen(req, timeout=5)
