@@ -49,3 +49,29 @@ mcp-publisher
 .wrangler
 .dev.vars*
 !.dev.vars.example
+
+# ── Local / internal — never commit (public repo) ──────────────────────
+# Sales / GTM / demo / internal collateral
+GTM_TARGETS.md
+PRESENTATION.md
+DEMO_SCRIPT.md
+FINAL_CLINE_DEMO_SCRIPT.md
+CLINE_DEMO_SETUP.md
+CLAUDE_MEMORY_INSTRUCTIONS.md
+TERMINAL_INTEGRATION_OPTIONS.md
+YourMemory Brief.md
+deck.html
+article_cover.html
+enterprise_post_graphic.html
+
+# Screenshots & local media
+Screenshot*.png
+demo_gifs/
+make_gifs.py
+
+# Third-party clone & node deps (do not vendor into this repo)
+awesome-llm-apps/
+node_modules/
+
+# Local scratch dir
+Yourmemory/
