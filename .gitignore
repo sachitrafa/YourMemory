@@ -44,3 +44,8 @@ valtown_tracking.ts
 avatar_sips.png
 benchmark_card.html
 mcp-publisher
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
