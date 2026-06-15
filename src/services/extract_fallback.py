@@ -1,4 +1,5 @@
 import re
+from src.services.extract import should_store_llm  # shared implementation
 
 _QUESTION_WORDS = {"what", "who", "where", "when", "why", "how", "which", "whose", "whom"}
 

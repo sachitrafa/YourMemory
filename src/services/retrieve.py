@@ -1,6 +1,9 @@
 import json
 import math
+import os
+import re
 import sys
+import urllib.request
 from datetime import datetime, timezone
 
 from .embed import embed
@@ -15,8 +18,8 @@ SIMILARITY_THRESHOLD_FALLBACK = 0.20
 REINFORCE_THRESHOLD           = 0.75
 
 # Hybrid scoring weights: BM25 keyword + vector×decay
-W_BM25   = 0.4
-W_VECTOR = 0.6
+W_BM25   = 0.5
+W_VECTOR = 0.5
 
 
 def _user_has_memories(user_id: str) -> bool:
@@ -151,8 +154,14 @@ def _fts_search_postgres(conn, user_id: str, agent_id: str | None,
     """Return {memory_id: bm25_norm} using Postgres tsvector + ts_rank."""
     try:
         from psycopg2.extras import RealDictCursor
+        # OR the sanitized content terms — any keyword match contributes (FTS is one
+        # leg of the hybrid score), and the 'english' config strips stopwords. The old
+        # code AND-joined the raw query incl. stopwords, so it never matched anything.
+        terms = [t for t in re.findall(r'[a-z0-9]+', query.lower()) if len(t) > 2]
+        if not terms:
+            return {}
+        tsq = " | ".join(terms)
         cur = conn.cursor(cursor_factory=RealDictCursor)
-        tsq = " & ".join(query.split())   # simple AND query — good for identifiers
         if agent_id:
             cur.execute("""
                 SELECT id, ts_rank_cd(content_tsv, to_tsquery('english', %s)) AS score
@@ -176,8 +185,12 @@ def _fts_search_postgres(conn, user_id: str, agent_id: str | None,
             """, (tsq, tsq, user_id, limit))
         rows = [dict(r) for r in cur.fetchall()]
         cur.close()
-        # ts_rank_cd already returns 0–1
-        return {r["id"]: float(r["score"]) for r in rows}
+        if not rows:
+            return {}
+        # Max-normalize ts_rank_cd (small absolute values) into a 0-1 signal so the
+        # keyword leg is comparable in magnitude to cosine in the hybrid score.
+        mx = max((r["score"] for r in rows if r["score"]), default=0.0) or 1.0
+        return {r["id"]: float(r["score"]) / mx for r in rows if r["score"]}
     except Exception as exc:
         print(f"[retrieve] FTS search failed (postgres): {exc}", file=sys.stderr)
         return {}
@@ -259,6 +272,85 @@ def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None,
             if boosted_ids:
                 _bump_recall_count(boosted_ids, backend)
 
+    # Optional LLM relevance gate — see _relevance_filter. Off unless
+    # YOURMEMORY_RELEVANCE_JUDGE=1. Runs at most one batched call, and only when
+    # there are candidates, so an empty/off-topic store costs zero LLM calls.
+    result = _relevance_filter(query, result)
+
+    return result
+
+
+def _relevance_filter(query: str, result: dict) -> dict:
+    """Ask the local model which candidate memories are actually relevant to the
+    query — a SINGLE batched call — and drop the rest.
+
+    Purpose: prevent "worse than nothing" injection. Vector recall always returns
+    the nearest memories even when none are on-topic (e.g. session 1 of a new
+    deal surfaces unrelated identity/preference memories). This gate lets recall
+    stay SILENT when nothing is genuinely relevant.
+
+    Cost controls (matters: recall runs on every prompt via the hook):
+      - No-op unless YOURMEMORY_RELEVANCE_JUDGE=1.
+      - Skips the LLM entirely when there are no candidates.
+      - One call total, not one per memory.
+      - Strict timeout; fails OPEN (returns candidates unchanged) so a slow or
+        down Ollama degrades to threshold-only behaviour instead of breaking recall.
+      - Judge model is configurable (YOURMEMORY_JUDGE_MODEL) so the hot path can
+        use a faster/smaller model than the extractor if latency demands it.
+    """
+    if os.getenv("YOURMEMORY_RELEVANCE_JUDGE", "0") != "1":
+        return result
+
+    memories = result.get("memories", [])
+    if not memories:
+        return result
+
+    listing = "\n".join(f"{i + 1}. {m['content']}" for i, m in enumerate(memories))
+    prompt = (
+        "You filter a memory store before injecting context into an assistant.\n"
+        "Given a QUERY and a numbered list of candidate MEMORIES, return the numbers "
+        "of ONLY the memories that are directly relevant as context for this query. "
+        "Be strict — exclude memories about a different topic, person, or project. "
+        "If none are relevant, reply NONE.\n"
+        "Reply with comma-separated numbers (or NONE) and nothing else.\n\n"
+        f"QUERY: {query}\n\nMEMORIES:\n{listing}\n\nRelevant numbers:"
+    )
+
+    url   = os.getenv("YOURMEMORY_OLLAMA_URL", "http://localhost:11434")
+    model = os.getenv("YOURMEMORY_JUDGE_MODEL",
+                      os.getenv("YOURMEMORY_OLLAMA_MODEL", "qwen2.5:7b"))
+    payload = json.dumps({
+        "model":   model,
+        "prompt":  prompt,
+        "stream":  False,
+        "keep_alive": os.getenv("YOURMEMORY_OLLAMA_KEEPALIVE", "30m"),
+        "options": {"temperature": 0, "num_predict": 24},
+    }).encode()
+
+    try:
+        req = urllib.request.Request(
+            f"{url}/api/generate", data=payload,
+            headers={"Content-Type": "application/json"},
+        )
+        timeout = float(os.getenv("YOURMEMORY_JUDGE_TIMEOUT", "5"))
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            answer = json.loads(resp.read()).get("response", "")
+    except Exception:
+        return result  # fail open — degrade to threshold-only behaviour
+
+    ans = answer.strip().upper()
+    keep_idx = {int(n) for n in re.findall(r"\d+", ans)}
+    if not keep_idx:
+        if "NONE" in ans:
+            kept = []                 # judge explicitly found nothing relevant
+        else:
+            return result             # unparseable answer → fail open
+    else:
+        kept = [m for i, m in enumerate(memories) if (i + 1) in keep_idx]
+
+    result["memories"]      = kept
+    result["memoriesFound"] = len(kept)
+    result["context"]       = _build_context(kept)
     return result
 
 

@@ -1,5 +1,8 @@
+import json
+import os
 import re
 import sys
+import urllib.request
 
 _QUESTION_WORDS = {"what", "who", "where", "when", "why", "how", "which", "whose", "whom"}
 
@@ -32,6 +35,44 @@ def is_question(text: str) -> bool:
         return True
     first_word = re.split(r"\s+", stripped.lower())[0]
     return first_word in _QUESTION_WORDS
+
+
+def should_store_llm(content: str) -> bool:
+    """Ask the local Ollama model whether this content is worth storing as a long-term memory.
+    Fails open — returns True if Ollama is unreachable so storage is never silently blocked.
+    """
+    ollama_url   = os.getenv("YOURMEMORY_OLLAMA_URL",   "http://localhost:11434")
+    ollama_model = os.getenv("YOURMEMORY_OLLAMA_MODEL", "qwen2.5:7b")
+
+    prompt = (
+        "Decide whether the following text is worth storing as a long-term memory for an AI assistant.\n\n"
+        "STORE if it contains: a user preference, a project decision, a technical config value, "
+        "a tool or library choice, a bug fix, a workflow rule, or any recurring fact.\n"
+        "SKIP if it is: a greeting, a vague question with no new information, "
+        "a one-time ephemeral action, or generic filler.\n\n"
+        f"Text: {content}\n\n"
+        "Reply with exactly one word: STORE or SKIP"
+    )
+
+    payload = json.dumps({
+        "model":   ollama_model,
+        "prompt":  prompt,
+        "stream":  False,
+        "keep_alive": os.getenv("YOURMEMORY_OLLAMA_KEEPALIVE", "30m"),
+        "options": {"temperature": 0, "num_predict": 8},
+    }).encode()
+
+    try:
+        req = urllib.request.Request(
+            f"{ollama_url}/api/generate",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            answer = json.loads(resp.read()).get("response", "").strip().upper()
+            return not answer.startswith("SKIP")
+    except Exception:
+        return True  # fail open
 
 
 def categorize(text: str) -> str:
