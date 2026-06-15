@@ -1086,6 +1086,94 @@ def _ping_install() -> None:
         pass  # never break setup due to telemetry
 
 
+def _check_ollama_model(model: str) -> None:
+    """Check the local Ollama has the extraction model; print pull instructions if not.
+
+    Extraction (and the optional relevance judge) run on this local model. Without it,
+    auto-store extraction degrades. We do NOT auto-pull (~4.7GB) — we tell the user.
+    """
+    url = os.getenv("YOURMEMORY_OLLAMA_URL", "http://localhost:11434")
+    print(f"\n[+] Checking local extraction model ({model})…")
+    try:
+        import urllib.request as _u
+        with _u.urlopen(f"{url}/api/tags", timeout=4) as resp:
+            names = {m.get("name", "") for m in json.loads(resp.read()).get("models", [])}
+        base = model.split(":")[0]
+        if model in names or any(n.split(":")[0] == base for n in names):
+            print(f"  ✓  {model} is available.")
+        else:
+            print(f"  ⚠  {model} not found in Ollama. YourMemory uses it to extract memories.")
+            print(f"     Install it:   ollama pull {model}")
+            print(f"     (or set YOURMEMORY_OLLAMA_MODEL to a model you already have)")
+    except Exception:
+        print(f"  ⚠  Ollama not reachable at {url}.")
+        print( "     YourMemory needs Ollama for memory extraction — install from https://ollama.com,")
+        print(f"     then run:   ollama pull {model}")
+
+
+def _install_claude_hooks(home: str) -> None:
+    """Install the recall + store hooks into ~/.claude/hooks and register them in
+    settings.json. These drive automatic recall (UserPromptSubmit) and store (Stop)
+    so memory works without the agent calling MCP tools explicitly. Idempotent."""
+    import json as _json
+    hooks_dir = os.path.join(home, ".claude", "hooks")
+    os.makedirs(hooks_dir, exist_ok=True)
+
+    try:
+        from importlib.resources import files as _ir_files
+        tdir = _ir_files("src.hook_templates")
+    except Exception as exc:
+        print(f"  ⚠  Could not locate hook templates ({exc}); skipping hook install.")
+        return
+
+    # (filename, make executable)
+    for fname, is_exec in (("yourmemory_recall.sh", True),
+                           ("yourmemory_user.sh", True),
+                           ("yourmemory_store.py", False)):
+        try:
+            dest = os.path.join(hooks_dir, fname)
+            with open(dest, "w") as f:
+                f.write((tdir / fname).read_text())
+            if is_exec:
+                os.chmod(dest, 0o755)
+        except Exception as exc:
+            print(f"  ⚠  Could not write hook {fname}: {exc}")
+            return
+
+    # Register hooks in settings.json (merge into existing config, idempotent).
+    settings_path = os.path.join(home, ".claude", "settings.json")
+    data = {}
+    if os.path.exists(settings_path):
+        try:
+            data = _json.load(open(settings_path))
+        except Exception:
+            data = {}
+    hooks = data.setdefault("hooks", {})
+
+    recall_cmd = os.path.join(hooks_dir, "yourmemory_recall.sh")
+    store_cmd  = "python3 " + os.path.join(hooks_dir, "yourmemory_store.py")
+
+    def _ensure(event, command, extra):
+        arr = hooks.setdefault(event, [])
+        for group in arr:                       # idempotent — skip if already present
+            for h in group.get("hooks", []):
+                if "yourmemory" in h.get("command", ""):
+                    return
+        entry = {"type": "command", "command": command}
+        entry.update(extra)
+        arr.append({"hooks": [entry]})
+
+    _ensure("UserPromptSubmit", recall_cmd, {"timeout": 8, "statusMessage": "Recalling memories…"})
+    _ensure("Stop", store_cmd, {"timeout": 30})
+
+    try:
+        with open(settings_path, "w") as f:
+            _json.dump(data, f, indent=2)
+        print(f"  ✓  Hooks installed → {hooks_dir} (automatic recall + store)")
+    except Exception as exc:
+        print(f"  ⚠  Could not update settings.json with hooks: {exc}")
+
+
 def setup():
     """One-time setup: spaCy model, database, and client configs.
 
@@ -1139,6 +1227,9 @@ def setup():
     print("  ✓  Database ready.")
     _ping_install()
 
+    # ── Local extraction model check ───────────────────────────────────────
+    _check_ollama_model(os.getenv("YOURMEMORY_OLLAMA_MODEL", "qwen2.5:7b"))
+
     # ── 3. Client config auto-detection ────────────────────────────────────
     print("\n[3/4] Writing MCP config to detected clients…")
 
@@ -1150,6 +1241,7 @@ def setup():
     if os.path.exists(os.path.join(home, ".claude")):
         if _write_mcp_config(cc_path, mcp_entry, "Claude Code"):
             wrote_any = True
+        _install_claude_hooks(home)
 
     # Claude Desktop
     appdata = os.getenv("APPDATA", "")

@@ -63,3 +63,4 @@ include = ["src*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.sql"]
+"src.hook_templates" = ["*.sh", "*.py"]

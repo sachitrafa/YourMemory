@@ -130,6 +130,14 @@ yourmemory-register <your-token>
 yourmemory-setup
 ```
 
+> **Requirement — local model:** YourMemory extracts memories with a local model via
+> [Ollama](https://ollama.com). After installing Ollama, pull the default model:
+> ```bash
+> ollama pull qwen2.5:7b
+> ```
+> `yourmemory-setup` checks for it and prints this reminder if it's missing. To use a
+> lighter model you already have, set `YOURMEMORY_OLLAMA_MODEL` (e.g. `llama3.2:3b`).
+
 ---
 
 ## Memory Dashboard
