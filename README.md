@@ -131,12 +131,12 @@ yourmemory-setup
 ```
 
 > **Requirement — local model:** YourMemory extracts memories with a local model via
-> [Ollama](https://ollama.com). After installing Ollama, pull the default model:
-> ```bash
-> ollama pull qwen2.5:7b
-> ```
-> `yourmemory-setup` checks for it and prints this reminder if it's missing. To use a
-> lighter model you already have, set `YOURMEMORY_OLLAMA_MODEL` (e.g. `llama3.2:3b`).
+> [Ollama](https://ollama.com). Install Ollama and start it — `yourmemory-setup` then
+> **pulls the default model (`qwen2.5:7b`, ~4.7 GB) automatically**. To use a lighter
+> model you already have, set `YOURMEMORY_OLLAMA_MODEL` (e.g. `llama3.2:3b`) before setup.
+>
+> **Backend:** `yourmemory-setup` asks whether to use **DuckDB** (zero setup, default) or
+> **Postgres** (shared/production — you provide a `DATABASE_URL`; needs the pgvector extension).
 
 ---
 

@@ -1087,28 +1087,47 @@ def _ping_install() -> None:
 
 
 def _check_ollama_model(model: str) -> None:
-    """Check the local Ollama has the extraction model; print pull instructions if not.
-
-    Extraction (and the optional relevance judge) run on this local model. Without it,
-    auto-store extraction degrades. We do NOT auto-pull (~4.7GB) — we tell the user.
+    """Ensure the local Ollama has the extraction model — pulling it automatically
+    if missing. Extraction (and the optional relevance judge) run on this model;
+    without it, auto-store extraction degrades.
     """
+    import urllib.request as _u
     url = os.getenv("YOURMEMORY_OLLAMA_URL", "http://localhost:11434")
     print(f"\n[+] Checking local extraction model ({model})…")
+
+    # 1. Is Ollama reachable? (We can't auto-install Ollama itself.)
     try:
-        import urllib.request as _u
         with _u.urlopen(f"{url}/api/tags", timeout=4) as resp:
             names = {m.get("name", "") for m in json.loads(resp.read()).get("models", [])}
-        base = model.split(":")[0]
-        if model in names or any(n.split(":")[0] == base for n in names):
-            print(f"  ✓  {model} is available.")
-        else:
-            print(f"  ⚠  {model} not found in Ollama. YourMemory uses it to extract memories.")
-            print(f"     Install it:   ollama pull {model}")
-            print(f"     (or set YOURMEMORY_OLLAMA_MODEL to a model you already have)")
     except Exception:
         print(f"  ⚠  Ollama not reachable at {url}.")
-        print( "     YourMemory needs Ollama for memory extraction — install from https://ollama.com,")
-        print(f"     then run:   ollama pull {model}")
+        print( "     Install Ollama from https://ollama.com and start it, then re-run")
+        print( "     yourmemory-setup — it will pull the model automatically.")
+        return
+
+    base = model.split(":")[0]
+    if model in names or any(n.split(":")[0] == base for n in names):
+        print(f"  ✓  {model} is available.")
+        return
+
+    # 2. Missing → pull it now.
+    print(f"  ↓  {model} not found — pulling it now (~4.7GB, one-time download)…")
+    import shutil, subprocess
+    if shutil.which("ollama"):
+        rc = subprocess.run(["ollama", "pull", model]).returncode  # streams progress
+        print(f"  ✓  {model} pulled." if rc == 0
+              else f"  ⚠  Pull failed — run manually:  ollama pull {model}")
+    else:
+        # Ollama API reachable but CLI not on PATH — pull via the API (no live progress).
+        try:
+            req = _u.Request(f"{url}/api/pull",
+                             data=json.dumps({"name": model, "stream": False}).encode(),
+                             headers={"Content-Type": "application/json"})
+            with _u.urlopen(req, timeout=3600) as resp:
+                resp.read()
+            print(f"  ✓  {model} pulled.")
+        except Exception as exc:
+            print(f"  ⚠  Could not pull {model} ({exc}). Run manually:  ollama pull {model}")
 
 
 def _install_claude_hooks(home: str) -> None:
@@ -1198,6 +1217,31 @@ def setup():
         "env":     {"PYTHONIOENCODING": "utf-8"},
     }
 
+    # ── Backend selection ───────────────────────────────────────────────────
+    # DuckDB (default) needs zero setup. Postgres is for shared/production use —
+    # the user supplies a connection URL, which we pass to the server via the MCP
+    # config's env block so the spawned server uses it.
+    print("\n[+] Memory backend:")
+    print("    1) DuckDB   — zero setup, single local file (default)")
+    print("    2) Postgres — shared/production; needs a connection URL + pgvector")
+    try:
+        _choice = input("  Choose [1]: ").strip()
+    except (EOFError, OSError):
+        _choice = ""
+    if _choice == "2":
+        try:
+            _dburl = input("  DATABASE_URL (postgresql://user:pass@host:5432/db): ").strip()
+        except (EOFError, OSError):
+            _dburl = ""
+        if _dburl:
+            os.environ["DATABASE_URL"] = _dburl
+            mcp_entry.setdefault("env", {})["DATABASE_URL"] = _dburl
+            print("  ✓  Postgres selected (verified during DB init below).")
+        else:
+            print("  ⚠  No URL provided — using DuckDB.")
+    else:
+        print("  ✓  DuckDB selected.")
+
     # ── 1. spaCy language model ─────────────────────────────────────────────
     print("\n[1/4] Downloading spaCy language model…")
     r = subprocess.run(
@@ -1223,8 +1267,22 @@ def setup():
     # ── 2. Database migration ───────────────────────────────────────────────
     print("\n[2/4] Initialising database…")
     from src.db.migrate import migrate
-    migrate()
-    print("  ✓  Database ready.")
+    from src.db.connection import get_backend
+    try:
+        migrate()
+        print(f"  ✓  Database ready ({get_backend()}).")
+    except Exception as exc:
+        if os.environ.get("DATABASE_URL"):
+            print(f"  ⚠  Postgres init failed ({exc}); falling back to DuckDB.")
+            os.environ.pop("DATABASE_URL", None)
+            mcp_entry.get("env", {}).pop("DATABASE_URL", None)
+            try:
+                migrate()
+                print("  ✓  Database ready (duckdb).")
+            except Exception as exc2:
+                print(f"  ⚠  Database init failed: {exc2}")
+        else:
+            print(f"  ⚠  Database init failed: {exc}")
     _ping_install()
 
     # ── Local extraction model check ───────────────────────────────────────
