@@ -618,13 +618,13 @@
 
           <!-- Step 1: Email -->
           <div id="step-email">
-            <p class="text-gray-400 text-sm mb-4">Enter your email — we'll send a 6-digit code to verify.</p>
-            <div class="flex gap-3">
+            <p class="text-gray-400 text-sm mb-4">Enter your email. We'll send a 6-digit code to verify.</p>
+            <div class="flex flex-col sm:flex-row gap-3">
               <input id="email-input" type="email" placeholder="you@example.com"
-                     class="flex-1 bg-black/30 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#00D4FF]/50"
+                     class="w-full sm:flex-1 bg-black/30 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#00D4FF]/50"
                      onkeydown="if(event.key==='Enter') sendOtp()"/>
               <button onclick="sendOtp()" id="send-otp-btn"
-                      class="px-5 py-2.5 bg-[#00D4FF] text-[#0A192F] font-bold text-sm rounded-xl hover:bg-[#00D4FF]/90 transition-colors whitespace-nowrap">
+                      class="w-full sm:w-auto px-5 py-2.5 bg-[#00D4FF] text-[#0A192F] font-bold text-sm rounded-xl hover:bg-[#00D4FF]/90 transition-colors whitespace-nowrap">
                 Send code
               </button>
             </div>
