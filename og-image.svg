@@ -1,0 +1,20 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0A192F"/>
+  <rect x="0" y="618" width="1200" height="12" fill="#00D4FF"/>
+  <circle cx="1050" cy="120" r="240" fill="#00D4FF" fill-opacity="0.06"/>
+
+  <!-- logo mark -->
+  <g>
+    <rect x="90"  y="150" width="150" height="22" rx="5" fill="#FFFFFF"/>
+    <rect x="118" y="120" width="94"  height="22" rx="5" fill="#FFFFFF"/>
+    <rect x="146" y="90"  width="28"  height="22" rx="5" fill="#FFFFFF"/>
+    <rect x="182" y="90"  width="11"  height="22" rx="3" fill="#00D4FF"/>
+    <rect x="160" y="60"  width="11"  height="22" rx="3" fill="#00D4FF" fill-opacity="0.6"/>
+  </g>
+
+  <text x="90" y="330" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="104" font-weight="700" fill="#FFFFFF">YourMemory</text>
+  <text x="92" y="400" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="40" font-weight="400" fill="#94A3B8">Persistent memory for AI agents — across every session.</text>
+  <text x="92" y="468" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="34" font-weight="400" fill="#94A3B8">Biologically-inspired decay that forgets the right things.</text>
+
+  <text x="92" y="560" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="30" font-weight="600" fill="#00D4FF">MCP-compatible  ·  pip install yourmemory</text>
+</svg>
