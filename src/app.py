@@ -148,31 +148,53 @@ def auto_store_endpoint(req: AutoStoreRequest):
     asst_text = req.assistant_text[:4000]
 
     prompt = (
-        "You extract durable facts worth storing as long-term memory from a chat exchange.\n\n"
-        "Store a fact only if it is one of: a user preference or instruction; a project or "
-        "deal decision; a tool/library/approach chosen; a bug or failure diagnosed or fixed; "
-        "a stakeholder, price, competitor, deadline, or other deal-critical detail; a research "
-        "or market finding.\n\n"
-        "Rules:\n"
-        "- KEEP every specific name, number, amount, competitor, and date from the text verbatim. "
-        "Never generalise a named entity into a vague subject like 'the project' or 'the client'.\n"
-        "- Refer to the person being assisted as 'The user'; never invent a personal name.\n"
-        "- One entity per fact; split multi-entity statements into separate facts.\n"
-        "- Plain declarative sentences. No markdown, no email subject/greeting/sign-off lines, "
-        "no meta-commentary, and never copy email body prose verbatim.\n"
-        "- importance: HIGH = stakeholders, pricing, competitors, deal-critical decisions; "
-        "MED = preferences, architectural choices, findings; LOW = background context.\n"
-        "- If nothing qualifies, return an empty list.\n\n"
-        "Return JSON: {\"facts\": [{\"fact\": \"<sentence>\", \"importance\": \"HIGH|MED|LOW\"}]}\n\n"
+        "You build an AI agent's long-term memory. From the exchange below, extract every "
+        "durable, reusable fact about the user and their world — anything that would help the "
+        "agent serve them better in a FUTURE, possibly unrelated conversation.\n\n"
+        "Capture knowledge of ANY kind. For example:\n"
+        "- Identity & background — name, role, job, company, location, age, languages, expertise\n"
+        "- Preferences & style — likes/dislikes, habits, tools, brands, how they want to be communicated with\n"
+        "- Goals & plans — what they want, are working toward, deadlines, upcoming events (with dates)\n"
+        "- Relationships — people, family, pets, colleagues, clients they mention, and who each one is\n"
+        "- Work & projects — what they're building, their stack/tools, decisions, constraints, requirements\n"
+        "- Possessions & environment — what they own or use; their setup (devices, OS, home, car, pets)\n"
+        "- Events & experiences — things that happened, are happening, or will happen — keep the timing\n"
+        "- Asserted knowledge — facts, findings, numbers, or results they state as true\n"
+        "- Problems & failures — what went wrong, blockers, mistakes, pitfalls to avoid\n"
+        "- Solutions & strategies — approaches, fixes, or tactics that worked\n"
+        "- Standing instructions — rules for how the agent should behave for this user\n\n"
+        "Rules for each fact:\n"
+        "- ONE atomic fact per item; split compound statements.\n"
+        "- SELF-CONTAINED — resolve pronouns and keep the actual names, numbers, dates, places, and "
+        "entities verbatim, so it stands alone, out of context, weeks later "
+        "(\"Aylin's daughter starts at NYU in September\", not \"her kid starts soon\").\n"
+        "- ANCHOR TIME — turn relative time into concrete terms where possible "
+        "(\"running a marathon on March 3\", \"broke his ankle, out ~6 weeks\").\n"
+        "- Capture facts about the USER and meaningful facts about OTHER people/things discussed; "
+        "note who owns or did what — don't blur the speakers.\n"
+        "- One plain declarative sentence. No markdown, no preamble.\n\n"
+        "Do NOT store: greetings, small talk, acknowledgements, filler; questions, or the assistant's "
+        "own suggestions/answers (unless the user adopted them as a decision); one-off throwaway actions "
+        "with no future relevance; anything you'd have to guess — only what is stated or clearly implied.\n\n"
+        "Tag each fact:\n"
+        "- importance: HIGH = identity, key relationships, strong preferences, decisions, deadlines, "
+        "critical facts; MED = useful context, ordinary preferences, projects, findings; LOW = minor/background.\n"
+        "- category: 'fact' = a stated/stable detail or preference; 'assumption' = inferred, not confirmed; "
+        "'failure' = something that went wrong / to avoid; 'strategy' = an approach that worked.\n\n"
+        "If nothing durable is worth remembering, return an empty list.\n\n"
+        "Return JSON: {\"facts\":[{\"fact\":\"<sentence>\",\"importance\":\"HIGH|MED|LOW\","
+        "\"category\":\"fact|assumption|failure|strategy\"}]}\n\n"
         "Example —\n"
-        "User: We're pitching GreenLeaf Agro Odoo ERP for 80 users. Our price is Rs 42 lakh "
-        "fixed-bid, AMC 75k/month. A Pune partner quoted Rs 38 lakh. Always CC my manager Rohit.\n"
-        "Assistant: Understood.\n"
+        "User: Finally moved to Berlin for the new job at Zalando — I'm a backend engineer there now. "
+        "Been learning Rust on weekends. My cat Mochi hated the flight. Also remind me: my partner "
+        "Aylin's birthday is March 12.\n"
+        "Assistant: Congrats on the move!\n"
         "{\"facts\":["
-        "{\"fact\":\"GreenLeaf Agro is being pitched Odoo ERP for about 80 users.\",\"importance\":\"HIGH\"},"
-        "{\"fact\":\"Ksolves quoted GreenLeaf Rs 42 lakh fixed-bid plus Rs 75k/month AMC.\",\"importance\":\"HIGH\"},"
-        "{\"fact\":\"A Pune partner quoted GreenLeaf Rs 38 lakh.\",\"importance\":\"HIGH\"},"
-        "{\"fact\":\"The user always CCs their manager Rohit on client emails.\",\"importance\":\"MED\"}"
+        "{\"fact\":\"The user moved to Berlin for a new job.\",\"importance\":\"HIGH\",\"category\":\"fact\"},"
+        "{\"fact\":\"The user works as a backend engineer at Zalando.\",\"importance\":\"HIGH\",\"category\":\"fact\"},"
+        "{\"fact\":\"The user is learning Rust on weekends.\",\"importance\":\"MED\",\"category\":\"fact\"},"
+        "{\"fact\":\"The user has a cat named Mochi.\",\"importance\":\"MED\",\"category\":\"fact\"},"
+        "{\"fact\":\"The user's partner Aylin has a birthday on March 12.\",\"importance\":\"HIGH\",\"category\":\"fact\"}"
         "]}\n\n"
         f"User: {user_text}\n\nAssistant: {asst_text}"
     )
@@ -187,8 +209,9 @@ def auto_store_endpoint(req: AutoStoreRequest):
                     "properties": {
                         "fact":       {"type": "string"},
                         "importance": {"type": "string", "enum": ["HIGH", "MED", "LOW"]},
+                        "category":   {"type": "string", "enum": ["fact", "assumption", "failure", "strategy"]},
                     },
-                    "required": ["fact", "importance"],
+                    "required": ["fact", "importance", "category"],
                 },
             }
         },
@@ -232,6 +255,7 @@ def auto_store_endpoint(req: AutoStoreRequest):
     cur = conn.cursor() if backend == "postgres" else None
 
     IMPORTANCE_MAP = {"HIGH": 0.85, "MED": 0.65, "LOW": 0.45}
+    VALID_CATS     = {"fact", "assumption", "failure", "strategy"}
     # Structured output removes the markdown/preamble/tag noise the old free-text
     # parser had to scrub, so only a light guard against empties/stray fragments remains.
     BAD_PREFIXES = ("subject:", "dear ", "regards", "to:", "cc:")
@@ -243,6 +267,9 @@ def auto_store_endpoint(req: AutoStoreRequest):
             continue
         fact       = str(item.get("fact", "")).strip().strip('"').strip()
         importance = IMPORTANCE_MAP.get(str(item.get("importance", "MED")).upper(), 0.65)
+        category   = str(item.get("category", "")).strip().lower()
+        if category not in VALID_CATS:
+            category = categorize(fact)        # fall back to heuristic if the model omits/garbles it
         if len(fact) < 12 or len(fact.split()) < 2:
             continue
         if fact.lower().startswith(BAD_PREFIXES):
@@ -255,7 +282,6 @@ def auto_store_endpoint(req: AutoStoreRequest):
 
             if action == "new":
                 emb_str  = emb_to_db(embedding, backend)
-                category = categorize(fact)
                 if backend == "postgres":
                     cur.execute(
                         "INSERT INTO memories (user_id, content, embedding, importance, category) "
@@ -285,7 +311,7 @@ def auto_store_endpoint(req: AutoStoreRequest):
                 new_content = resolution["content"]
                 new_emb     = embed(new_content)
                 emb_str     = emb_to_db(new_emb, backend)
-                new_cat     = categorize(new_content)
+                new_cat     = category   # carry the model-assigned category onto the merged memory
                 if backend == "postgres":
                     cur.execute(
                         "UPDATE memories SET content=%s, embedding=%s::vector, category=%s, "
