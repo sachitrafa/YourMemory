@@ -1193,6 +1193,49 @@ def _install_claude_hooks(home: str) -> None:
         print(f"  ⚠  Could not update settings.json with hooks: {exc}")
 
 
+def _want_replace_native_memory() -> bool:
+    """Decide whether to disable Claude Code's native auto-memory. Honors an explicit
+    flag/env for non-interactive installs, else asks once (default No) on a TTY."""
+    if "--replace-native-memory" in sys.argv or os.getenv("YOURMEMORY_REPLACE_NATIVE_MEMORY") == "1":
+        return True
+    if "--keep-native-memory" in sys.argv:
+        return False
+    try:
+        if sys.stdin.isatty():
+            ans = input("  Disable Claude Code's native auto-memory so YourMemory's selective "
+                        "recall replaces full-file context injection? [y/N] ").strip().lower()
+            return ans in ("y", "yes")
+    except Exception:
+        pass
+    return False
+
+
+def _disable_native_memory(home: str) -> None:
+    """Opt-in: turn off Claude Code's native auto-memory (the growing MEMORY.md that
+    re-injects full context every turn) so YourMemory's selective recall replaces it.
+    Sets autoMemory:false in settings.json — idempotent and reversible. Deliberately
+    leaves the user's own CLAUDE.md instructions untouched."""
+    import json as _json
+    settings_path = os.path.join(home, ".claude", "settings.json")
+    data = {}
+    if os.path.exists(settings_path):
+        try:
+            data = _json.load(open(settings_path))
+        except Exception:
+            data = {}
+    if data.get("autoMemory") is False:
+        print("  ✓  Native auto-memory already disabled (autoMemory:false).")
+        return
+    data["autoMemory"] = False
+    try:
+        with open(settings_path, "w") as f:
+            _json.dump(data, f, indent=2)
+        print("  ✓  Disabled Claude Code native auto-memory — YourMemory now owns recall.")
+        print("     Revert anytime: set \"autoMemory\": true in ~/.claude/settings.json")
+    except Exception as exc:
+        print(f"  ⚠  Could not update settings.json (autoMemory): {exc}")
+
+
 def setup():
     """One-time setup: spaCy model, database, and client configs.
 
@@ -1300,6 +1343,8 @@ def setup():
         if _write_mcp_config(cc_path, mcp_entry, "Claude Code"):
             wrote_any = True
         _install_claude_hooks(home)
+        if _want_replace_native_memory():
+            _disable_native_memory(home)
 
     # Claude Desktop
     appdata = os.getenv("APPDATA", "")
