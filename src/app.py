@@ -187,6 +187,7 @@ def observe_endpoint(req: ObserveRequest):
 
     IMP = {"HIGH": 0.8, "MED": 0.6, "LOW": 0.4}
     stored = 0
+    ids = []
     for it in facts:
         if not isinstance(it, dict):
             continue
@@ -203,10 +204,22 @@ def observe_endpoint(req: ObserveRequest):
             rq = _ur.Request("http://localhost:3033/memories", data=body,
                              headers={"Content-Type": "application/json"}, method="POST")
             with _ur.urlopen(rq, timeout=10) as r:
-                r.read()
+                mid = json.loads(r.read()).get("id")
+            if mid is not None:
+                ids.append(mid)
             stored += 1
         except Exception:
             pass
+
+    # Phase 3 — structural co-occurrence edges: facts from the SAME source form a
+    # connected region in the graph, so recalling one surfaces the whole region.
+    if len(ids) > 1:
+        try:
+            from src.graph.graph_store import link_memories
+            link_memories(ids, relation="co_occurrence", weight=0.55)
+        except Exception:
+            pass
+
     return {"stored": stored, "facts": [it.get("fact") for it in facts]}
 
 

@@ -118,6 +118,29 @@ def index_memory(
             print(f"[graph_store] entity_edge failed: {exc}", file=sys.stderr)
 
 
+def link_memories(memory_ids: list, relation: str = "co_occurrence",
+                  weight: float = 0.55) -> None:
+    """Link memories that came from the SAME source (one file / tool output / exchange)
+    into a connected region. A STRUCTURAL edge — more deliberate than incidental
+    similarity — so recalling one fact surfaces the whole region via BFS, which is what
+    lets the model answer without re-reading. Clique over the group (capped at 8),
+    bidirectional. upsert_edge's max() policy lets co-occurrence upgrade a weak
+    similarity edge without ever downgrading a stronger entity edge."""
+    g = _g()
+    if g is None:
+        return
+    ids = list(dict.fromkeys([i for i in memory_ids if i is not None]))[:8]
+    if len(ids) < 2:
+        return
+    for i in range(len(ids)):
+        for j in range(i + 1, len(ids)):
+            try:
+                g.upsert_edge(ids[i], ids[j], relation, weight)
+                g.upsert_edge(ids[j], ids[i], relation, weight)
+            except Exception as exc:
+                print(f"[graph_store] link_memories failed: {exc}", file=sys.stderr)
+
+
 def _similar_nodes(
     memory_id: int,
     user_id:   str,
