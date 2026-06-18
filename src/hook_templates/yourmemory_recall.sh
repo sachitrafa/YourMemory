@@ -14,11 +14,14 @@ USER_ID=$(resolve_yourmemory_user)
 
 RESULT=$(curl -sf --max-time 5 -X POST http://localhost:3033/retrieve \
   -H "Content-Type: application/json" \
-  -d "{\"userId\":$(printf '%s' "$USER_ID" | jq -Rs .),\"query\":$(echo "$QUERY" | jq -Rs .), \"topK\":3}" 2>/dev/null)
+  -d "{\"userId\":$(printf '%s' "$USER_ID" | jq -Rs .),\"query\":$(echo "$QUERY" | jq -Rs .), \"topK\":6, \"expandK\":4}" 2>/dev/null)
 
 [ -z "$RESULT" ] && exit 0
 
-MEMORIES=$(echo "$RESULT" | jq -r '[.memories[]? | select(.score >= 0.5 and .similarity >= 0.50) | "- " + .content] | join("\n")' 2>/dev/null)
+# Keep direct hits over the 0.5 gate, PLUS graph-expanded neighbours (the connected
+# region) — those score lower by design but carry the surrounding context that lets
+# the model answer without re-reading.
+MEMORIES=$(echo "$RESULT" | jq -r '[.memories[]? | select((.score >= 0.5 and .similarity >= 0.50) or .via_graph) | "- " + .content] | join("\n")' 2>/dev/null)
 [ -z "$MEMORIES" ] && exit 0
 
 CONTEXT="[YourMemory — recalled context]

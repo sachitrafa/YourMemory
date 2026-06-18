@@ -198,6 +198,40 @@ async def list_tools() -> list[types.Tool]:
             },
         ),
         types.Tool(
+            name="memory_search",
+            description=(
+                "Stage 1 of two-stage recall (progressive disclosure). Returns a COMPACT index "
+                "of relevant memories (id + short summary + score) — cheap to scan. Use this first, "
+                "then call memory_get on the IDs you want, instead of re-reading source files."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query":   {"type": "string", "description": "What to look for in memory."},
+                    "user_id": {"type": "string", "description": f"User identifier (default: '{DEFAULT_USER}')."},
+                    "top_k":   {"type": "integer", "description": "Max results (default: 8)."},
+                },
+                "required": ["query"],
+            },
+        ),
+        types.Tool(
+            name="memory_get",
+            description=(
+                "Stage 2 of two-stage recall. Returns the FULL content of one memory PLUS its "
+                "connected graph neighbourhood (related facts) — the 'connected region'. Use after "
+                "memory_search to pull depth on demand without re-reading files."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "id":        {"type": "integer", "description": "Memory id from memory_search results."},
+                    "user_id":   {"type": "string", "description": f"User identifier (default: '{DEFAULT_USER}')."},
+                    "neighbors": {"type": "integer", "description": "How many connected neighbours to include (default: 5)."},
+                },
+                "required": ["id"],
+            },
+        ),
+        types.Tool(
             name="store_memory",
             description=(
                 "Store a new memory about the user. "
@@ -397,6 +431,40 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
             pass
 
         return [types.TextContent(type="text", text=json.dumps(result, default=str))]
+
+    elif name == "memory_search":
+        user_id = arguments.get("user_id", DEFAULT_USER).strip().lower()
+        query   = arguments["query"]
+        top_k   = arguments.get("top_k", 8)
+        result  = retrieve(user_id, query, top_k=top_k, expand_k=4)
+        hits = []
+        for m in result.get("memories", []):
+            c = m.get("content", "") or ""
+            hits.append({
+                "id":        m["id"],
+                "summary":   (c[:90] + "…") if len(c) > 90 else c,
+                "score":     round(m.get("score", 0), 3),
+                "category":  m.get("category"),
+                "via_graph": bool(m.get("via_graph", False)),
+            })
+        return [types.TextContent(type="text",
+                text=json.dumps({"results": hits, "count": len(hits)}, default=str))]
+
+    elif name == "memory_get":
+        user_id = arguments.get("user_id", DEFAULT_USER).strip().lower()
+        mem_id  = int(arguments["id"])
+        n       = arguments.get("neighbors", 5)
+        from src.services.retrieve import _fetch_by_ids
+        from src.graph.graph_store import expand_with_graph
+        backend = get_backend()
+        main    = _fetch_by_ids([(mem_id, 1.0)], user_id, backend)
+        if not main:
+            return [types.TextContent(type="text", text=json.dumps({"memory": None, "neighbors": []}))]
+        nb   = [(nid, ew) for nid, ew in expand_with_graph([mem_id], user_id, top_k=n + 1)
+                if nid != mem_id][:n]
+        nbrs = _fetch_by_ids(nb, user_id, backend) if nb else []
+        return [types.TextContent(type="text",
+                text=json.dumps({"memory": main[0], "neighbors": nbrs}, default=str))]
 
     elif name == "store_memory":
         user_id = arguments.get("user_id", DEFAULT_USER).strip().lower()
@@ -1213,7 +1281,7 @@ def _want_replace_native_memory() -> bool:
 def _disable_native_memory(home: str) -> None:
     """Opt-in: turn off Claude Code's native auto-memory (the growing MEMORY.md that
     re-injects full context every turn) so YourMemory's selective recall replaces it.
-    Sets autoMemory:false in settings.json — idempotent and reversible. Deliberately
+    Sets autoMemoryEnabled:false in settings.json — idempotent and reversible. Deliberately
     leaves the user's own CLAUDE.md instructions untouched."""
     import json as _json
     settings_path = os.path.join(home, ".claude", "settings.json")
@@ -1223,17 +1291,19 @@ def _disable_native_memory(home: str) -> None:
             data = _json.load(open(settings_path))
         except Exception:
             data = {}
-    if data.get("autoMemory") is False:
-        print("  ✓  Native auto-memory already disabled (autoMemory:false).")
+    # Clean up the legacy no-op key from older versions, which wrote the wrong name.
+    data.pop("autoMemory", None)
+    if data.get("autoMemoryEnabled") is False:
+        print("  ✓  Native auto-memory already disabled (autoMemoryEnabled:false).")
         return
-    data["autoMemory"] = False
+    data["autoMemoryEnabled"] = False
     try:
         with open(settings_path, "w") as f:
             _json.dump(data, f, indent=2)
         print("  ✓  Disabled Claude Code native auto-memory — YourMemory now owns recall.")
-        print("     Revert anytime: set \"autoMemory\": true in ~/.claude/settings.json")
+        print("     Revert anytime: set \"autoMemoryEnabled\": true in ~/.claude/settings.json")
     except Exception as exc:
-        print(f"  ⚠  Could not update settings.json (autoMemory): {exc}")
+        print(f"  ⚠  Could not update settings.json (autoMemoryEnabled): {exc}")
 
 
 def setup():

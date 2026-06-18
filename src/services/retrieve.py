@@ -224,7 +224,7 @@ def _apply_scope_filter(candidates: list, scope: list[str] | None) -> list:
 def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None,
              current_path: str | None = None, no_graph: bool = False,
              score_threshold: float | None = None,
-             scope: list[str] | None = None) -> dict:
+             scope: list[str] | None = None, expand_k: int = 0) -> dict:
     """
     Round 1 — vector search (cosine similarity):
        - DuckDB:   native array_cosine_similarity
@@ -259,11 +259,15 @@ def retrieve(user_id: str, query: str, top_k: int = 5, agent_id: str = None,
 
     seed_ids = [m["id"] for m in result.get("memories", [])]
     if seed_ids and not no_graph:
-        graph_hits = expand_with_graph(seed_ids, user_id, top_k=top_k)
+        # expand_k > 0 makes graph expansion ADDITIVE: keep the top_k direct hits and
+        # enrich with up to expand_k connected neighbours (the "connected region" that
+        # lets the model answer without re-reading). expand_k=0 = legacy behaviour.
+        cap = top_k + max(0, expand_k)
+        graph_hits = expand_with_graph(seed_ids, user_id, top_k=cap)
         new_hits = [(nid, ew) for nid, ew in graph_hits if nid not in set(seed_ids)]
         if new_hits:
             extra = _fetch_by_ids(new_hits, user_id, backend)
-            result = _merge_graph_results(result, extra, top_k)
+            result = _merge_graph_results(result, extra, cap)
 
         reinforced = [m for m in result.get("memories", [])
                       if m.get("similarity", 0) >= REINFORCE_THRESHOLD]
@@ -447,6 +451,7 @@ def _format_result(top: list) -> dict:
                 "bm25":          round(m.get("bm25", 0.0), 4),
                 "score":         round(m["score"], 4),
                 "context_paths": m.get("context_paths"),
+                "via_graph":     bool(m.get("via_graph", False)),
             }
             for m in top
         ],

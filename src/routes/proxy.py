@@ -23,7 +23,7 @@ def _user_id(request: Request) -> str:
 
 def _memory_block(user_id: str, query: str) -> str:
     try:
-        result = _retrieve(user_id, query, top_k=5)
+        result = _retrieve(user_id, query, top_k=8, expand_k=4)
         mems = result.get("memories", [])
         if not mems:
             return ""
