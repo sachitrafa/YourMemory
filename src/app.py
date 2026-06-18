@@ -40,6 +40,88 @@ def health():
     return {"status": "ok"}
 
 
+# ── Verbatim conversation buffer (opt-in headless lean-window mode) ──────────
+# Keeps the last N exchanges raw (no qwen distillation) so a flushed context window
+# can be reconstructed losslessly. Pairs with /auto-store: buffer = recent verbatim,
+# memories = distilled long-term. Recall injects the buffer ALWAYS + gated facts.
+class BufferStoreRequest(BaseModel):
+    user_id: str
+    user_text: str = ""
+    assistant_text: str = ""
+    keep: int = 3
+
+
+@app.post("/buffer-store")
+def buffer_store(req: BufferStoreRequest):
+    from src.db.connection import get_conn, get_backend
+    backend = get_backend()
+    conn = get_conn()
+    keep = max(1, min(int(req.keep or 3), 20))
+    ut, at = (req.user_text or "")[:4000], (req.assistant_text or "")[:8000]
+    if not (ut or at):
+        return {"ok": False, "error": "empty exchange"}
+    try:
+        if backend == "postgres":
+            cur = conn.cursor()
+            cur.execute(
+                "INSERT INTO conversation_buffer (user_id, user_text, assistant_text) VALUES (%s, %s, %s)",
+                (req.user_id, ut, at))
+            cur.execute(
+                "DELETE FROM conversation_buffer WHERE user_id=%s AND id NOT IN "
+                "(SELECT id FROM conversation_buffer WHERE user_id=%s ORDER BY id DESC LIMIT %s)",
+                (req.user_id, req.user_id, keep))
+            conn.commit()
+            cur.close()
+        else:  # duckdb / sqlite share the ?-param dialect
+            conn.execute(
+                "INSERT INTO conversation_buffer (user_id, user_text, assistant_text) VALUES (?, ?, ?)",
+                [req.user_id, ut, at])
+            conn.execute(
+                "DELETE FROM conversation_buffer WHERE user_id=? AND id NOT IN "
+                "(SELECT id FROM conversation_buffer WHERE user_id=? ORDER BY id DESC LIMIT ?)",
+                [req.user_id, req.user_id, keep])
+            if backend == "sqlite":
+                conn.commit()
+        return {"ok": True, "kept": keep}
+    except Exception as e:
+        return {"ok": False, "error": str(e)[:200]}
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
+
+
+@app.get("/buffer")
+def buffer_get(userId: str, n: int = 3):
+    """Return the last n verbatim exchanges (oldest → newest) for injection."""
+    from src.db.connection import get_conn, get_backend
+    backend = get_backend()
+    conn = get_conn()
+    n = max(1, min(int(n or 3), 20))
+    try:
+        if backend == "postgres":
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT user_text, assistant_text FROM conversation_buffer "
+                "WHERE user_id=%s ORDER BY id DESC LIMIT %s", (userId, n))
+            rows = cur.fetchall()
+            cur.close()
+        else:
+            rows = conn.execute(
+                "SELECT user_text, assistant_text FROM conversation_buffer "
+                "WHERE user_id=? ORDER BY id DESC LIMIT ?", [userId, n]).fetchall()
+        exchanges = [{"user_text": r[0] or "", "assistant_text": r[1] or ""} for r in reversed(rows)]
+        return {"buffer": exchanges, "count": len(exchanges)}
+    except Exception as e:
+        return {"buffer": [], "count": 0, "error": str(e)[:200]}
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
+
+
 class AskRequest(BaseModel):
     query: str
     user_id: str | None = None
