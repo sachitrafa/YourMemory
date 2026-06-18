@@ -122,6 +122,94 @@ def buffer_get(userId: str, n: int = 3):
             pass
 
 
+# ── Observation capture (knowledge from work output) ────────────────────────
+# Unlike /auto-store (conversational facts about the user), /observe extracts technical/
+# factual statements from WORK OUTPUT — file contents, command output, documents — so an
+# agent can recall them later instead of re-reading the source. This is what gives recall
+# the work-detail. Stores each fact via the proven single-fact path (/memories).
+class ObserveRequest(BaseModel):
+    text:    str
+    user_id: str | None = None
+    source:  str | None = None
+
+
+@app.post("/observe")
+def observe_endpoint(req: ObserveRequest):
+    import getpass
+    import urllib.request as _ur
+    OLLAMA_URL   = os.getenv("YOURMEMORY_OLLAMA_URL",   "http://localhost:11434")
+    OLLAMA_MODEL = os.getenv("YOURMEMORY_OLLAMA_MODEL", "qwen2.5:7b")
+    user_id = req.user_id or os.getenv("YOURMEMORY_USER", "") or getpass.getuser()
+    text = (req.text or "")[:8000]
+    if len(text) < 200:
+        return {"stored": 0, "facts": []}
+    src = f" (source: {req.source})" if req.source else ""
+
+    prompt = (
+        "You build an agent's KNOWLEDGE memory from work output (code, file contents, command "
+        "output, documents, logs). Extract atomic FACTUAL statements an agent would want to recall "
+        "later INSTEAD OF re-reading the source.\n"
+        "Capture: what a file/function/component does; key parameters, values, thresholds, names; "
+        "structure and relationships between parts; configuration; results/outputs; decisions "
+        "encoded in the work.\n"
+        "Rules:\n- ONE atomic fact per item.\n- SELF-CONTAINED: keep exact names, numbers, and "
+        "file/function names verbatim so it stands alone.\n- One plain declarative sentence, no markdown.\n"
+        "- Skip imports, license headers, boilerplate and trivia.\n- If nothing durable, return an empty list.\n\n"
+        "Return JSON: {\"facts\":[{\"fact\":\"<sentence>\",\"importance\":\"HIGH|MED|LOW\","
+        "\"category\":\"fact|assumption|failure|strategy\"}]}\n\n"
+        f"WORK OUTPUT{src}:\n{text}"
+    )
+    schema = {
+        "type": "object",
+        "properties": {"facts": {"type": "array", "items": {"type": "object", "properties": {
+            "fact":       {"type": "string"},
+            "importance": {"type": "string", "enum": ["HIGH", "MED", "LOW"]},
+            "category":   {"type": "string", "enum": ["fact", "assumption", "failure", "strategy"]},
+        }, "required": ["fact", "importance", "category"]}}},
+        "required": ["facts"],
+    }
+    payload = json.dumps({
+        "model": OLLAMA_MODEL, "prompt": prompt, "stream": False, "format": schema,
+        "keep_alive": os.getenv("YOURMEMORY_OLLAMA_KEEPALIVE", "30m"),
+        "options": {"temperature": 0, "num_predict": 700},
+    }).encode()
+
+    try:
+        rq = _ur.Request(f"{OLLAMA_URL}/api/generate", data=payload,
+                         headers={"Content-Type": "application/json"})
+        with _ur.urlopen(rq, timeout=90) as r:
+            raw = json.loads(r.read()).get("response", "").strip()
+        facts = json.loads(raw).get("facts", [])
+    except Exception as exc:
+        return {"stored": 0, "error": str(exc)[:200]}
+    if not facts:
+        return {"stored": 0, "facts": []}
+
+    IMP = {"HIGH": 0.8, "MED": 0.6, "LOW": 0.4}
+    stored = 0
+    for it in facts:
+        if not isinstance(it, dict):
+            continue
+        c = str(it.get("fact", "")).strip()
+        if len(c) < 12:
+            continue
+        imp = IMP.get(str(it.get("importance", "MED")).upper(), 0.6)
+        cat = str(it.get("category", "fact")).strip().lower()
+        if cat not in ("fact", "assumption", "failure", "strategy"):
+            cat = "fact"
+        try:
+            body = json.dumps({"userId": user_id, "content": c,
+                               "importance": imp, "category": cat}).encode()
+            rq = _ur.Request("http://localhost:3033/memories", data=body,
+                             headers={"Content-Type": "application/json"}, method="POST")
+            with _ur.urlopen(rq, timeout=10) as r:
+                r.read()
+            stored += 1
+        except Exception:
+            pass
+    return {"stored": stored, "facts": [it.get("fact") for it in facts]}
+
+
 class AskRequest(BaseModel):
     query: str
     user_id: str | None = None

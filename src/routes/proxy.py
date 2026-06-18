@@ -1,5 +1,6 @@
 import os
 import json
+import asyncio
 import getpass
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import StreamingResponse, JSONResponse
@@ -33,6 +34,55 @@ def _memory_block(user_id: str, query: str) -> str:
         return "\n".join(lines)
     except Exception:
         return ""
+
+
+# ── Capture from tool outputs (client-agnostic PostToolUse equivalent) ──────────
+# The proxy sees the full message list, including tool_result blocks (the file
+# contents / command outputs the model just read). Distilling those into memory is
+# what gives recall the *work detail* — so the model can later answer without
+# re-reading. Fire-and-forget so it never delays the LLM response.
+
+_bg_tasks: set = set()
+_CAPTURE_MIN_CHARS = 800   # only capture substantial tool outputs
+
+
+async def _store_observation(user_id: str, text: str) -> None:
+    try:
+        async with httpx.AsyncClient(timeout=90) as c:
+            await c.post("http://localhost:3033/observe", json={
+                "text":    text,
+                "user_id": user_id,
+            })
+    except Exception:
+        pass
+
+
+def _latest_tool_output(messages: list) -> str | None:
+    """The most recent substantial tool output (OpenAI `tool` role or Anthropic
+    `tool_result` block). Only the latest, so we don't re-capture the whole history
+    each turn — resolve() dedups any overlap on the store side."""
+    for m in reversed(messages):
+        content = m.get("content")
+        if m.get("role") == "tool" and isinstance(content, str) and len(content) > _CAPTURE_MIN_CHARS:
+            return content[:6000]
+        if isinstance(content, list):
+            for b in content:
+                if isinstance(b, dict) and b.get("type") == "tool_result":
+                    c = b.get("content")
+                    s = c if isinstance(c, str) else json.dumps(c)
+                    if len(s) > _CAPTURE_MIN_CHARS:
+                        return s[:6000]
+    return None
+
+
+def _capture_observations(messages: list, user_id: str) -> None:
+    """Schedule fire-and-forget capture of the latest tool output into memory."""
+    text = _latest_tool_output(messages)
+    if not text:
+        return
+    task = asyncio.create_task(_store_observation(user_id, text))
+    _bg_tasks.add(task)
+    task.add_done_callback(_bg_tasks.discard)
 
 
 def _last_user_text(messages: list) -> str:
@@ -171,6 +221,7 @@ async def proxy_openai(request: Request):
     uid      = _user_id(request)
     messages = body.get("messages", [])
     block    = _memory_block(uid, _last_user_text(messages))
+    _capture_observations(messages, uid)   # fire-and-forget: distill tool output into memory
 
     if block:
         if messages and messages[0].get("role") == "system":
@@ -244,6 +295,7 @@ async def proxy_anthropic(request: Request):
     uid      = _user_id(request)
     messages = body.get("messages", [])
     block    = _memory_block(uid, _last_user_text(messages))
+    _capture_observations(messages, uid)   # fire-and-forget: distill tool output into memory
 
     if block:
         existing = body.get("system", "")
