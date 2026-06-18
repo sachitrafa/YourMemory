@@ -1216,7 +1216,8 @@ def _install_claude_hooks(home: str) -> None:
     # (filename, make executable)
     for fname, is_exec in (("yourmemory_recall.sh", True),
                            ("yourmemory_user.sh", True),
-                           ("yourmemory_store.py", False)):
+                           ("yourmemory_store.py", False),
+                           ("yourmemory_observe.py", False)):
         try:
             dest = os.path.join(hooks_dir, fname)
             with open(dest, "w") as f:
@@ -1237,10 +1238,11 @@ def _install_claude_hooks(home: str) -> None:
             data = {}
     hooks = data.setdefault("hooks", {})
 
-    recall_cmd = os.path.join(hooks_dir, "yourmemory_recall.sh")
-    store_cmd  = "python3 " + os.path.join(hooks_dir, "yourmemory_store.py")
+    recall_cmd  = os.path.join(hooks_dir, "yourmemory_recall.sh")
+    store_cmd   = "python3 " + os.path.join(hooks_dir, "yourmemory_store.py")
+    observe_cmd = "python3 " + os.path.join(hooks_dir, "yourmemory_observe.py")
 
-    def _ensure(event, command, extra):
+    def _ensure(event, command, extra, matcher=None):
         arr = hooks.setdefault(event, [])
         for group in arr:                       # idempotent — skip if already present
             for h in group.get("hooks", []):
@@ -1248,10 +1250,17 @@ def _install_claude_hooks(home: str) -> None:
                     return
         entry = {"type": "command", "command": command}
         entry.update(extra)
-        arr.append({"hooks": [entry]})
+        group = {"hooks": [entry]}
+        if matcher:
+            group["matcher"] = matcher
+        arr.append(group)
 
     _ensure("UserPromptSubmit", recall_cmd, {"timeout": 8, "statusMessage": "Recalling memories…"})
     _ensure("Stop", store_cmd, {"timeout": 30})
+    # PostToolUse capture — async, so it never blocks the tool call; distills file/command
+    # output into memory (/observe) so the model can later answer without re-reading.
+    _ensure("PostToolUse", observe_cmd, {"timeout": 95, "async": True},
+            matcher="Read|Bash|Grep|Glob|WebFetch")
 
     try:
         with open(settings_path, "w") as f:
