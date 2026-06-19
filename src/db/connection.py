@@ -56,9 +56,40 @@ def get_conn():
         conn = sqlite3.connect(path)
         conn.row_factory = sqlite3.Row
         return conn
-    # DuckDB default
+    # DuckDB default — wrap with a timeout because DuckDB enforces a single-writer
+    # constraint: if another process (e.g. the YourMemory HTTP server) already holds
+    # the write lock, duckdb.connect() hangs forever. We surface a clear error instead.
     import duckdb
-    return duckdb.connect(_duckdb_path())
+    import queue
+    import threading
+
+    path = _duckdb_path()
+    result_q: queue.Queue = queue.Queue()
+
+    def _connect() -> None:
+        try:
+            result_q.put(("ok", duckdb.connect(path)))
+        except Exception as exc:
+            result_q.put(("err", exc))
+
+    t = threading.Thread(target=_connect, daemon=True)
+    t.start()
+    try:
+        status, val = result_q.get(timeout=8)
+    except queue.Empty:
+        raise RuntimeError(
+            "DuckDB connection timed out (8 s). Another process is likely holding "
+            "the write lock — typically the YourMemory HTTP server or a previous "
+            "session that did not exit cleanly.\n\n"
+            "Fix:\n"
+            "  pkill -f yourmemory 2>/dev/null || true\n"
+            "  rm -f ~/.yourmemory/memories.duckdb.wal "
+            "~/.yourmemory/memories.duckdb.lock 2>/dev/null\n"
+            "Then restart."
+        ) from None
+    if status == "err":
+        raise val
+    return val
 
 
 def emb_to_db(embedding: list, backend: str = None) -> object:

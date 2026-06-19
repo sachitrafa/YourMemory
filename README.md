@@ -50,6 +50,7 @@ Zero infrastructure required. SQLite by default, Postgres for teams.
 - [Multi-Agent Memory](#multi-agent-memory)
 - [Stack](#stack)
 - [Architecture](#architecture)
+- [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 
 ---
@@ -429,6 +430,38 @@ Claude / Cline / Cursor / Any MCP client
     user_activity  (active days log)
     memory_history (supersession audit)
 ```
+
+---
+
+## Troubleshooting
+
+### Writes hang / time out in Claude Desktop
+
+**Symptom:** `store_memory` or `update_memory` never returns; the MCP server appears frozen.
+
+**Cause:** DuckDB enforces a single-writer-per-process constraint. If you also have the
+YourMemory HTTP server running (e.g. for Claude Code hooks), both processes compete for
+the same write lock and one hangs indefinitely.
+
+**Fix — kill the lock holder and restart:**
+```bash
+# Kill any lingering YourMemory process holding the DuckDB write lock
+pkill -f yourmemory 2>/dev/null || true
+
+# Remove stale DuckDB WAL/lock files if the process exited uncleanly
+rm -f ~/.yourmemory/memories.duckdb.wal \
+      ~/.yourmemory/memories.duckdb.lock 2>/dev/null || true
+
+# Restart Claude Desktop
+```
+
+As of v1.4.57+, DuckDB connections time out after 8 seconds and surface this exact
+error message with the fix above instead of hanging forever.
+
+**If you run both Claude Desktop (MCP) and Claude Code (hooks) at the same time:**
+Use the environment variable `DATABASE_URL=sqlite:///~/.yourmemory/memories.db` in
+your MCP server config. SQLite's WAL mode handles concurrent readers/writers cleanly
+and has no single-writer process limit.
 
 ---
 
