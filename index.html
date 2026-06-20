@@ -758,21 +758,76 @@ class Component extends DCLogic {
     ctx.beginPath(); ctx.moveTo(sx(md), sy(ms)); ctx.lineTo(sx(md), y1); ctx.stroke(); ctx.setLineDash([]);
   }
 
-  _bench() {
-    return {
-      loco: { num: '59%', label: 'Recall@5 · LoCoMo-10', desc: 'Multi-session conversational memory. 1,000 questions across 50 conversations, 10 sessions each.', max: 70, rows: [{ l: 'Flat vector (baseline)', v: 34 }, { l: '+ BM25 hybrid', v: 47 }, { l: '+ Graph expansion', v: 54 }, { l: 'YourMemory', v: 59, us: true }] },
-      long: { num: '89.4%', label: 'Recall@5 · LongMemEval', desc: '500 long-horizon Q&A tasks from the official LongMemEval benchmark, tested end-to-end.', max: 100, rows: [{ l: 'ReadAgent', v: 71.2 }, { l: 'MemoryOS', v: 80.3 }, { l: 'Zep', v: 83.1 }, { l: 'YourMemory', v: 89.4, us: true }] },
-      hot: { num: '71.5', label: 'F1 · HotpotQA', desc: 'Multi-hop reasoning. Answers require connecting facts across multiple stored memories.', max: 80, rows: [{ l: 'Flat vector', v: 58.2 }, { l: '+ BM25 hybrid', v: 63.4 }, { l: '+ Entity graph', v: 68.1 }, { l: 'YourMemory', v: 71.5, us: true }] }
+  _initData() {
+    if (this._data) return;
+    const ck = (v) => v === true ? '✓' : (v === 'partial' ? '~' : '✕');
+    const cc = (v) => v === true ? '#5eead4' : (v === 'partial' ? '#fbbf73' : '#5a6b80');
+    this._data = {
+      bench: {
+        loco: { num: '59%', label: 'Recall@5 · LoCoMo-10', desc: 'Multi-session conversational memory. 1,000 questions across 50 conversations, 10 sessions each.', max: 70, rows: [{ l: 'Flat vector (baseline)', v: 34 }, { l: '+ BM25 hybrid', v: 47 }, { l: '+ Graph expansion', v: 54 }, { l: 'YourMemory', v: 59, us: true }] },
+        long: { num: '89.4%', label: 'Recall@5 · LongMemEval', desc: '500 long-horizon Q&A tasks from the official LongMemEval benchmark, tested end-to-end.', max: 100, rows: [{ l: 'ReadAgent', v: 71.2 }, { l: 'MemoryOS', v: 80.3 }, { l: 'Zep', v: 83.1 }, { l: 'YourMemory', v: 89.4, us: true }] },
+        hot: { num: '71.5', label: 'F1 · HotpotQA', desc: 'Multi-hop reasoning. Answers require connecting facts across multiple stored memories.', max: 80, rows: [{ l: 'Flat vector', v: 58.2 }, { l: '+ BM25 hybrid', v: 63.4 }, { l: '+ Entity graph', v: 68.1 }, { l: 'YourMemory', v: 71.5, us: true }] }
+      },
+      matrix: [
+        { f: 'Ebbinghaus decay & pruning', ym: true, mem0: false, zep: 'partial' },
+        { f: 'Hybrid graph + vector retrieval', ym: true, mem0: false, zep: true },
+        { f: 'Per-agent shared / private memory', ym: true, mem0: false, zep: false },
+        { f: 'Runs 100% locally (no API calls)', ym: true, mem0: false, zep: false },
+        { f: 'MCP-native (7 clients)', ym: true, mem0: 'partial', zep: false },
+        { f: 'Self-hostable', ym: true, mem0: true, zep: true },
+        { f: 'Open source', ym: true, mem0: true, zep: true }
+      ].map(r => ({ f: r.f, ym: ck(r.ym), mem0: ck(r.mem0), zep: ck(r.zep), ymColor: cc(r.ym), mem0Color: cc(r.mem0), zepColor: cc(r.zep) })),
+      faqRaw: [
+        { q: 'How is this different from Mem0 or built-in Claude memory?', a: 'Most memory systems store flat vectors and never forget. YourMemory adds three things: Ebbinghaus decay by category (different memory types age at different rates), graph-based retrieval that surfaces related memories the query didn’t directly match, and automatic pruning so stale facts never pollute context. Built-in Claude memory is cloud-only and limited; YourMemory runs fully locally with no data leaving your machine.' },
+        { q: 'Does my data leave my machine?', a: 'No. YourMemory runs entirely on your local machine. Embeddings are generated with a local spaCy model (no API calls), and all storage is in a local DuckDB file by default. Nothing is sent to external servers. For teams using PostgreSQL, the database is wherever you host it — still under your control.' },
+        { q: 'What does “Ebbinghaus decay” actually mean in practice?', a: 'It models how human memory fades — fast at first, then slower. Each stored memory carries a strength score S(t) = e^(−λt), where λ depends on the memory’s category. Strategies decay slowly (~38 day half-life), facts moderately (~24 days), failures quickly (~11 days). When strength drops below 0.05, the memory is pruned. Recalling a memory refreshes its strength, so frequently used context stays alive automatically.' },
+        { q: 'Does it work with Cursor, Cline, and Windsurf?', a: 'Yes. yourmemory-setup automatically detects and configures every MCP-compatible client on your machine: Claude Code, Claude Desktop, Cursor, Windsurf, Cline, Continue, and Zed. After a client restart, YourMemory is available as a tool in all of them simultaneously.' },
+        { q: 'Can multiple AI agents share the same memory?', a: 'Yes. Register each agent to get a ym_ API key. Memories marked shared are visible to all agents; memories marked private are only visible to the storing agent. Useful when a coding agent and a review agent should share project context but keep credentials separate.' },
+        { q: 'Is there a hosted / cloud version?', a: 'Not currently — YourMemory is fully local / self-hostable by design. For team deployments, use the PostgreSQL + pgvector backend with your own Postgres instance (Fly.io, Railway, Supabase, etc.). A managed cloud option may come later.' },
+        { q: 'What’s the license?', a: 'Non-commercial license (CC BY-NC 4.0). Free for personal use, research, and open source projects. For commercial use or team deployments, reach out.' }
+      ],
+      steps: [
+        { n: '01', title: 'Install & connect', desc: 'Three commands configure everything — install, activate with your token, and wire up every AI client on your machine.', code: '$ pip install yourmemory\n$ yourmemory-register <token>\n$ yourmemory-setup' },
+        { n: '02', title: 'AI learns as you work', desc: 'Your AI agent automatically stores preferences, project decisions, and recurring context — no manual tagging needed.', code: '✓ "Sachit uses Python, not JS"\n✓ "Postgres in prod, DuckDB local"\n✓ "Prefers BM25 hybrid retrieval"' },
+        { n: '03', title: 'Memory ages intelligently', desc: 'The Ebbinghaus forgetting curve prunes stale context automatically. Important memories persist; irrelevant ones fade. Graph connections keep clusters alive.', code: '~ "Uses React" → 0.04 (decaying)\n✗ pruned at S < 0.05\n↻ graph cluster kept alive' }
+      ],
+      layers: [
+        { tag: 'Ebbinghaus Decay', title: 'Forgets on a curve', desc: 'Different memory types age at different rates. Important facts persist longer; transient context fades naturally. Related memories stay alive together through graph propagation.', points: ['strategy — ~38 day half-life', 'fact — ~24 day half-life', 'failure — ~11 day half-life'] },
+        { tag: 'Hybrid Graph + Vector', title: 'Finds what you forgot to ask', desc: 'Two-round retrieval: semantic search surfaces exact matches, then graph traversal finds related memories that don’t share vocabulary with the query. Nothing slips through.', points: ['BM25 + dense vector hybrid', 'Entity graph expansion', 'Temporal reasoning boost'] },
+        { tag: 'Multi-Agent Memory', title: 'Share context or keep secrets', desc: 'Multiple AI agents share context or stay private. Each agent gets a ym_ API key with its own visibility — shared memories visible to all, private to the owner.', points: ['Per-agent API keys (ym_ prefix)', 'shared / private visibility', 'Revoke any agent anytime'] }
+      ],
+      legacyPoints: ['Flat embeddings, no decay', 'Append-only — no pruning', 'Stale facts pollute context', 'No graph relationships'],
+      ymPoints: ['Ebbinghaus decay by category', 'Auto-prunes below S < 0.05', 'Hybrid graph + vector recall', 'Per-agent shared / private'],
+      install: [
+        { n: '01', title: 'Install the package', cmd: 'pip install yourmemory', desc: 'Downloads YourMemory and registers the CLI commands on your machine.' },
+        { n: '02', title: 'Activate with your token', cmd: 'yourmemory-register <your-token>', desc: 'Verifies your token and unlocks the memory tools.' },
+        { n: '03', title: 'Connect your AI clients', cmd: 'yourmemory-setup', desc: 'Downloads the language model, initialises the database, and writes the MCP config into every AI client it finds.' }
+      ],
+      entFeatures: [
+        { title: 'Org memory sharing', desc: 'Shared memories surface automatically across every team member’s session. What one engineer learns, the whole team benefits from — instantly.' },
+        { title: 'Private memories', desc: 'Mark any memory private and it stays yours alone. Sensitive context, personal notes, draft decisions — never visible to colleagues or admins.' },
+        { title: 'Admin portal', desc: 'One dashboard to see every member’s memories. Search, filter, and delete anything. Full visibility and control over your knowledge base.' }
+      ],
+      marquee: ['Medium', 'dev.to', 'Hacker News', 'ChatGate AI', 'LinkedIn', 'Let’s Data Science', 'Daily Neural Digest', 'Medium', 'dev.to', 'Hacker News', 'ChatGate AI', 'LinkedIn', 'Let’s Data Science', 'Daily Neural Digest'],
+      press: [
+        { source: 'Medium', title: 'Beyond Flat RAG: Associative Decay & Graph Context', desc: 'A deep dive into the architecture — why flat vector search isn’t enough and how decay changes retrieval.', url: 'https://medium.com/@mishrasachit1/beyond-flat-rag-implementing-associative-decay-and-graph-based-context-for-local-agents-f3c9aeda7daf' },
+        { source: 'dev.to', title: 'I Built Memory Decay Using the Ebbinghaus Curve', desc: 'The original writeup — the forgetting-curve formula and category-based decay rates.', url: 'https://dev.to/sachit_mishra_686a94d1bb5/i-built-memory-decay-for-ai-agents-using-the-ebbinghaus-forgetting-curve-1b0e' },
+        { source: 'Hacker News · ▲ 90', title: 'Show HN: AI memory with biological decay', desc: 'Community discussion on the architecture, tradeoffs, and why decay beats hoarding.', url: 'https://news.ycombinator.com/item?id=47914367' },
+        { source: 'ChatGate AI', title: 'Agentic Memory Is a Pruning Problem, Not Hoarding', desc: 'Third-party analysis of the pruning-first approach with a benchmark breakdown.', url: 'https://chatgate.ai/post/yourmemory' },
+        { source: 'LinkedIn', title: 'Launched on Product Hunt — #20 Product of the Day', desc: 'The story behind building a memory layer that works like human memory.', url: 'https://www.linkedin.com/posts/sachit-mishra-19b393165_launched-yourmemory-on-product-hunt-yesterday-share-7453003179438346240-fVkp' },
+        { source: 'Let’s Data Science', title: 'YourMemory Adds Ebbinghaus Decay to Agent Memory', desc: 'How the forgetting curve makes context decay so only relevant knowledge survives.', url: 'https://letsdatascience.com/news/yourmemory-adds-ebbinghaus-decay-to-agent-memory-4848cdb5' }
+      ]
     };
   }
 
   renderVals() {
+    this._initData();
+    const d = this._data;
     const hl = this.state.halfLife;
     const s14 = Math.exp(-Math.LN2 / hl * 14);
     const pruneDay = hl * Math.log(1 / 0.05) / Math.LN2;
     const tab = this.state.tab;
-    const bench = this._bench();
-    const cur = bench[tab];
+    const cur = d.bench[tab];
     const bars = cur.rows.map(row => ({
       l: row.l,
       valLabel: (cur.num.includes('%') ? row.v + '%' : row.v.toFixed(1)),
@@ -790,30 +845,7 @@ class Component extends DCLogic {
     const maskedEmail = em.includes('@') ? em.replace(/^(.)(.*)(@.*)$/, (m, a, b, c) => a + '•'.repeat(Math.max(b.length, 1)) + c) : em;
     const validEmail = /.+@.+\..+/.test(em);
     const rs = this.state.regStep;
-
-    const ck = (v) => v === true ? '✓' : (v === 'partial' ? '~' : '✕');
-    const ckColor = (v) => v === true ? '#5eead4' : (v === 'partial' ? '#fbbf73' : '#5a6b80');
-    const matrixRaw = [
-      { f: 'Ebbinghaus decay & pruning', ym: true, mem0: false, zep: 'partial' },
-      { f: 'Hybrid graph + vector retrieval', ym: true, mem0: false, zep: true },
-      { f: 'Per-agent shared / private memory', ym: true, mem0: false, zep: false },
-      { f: 'Runs 100% locally (no API calls)', ym: true, mem0: false, zep: false },
-      { f: 'MCP-native (7 clients)', ym: true, mem0: 'partial', zep: false },
-      { f: 'Self-hostable', ym: true, mem0: true, zep: true },
-      { f: 'Open source', ym: true, mem0: true, zep: true }
-    ];
-    const matrix = matrixRaw.map(r => ({ f: r.f, ym: ck(r.ym), mem0: ck(r.mem0), zep: ck(r.zep), ymColor: ckColor(r.ym), mem0Color: ckColor(r.mem0), zepColor: ckColor(r.zep) }));
-
-    const faqRaw = [
-      { q: 'How is this different from Mem0 or built-in Claude memory?', a: 'Most memory systems store flat vectors and never forget. YourMemory adds three things: Ebbinghaus decay by category (different memory types age at different rates), graph-based retrieval that surfaces related memories the query didn\u2019t directly match, and automatic pruning so stale facts never pollute context. Built-in Claude memory is cloud-only and limited; YourMemory runs fully locally with no data leaving your machine.' },
-      { q: 'Does my data leave my machine?', a: 'No. YourMemory runs entirely on your local machine. Embeddings are generated with a local spaCy model (no API calls), and all storage is in a local DuckDB file by default. Nothing is sent to external servers. For teams using PostgreSQL, the database is wherever you host it \u2014 still under your control.' },
-      { q: 'What does "Ebbinghaus decay" actually mean in practice?', a: 'It models how human memory fades \u2014 fast at first, then slower. Each stored memory carries a strength score S(t) = e^(\u2212\u03bbt), where \u03bb depends on the memory\u2019s category. Strategies decay slowly (~38 day half-life), facts moderately (~24 days), failures quickly (~11 days). When strength drops below 0.05, the memory is pruned. Recalling a memory refreshes its strength, so frequently used context stays alive automatically.' },
-      { q: 'Does it work with Cursor, Cline, and Windsurf?', a: 'Yes. yourmemory-setup automatically detects and configures every MCP-compatible client on your machine: Claude Code, Claude Desktop, Cursor, Windsurf, Cline, Continue, and Zed. After a client restart, YourMemory is available as a tool in all of them simultaneously.' },
-      { q: 'Can multiple AI agents share the same memory?', a: 'Yes. Register each agent to get a ym_ API key. Memories marked shared are visible to all agents; memories marked private are only visible to the storing agent. Useful when a coding agent and a review agent should share project context but keep credentials separate.' },
-      { q: 'Is there a hosted / cloud version?', a: 'Not currently \u2014 YourMemory is fully local / self-hostable by design. For team deployments, use the PostgreSQL + pgvector backend with your own Postgres instance (Fly.io, Railway, Supabase, etc.). A managed cloud option may come later.' },
-      { q: 'What\u2019s the license?', a: 'Non-commercial license (CC BY-NC 4.0). Free for personal use, research, and open source projects. For commercial use or team deployments, reach out.' }
-    ];
-    const faqs = faqRaw.map((f, i) => ({ q: f.q, a: f.a, open: this.state.faqOpen === i, sign: this.state.faqOpen === i ? '−' : '+', onClick: () => this.setState({ faqOpen: this.state.faqOpen === i ? -1 : i }) }));
+    const faqs = d.faqRaw.map((f, i) => ({ q: f.q, a: f.a, open: this.state.faqOpen === i, sign: this.state.faqOpen === i ? '−' : '+', onClick: () => this.setState({ faqOpen: this.state.faqOpen === i ? -1 : i }) }));
 
     return {
       heroCanvasRef: (el) => { if (el) { this._hero = el; this._startHero(el); } },
@@ -842,19 +874,11 @@ class Component extends DCLogic {
       presets: [mkPreset('strategy · 38d', 38), mkPreset('fact · 24d', 24), mkPreset('failure · 11d', 11)],
       tabs: [mkTab('loco', 'LoCoMo-10'), mkTab('long', 'LongMemEval'), mkTab('hot', 'HotpotQA')],
       bigNum: cur.num, bigLabel: cur.label, bigDesc: cur.desc, bars,
-      matrix,
-      steps: [
-        { n: '01', title: 'Install & connect', desc: 'Three commands configure everything — install, activate with your token, and wire up every AI client on your machine.', code: '$ pip install yourmemory\n$ yourmemory-register <token>\n$ yourmemory-setup' },
-        { n: '02', title: 'AI learns as you work', desc: 'Your AI agent automatically stores preferences, project decisions, and recurring context — no manual tagging needed.', code: '✓ "Sachit uses Python, not JS"\n✓ "Postgres in prod, DuckDB local"\n✓ "Prefers BM25 hybrid retrieval"' },
-        { n: '03', title: 'Memory ages intelligently', desc: 'The Ebbinghaus forgetting curve prunes stale context automatically. Important memories persist; irrelevant ones fade. Graph connections keep clusters alive.', code: '~ "Uses React" → 0.04 (decaying)\n✗ pruned at S < 0.05\n↻ graph cluster kept alive' }
-      ],
-      layers: [
-        { tag: 'Ebbinghaus Decay', title: 'Forgets on a curve', desc: 'Different memory types age at different rates. Important facts persist longer; transient context fades naturally. Related memories stay alive together through graph propagation.', points: ['strategy — ~38 day half-life', 'fact — ~24 day half-life', 'failure — ~11 day half-life'] },
-        { tag: 'Hybrid Graph + Vector', title: 'Finds what you forgot to ask', desc: 'Two-round retrieval: semantic search surfaces exact matches, then graph traversal finds related memories that don\u2019t share vocabulary with the query. Nothing slips through.', points: ['BM25 + dense vector hybrid', 'Entity graph expansion', 'Temporal reasoning boost'] },
-        { tag: 'Multi-Agent Memory', title: 'Share context or keep secrets', desc: 'Multiple AI agents share context or stay private. Each agent gets a ym_ API key with its own visibility — shared memories visible to all, private to the owner.', points: ['Per-agent API keys (ym_ prefix)', 'shared / private visibility', 'Revoke any agent anytime'] }
-      ],
-      legacyPoints: ['Flat embeddings, no decay', 'Append-only — no pruning', 'Stale facts pollute context', 'No graph relationships'],
-      ymPoints: ['Ebbinghaus decay by category', 'Auto-prunes below S < 0.05', 'Hybrid graph + vector recall', 'Per-agent shared / private'],
+      matrix: d.matrix,
+      steps: d.steps,
+      layers: d.layers,
+      legacyPoints: d.legacyPoints,
+      ymPoints: d.ymPoints,
       faqs,
       isEmailStep: rs === 'email', isCodeStep: rs === 'code', isDoneStep: rs === 'done',
       email: em, maskedEmail, code: this.state.code, token: this.state.token,
@@ -898,25 +922,10 @@ class Component extends DCLogic {
         }
       },
       backToEmail: () => this.setState({ regStep: 'email', code: '', verifyError: '' }),
-      install: [
-        { n: '01', title: 'Install the package', cmd: 'pip install yourmemory', desc: 'Downloads YourMemory and registers the CLI commands on your machine.' },
-        { n: '02', title: 'Activate with your token', cmd: 'yourmemory-register <your-token>', desc: 'Verifies your token and unlocks the memory tools.' },
-        { n: '03', title: 'Connect your AI clients', cmd: 'yourmemory-setup', desc: 'Downloads the language model, initialises the database, and writes the MCP config into every AI client it finds.' }
-      ],
-      entFeatures: [
-        { title: 'Org memory sharing', desc: 'Shared memories surface automatically across every team member\u2019s session. What one engineer learns, the whole team benefits from \u2014 instantly.' },
-        { title: 'Private memories', desc: 'Mark any memory private and it stays yours alone. Sensitive context, personal notes, draft decisions \u2014 never visible to colleagues or admins.' },
-        { title: 'Admin portal', desc: 'One dashboard to see every member\u2019s memories. Search, filter, and delete anything. Full visibility and control over your knowledge base.' }
-      ],
-      marquee: ['Medium', 'dev.to', 'Hacker News', 'ChatGate AI', 'LinkedIn', 'Let\u2019s Data Science', 'Daily Neural Digest', 'Medium', 'dev.to', 'Hacker News', 'ChatGate AI', 'LinkedIn', 'Let\u2019s Data Science', 'Daily Neural Digest'],
-      press: [
-        { source: 'Medium', title: 'Beyond Flat RAG: Associative Decay & Graph Context', desc: 'A deep dive into the architecture — why flat vector search isn\u2019t enough and how decay changes retrieval.', url: 'https://medium.com/@mishrasachit1/beyond-flat-rag-implementing-associative-decay-and-graph-based-context-for-local-agents-f3c9aeda7daf' },
-        { source: 'dev.to', title: 'I Built Memory Decay Using the Ebbinghaus Curve', desc: 'The original writeup — the forgetting-curve formula and category-based decay rates.', url: 'https://dev.to/sachit_mishra_686a94d1bb5/i-built-memory-decay-for-ai-agents-using-the-ebbinghaus-forgetting-curve-1b0e' },
-        { source: 'Hacker News · ▲ 90', title: 'Show HN: AI memory with biological decay', desc: 'Community discussion on the architecture, tradeoffs, and why decay beats hoarding.', url: 'https://news.ycombinator.com/item?id=47914367' },
-        { source: 'ChatGate AI', title: 'Agentic Memory Is a Pruning Problem, Not Hoarding', desc: 'Third-party analysis of the pruning-first approach with a benchmark breakdown.', url: 'https://chatgate.ai/post/yourmemory' },
-        { source: 'LinkedIn', title: 'Launched on Product Hunt — #20 Product of the Day', desc: 'The story behind building a memory layer that works like human memory.', url: 'https://www.linkedin.com/posts/sachit-mishra-19b393165_launched-yourmemory-on-product-hunt-yesterday-share-7453003179438346240-fVkp' },
-        { source: 'Let\u2019s Data Science', title: 'YourMemory Adds Ebbinghaus Decay to Agent Memory', desc: 'How the forgetting curve makes context decay so only relevant knowledge survives.', url: 'https://letsdatascience.com/news/yourmemory-adds-ebbinghaus-decay-to-agent-memory-4848cdb5' }
-      ]
+      install: d.install,
+      entFeatures: d.entFeatures,
+      marquee: d.marquee,
+      press: d.press
     };
   }
 }
