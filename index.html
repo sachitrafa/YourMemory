@@ -43,6 +43,25 @@
   @keyframes ymBlink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
   @keyframes ymMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   @keyframes ymFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  /* ---- responsive ---- */
+  @media (max-width: 900px) {
+    [data-r="split"] { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 820px) {
+    [data-nav="links"], [data-nav="star"] { display: none !important; }
+    [data-nav="burger"] { display: inline-flex !important; }
+  }
+  @media (min-width: 821px) {
+    [data-nav="menu"] { display: none !important; }
+  }
+  @media (max-width: 720px) {
+    [data-r="svgwrap"] { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    [data-r="svgwrap"] svg { min-width: 540px; }
+  }
+  @media (max-width: 600px) {
+    [data-r="matrix-head"] > div, [data-r="matrix-row"] > div { padding-left: 9px !important; padding-right: 9px !important; font-size: 12px !important; }
+    [data-r="matrix-row"] > div:first-child, [data-r="matrix-head"] > div:first-child { padding-left: 13px !important; }
+  }
 </style>
 </helmet>
 
@@ -57,7 +76,7 @@
       <img src="assets/logo.png" alt="YourMemory" style="width: 28px; height: 28px; border-radius: 8px; box-shadow: 0 0 18px rgba(25,205,255,0.45);">
       <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.6px;">Your<span style="color: #19cdff;">Memory</span></span>
     </a>
-    <div style="display: flex; align-items: center; gap: clamp(12px, 1.8vw, 28px); font-size: 14px; color: #9fb0c3; font-weight: 500;">
+    <div data-nav="links" style="display: flex; align-items: center; gap: clamp(12px, 1.8vw, 28px); font-size: 14px; color: #9fb0c3; font-weight: 500;">
       <a href="#how" style="transition: color .2s;" style-hover="color: #19cdff;">How it works</a>
       <a href="#engine" style="transition: color .2s;" style-hover="color: #19cdff;">Engine</a>
       <a href="#benchmarks" style="transition: color .2s;" style-hover="color: #19cdff;">Benchmarks</a>
@@ -66,12 +85,26 @@
       <a href="#faq" style="transition: color .2s;" style-hover="color: #19cdff;">FAQ</a>
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
-      <a href="https://github.com/sachitrafa/YourMemory" style="display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 600; color: #cdd9e8; border: 1px solid rgba(255,255,255,0.14); padding: 8px 13px; border-radius: 9px; transition: border-color .2s;" style-hover="border-color: rgba(25,205,255,0.5);">
+      <a data-nav="star" href="https://github.com/sachitrafa/YourMemory" style="display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 600; color: #cdd9e8; border: 1px solid rgba(255,255,255,0.14); padding: 8px 13px; border-radius: 9px; transition: border-color .2s;" style-hover="border-color: rgba(25,205,255,0.5);">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="#cdd9e8"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         Star
       </a>
       <a href="#setup" style="font-size: 13.5px; font-weight: 600; white-space: nowrap; color: #061021; background: #19cdff; padding: 9px 16px; border-radius: 9px; box-shadow: 0 0 22px rgba(25,205,255,0.35); transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-1px); box-shadow: 0 0 30px rgba(25,205,255,0.55);">Get started</a>
+      <button data-nav="burger" onClick="{{ toggleMenu }}" style="display: none; cursor: pointer; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 9px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); color: #cdd9e8;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
     </div>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div data-nav="menu" style="position: absolute; top: 100%; left: 0; right: 0; display: flex; flex-direction: column; padding: 8px 18px 16px; background: rgba(7,11,19,0.97); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <a href="#how" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.06);">How it works</a>
+        <a href="#engine" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.06);">Engine</a>
+        <a href="#benchmarks" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.06);">Benchmarks</a>
+        <a href="#compare" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.06);">Compare</a>
+        <a href="#enterprise" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.06);">Enterprise</a>
+        <a href="#faq" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.06);">FAQ</a>
+        <a href="https://github.com/sachitrafa/YourMemory" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8;">GitHub</a>
+      </div>
+    </sc-if>
   </nav>
 
   <!-- HERO -->
@@ -188,7 +221,7 @@
     <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
       <span>// MEMORY DECAY</span><span style="margin-left: auto; color: #5a6b80;">[ 03 / 07 ]</span>
     </div>
-    <div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.2fr); gap: clamp(28px, 4vw, 64px); align-items: center;">
+    <div data-r="split" style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.2fr); gap: clamp(28px, 4vw, 64px); align-items: center;">
       <div>
         <h2 style="margin: 0 0 16px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(28px, 3.6vw, 48px); letter-spacing: -1.2px; line-height: 1.05;">Watch memory fade.</h2>
         <p style="margin: 0 0 26px; font-size: 16px; line-height: 1.6; color: #9fb0c3;">Every memory carries a strength score <span style="font-family: 'JetBrains Mono', monospace; color: #7fe3ff;">S(t) = e<sup>−λt</sup></span>. Different categories age at different rates. Drag the half-life — when strength drops below the prune line, the memory fades from retrieval.</p>
@@ -234,7 +267,7 @@
       </sc-for>
     </div>
 
-    <div style="display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr); gap: clamp(24px, 4vw, 56px); align-items: start;">
+    <div data-r="split" style="display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr); gap: clamp(24px, 4vw, 56px); align-items: start;">
       <div>
         <div style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: clamp(54px, 7.5vw, 96px); line-height: 0.9; background: linear-gradient(130deg, #19cdff, #5eead4); -webkit-background-clip: text; background-clip: text; color: transparent;">{{ bigNum }}</div>
         <div style="font-size: 15.5px; font-weight: 600; color: #e6edf6; margin-top: 12px;">{{ bigLabel }}</div>
@@ -288,14 +321,14 @@
 
     <!-- feature matrix -->
     <div style="border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; background: #0c1320;">
-      <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; color: #64748b; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02);">
+      <div data-r="matrix-head" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; color: #64748b; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02);">
         <div style="padding: 16px 20px;">Feature</div>
         <div style="padding: 16px 12px; text-align: center; color: #19cdff;">YourMemory</div>
         <div style="padding: 16px 12px; text-align: center;">Mem0</div>
         <div style="padding: 16px 12px; text-align: center;">Zep</div>
       </div>
       <sc-for list="{{ matrix }}" as="row" hint-placeholder-count="7">
-        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center;">
+        <div data-r="matrix-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center;">
           <div style="padding: 14px 20px; font-size: 14px; color: #cdd9e8;">{{ row.f }}</div>
           <div style="padding: 14px 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 15px; color: {{ row.ymColor }};">{{ row.ym }}</div>
           <div style="padding: 14px 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 15px; color: {{ row.mem0Color }};">{{ row.mem0 }}</div>
@@ -314,7 +347,7 @@
     <p style="margin: 0; max-width: 620px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Your team accumulates deep knowledge every day — customer quirks, solved problems, architectural decisions. Right now it evaporates when the session closes. Enterprise gives it a permanent home.</p>
 
     <!-- ✦ TEAM MEMORY NETWORK -->
-    <div style="margin-top: 44px; border-radius: 20px; background: radial-gradient(60% 80% at 50% 50%, rgba(25,205,255,0.05) 0%, rgba(25,205,255,0) 70%), #0a0f1a; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; padding: 14px;">
+    <div data-r="svgwrap" style="margin-top: 44px; border-radius: 20px; background: radial-gradient(60% 80% at 50% 50%, rgba(25,205,255,0.05) 0%, rgba(25,205,255,0) 70%), #0a0f1a; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; padding: 14px;">
       <svg width="100%" viewBox="0 0 900 360" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
         <defs>
           <radialGradient id="ymhub" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#19cdff" stop-opacity=".55"/><stop offset="60%" stop-color="#19cdff" stop-opacity=".12"/><stop offset="100%" stop-color="#19cdff" stop-opacity="0"/></radialGradient>
@@ -440,7 +473,7 @@ recall("customer edge case")
     <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 52px); letter-spacing: -1.2px; line-height: 1.04;">Start in under 2 minutes.</h2>
     <p style="margin: 0 0 40px; max-width: 560px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Free, open source, runs entirely on your machine. No API key. No data leaves your system.</p>
 
-    <div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(24px, 4vw, 48px); align-items: start;">
+    <div data-r="split" style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(24px, 4vw, 48px); align-items: start;">
       <!-- activation flow -->
       <div style="padding: 28px; border-radius: 18px; background: #0c1320; border: 1px solid rgba(255,255,255,0.1);">
         <sc-if value="{{ isEmailStep }}" hint-placeholder-val="{{ true }}">
@@ -576,7 +609,7 @@ recall("customer edge case")
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1280, &quot;height&quot;: 900}, &quot;animate&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}, &quot;heroDensity&quot;: {&quot;editor&quot;: &quot;float&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0.5, &quot;max&quot;: 2, &quot;step&quot;: 0.1, &quot;tsType&quot;: &quot;number&quot;}}">
 class Component extends DCLogic {
-  state = { halfLife: 24, tab: 'long', regStep: 'email', email: '', code: '', token: '', faqOpen: 0, copied: false, copiedToken: false, sendError: '', verifyError: '' };
+  state = { halfLife: 24, tab: 'long', regStep: 'email', email: '', code: '', token: '', faqOpen: 0, copied: false, copiedToken: false, menuOpen: false, sendError: '', verifyError: '' };
 
   componentWillUnmount() {
     this._running = false;
@@ -785,6 +818,9 @@ class Component extends DCLogic {
     return {
       heroCanvasRef: (el) => { if (el) { this._hero = el; this._startHero(el); } },
       decayCanvasRef: (el) => { if (el) { this._decay = el; this._ensureDecay(); } },
+      menuOpen: this.state.menuOpen,
+      toggleMenu: () => this.setState({ menuOpen: !this.state.menuOpen }),
+      closeMenu: () => this.setState({ menuOpen: false }),
       copyInstall: () => {
         try { navigator.clipboard && navigator.clipboard.writeText('pip install yourmemory'); } catch (e) {}
         this.setState({ copied: true });
@@ -824,6 +860,7 @@ class Component extends DCLogic {
       email: em, maskedEmail, code: this.state.code, token: this.state.token,
       onEmail: (e) => this.setState({ email: e.target.value }),
       onCode: (e) => this.setState({ code: e.target.value.replace(/[^0-9]/g, '').slice(0, 6) }),
+      sendError: this.state.sendError || '',
       sendCode: async () => {
         if (!validEmail) return;
         try {
@@ -841,7 +878,7 @@ class Component extends DCLogic {
           this.setState({ sendError: 'Network error. Check your connection.' });
         }
       },
-      sendError: this.state.sendError || '',
+      verifyError: this.state.verifyError || '',
       verifyCode: async () => {
         const c = this.state.code;
         if (!c || c.length !== 6) return;
@@ -860,7 +897,6 @@ class Component extends DCLogic {
           this.setState({ verifyError: 'Network error. Check your connection.' });
         }
       },
-      verifyError: this.state.verifyError || '',
       backToEmail: () => this.setState({ regStep: 'email', code: '', verifyError: '' }),
       install: [
         { n: '01', title: 'Install the package', cmd: 'pip install yourmemory', desc: 'Downloads YourMemory and registers the CLI commands on your machine.' },
