@@ -290,6 +290,85 @@
     </div>
   </section>
 
+  <!-- 04b SAVINGS CALCULATOR -->
+  <section id="calculator" style="position: relative; z-index: 1; padding: clamp(60px, 7vw, 100px) clamp(18px, 4vw, 56px); max-width: 1180px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
+      <span>// YOUR NUMBERS</span>
+    </div>
+    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 52px); letter-spacing: -1.2px; line-height: 1.04;">How much would <em>you</em> save?</h2>
+    <p style="margin: 0 0 42px; max-width: 580px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Paste any conversation history. We count the tokens and show you exactly what YourMemory would have saved — no signup needed.</p>
+
+    <div data-r="split" style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(24px, 4vw, 48px); align-items: start;">
+
+      <!-- LEFT: Controls -->
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+        <div>
+          <label style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1.5px; color: #5a6b80; text-transform: uppercase; margin-bottom: 10px;">Paste conversation history</label>
+          <textarea oninput="$h.onCalcText(event)" placeholder="Paste your Claude, ChatGPT, Cursor, or any AI chat history here…" style="width:100%;min-height:180px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#e6edf6;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;padding:14px 16px;resize:vertical;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='rgba(25,205,255,0.45)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
+          <div style="margin-top:8px;font-size:12px;font-family:'JetBrains Mono',monospace;">
+            <sc-if val="{{ calcTokens > 0 }}"><span style="color:#19cdff;">{{ calcTokensFmt }} tokens detected</span></sc-if>
+            <sc-if val="{{ calcTokens === 0 }}"><span style="color:#3d4f60;">~4 characters per token</span></sc-if>
+          </div>
+        </div>
+
+        <div>
+          <label style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#5a6b80;text-transform:uppercase;margin-bottom:10px;">
+            <span>Sessions this spans</span><span style="color:#e6edf6;">{{ calcSessions }}</span>
+          </label>
+          <input type="range" min="1" max="20" value="{{ calcSessions }}" oninput="$h.onCalcSessions(event)" style="width:100%;-webkit-appearance:none;height:5px;border-radius:3px;background:rgba(255,255,255,0.08);outline:none;cursor:pointer;">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#3d4f60;margin-top:5px;font-family:'JetBrains Mono',monospace;"><span>1</span><span>20</span></div>
+          <div style="font-size:12px;color:#3d4f60;margin-top:6px;">How many separate chats does this history cover?</div>
+        </div>
+
+        <div>
+          <label style="display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#5a6b80;text-transform:uppercase;margin-bottom:10px;">Model</label>
+          <select onchange="$h.onCalcModel(event)" style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e6edf6;font-family:'JetBrains Mono',monospace;font-size:13px;padding:11px 14px;cursor:pointer;outline:none;-webkit-appearance:none;">
+            <option value="3">Claude Sonnet — $3 / 1M tokens</option>
+            <option value="15">Claude Opus — $15 / 1M tokens</option>
+            <option value="1">Claude Haiku — $1 / 1M tokens</option>
+            <option value="2.5">GPT-4o — $2.50 / 1M tokens</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- RIGHT: Results -->
+      <div>
+        <sc-if val="{{ calcTokens === 0 }}">
+          <div style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.07);border-radius:20px;padding:56px 32px;text-align:center;">
+            <div style="font-size:36px;margin-bottom:16px;opacity:0.2;">⌗</div>
+            <div style="font-size:15px;color:#3d4f60;line-height:1.7;">Paste any chat history on the left<br>to see your token savings.</div>
+          </div>
+        </sc-if>
+
+        <sc-if val="{{ calcTokens > 0 }}">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+
+            <div style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.2);border-radius:16px;padding:20px 22px;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#f87171;margin-bottom:8px;">Without YourMemory</div>
+              <div style="font-size:34px;font-weight:800;color:#f87171;letter-spacing:-1px;line-height:1;">{{ calcBaseTokFmt }}</div>
+              <div style="font-size:13px;color:#9fb0c3;margin-top:6px;">tokens total · <span style="color:#f87171;">{{ calcBaseCostFmt }}</span> on {{ calcModelLabel }}</div>
+              <div style="font-size:12px;color:#4a5a6a;margin-top:7px;line-height:1.5;">Context grows each session — by session {{ calcSessions }}, you're re-sending {{ calcCtxPerSessFmt }} tokens of history every time.</div>
+            </div>
+
+            <div style="background:rgba(94,234,212,0.06);border:1px solid rgba(94,234,212,0.2);border-radius:16px;padding:20px 22px;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#5eead4;margin-bottom:8px;">With YourMemory</div>
+              <div style="font-size:34px;font-weight:800;color:#5eead4;letter-spacing:-1px;line-height:1;">{{ calcYmTokFmt }}</div>
+              <div style="font-size:13px;color:#9fb0c3;margin-top:6px;">tokens total · <span style="color:#5eead4;">{{ calcYmCostFmt }}</span> on {{ calcModelLabel }}</div>
+              <div style="font-size:12px;color:#4a5a6a;margin-top:7px;line-height:1.5;">~{{ calcYmPerSessFmt }} recalled tokens injected per session — flat, never growing.</div>
+            </div>
+
+            <div style="background:linear-gradient(160deg,rgba(25,205,255,0.1),rgba(94,234,212,0.07));border:1px solid rgba(25,205,255,0.3);border-radius:16px;padding:20px 22px;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#19cdff;margin-bottom:8px;">You save</div>
+              <div style="font-size:48px;font-weight:800;color:#19cdff;letter-spacing:-2px;line-height:1;">{{ calcSavePct }}%</div>
+              <div style="font-size:14px;color:#9fb0c3;margin-top:8px;">{{ calcSaveTokFmt }} tokens · {{ calcSaveCostFmt }}</div>
+            </div>
+
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </section>
+
   <!-- 05 COMPARISON -->
   <section id="compare" style="position: relative; z-index: 1; padding: clamp(60px, 7vw, 100px) clamp(18px, 4vw, 56px); max-width: 1180px; margin: 0 auto;">
     <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
@@ -609,7 +688,7 @@ recall("customer edge case")
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1280, &quot;height&quot;: 900}, &quot;animate&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}, &quot;heroDensity&quot;: {&quot;editor&quot;: &quot;float&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0.5, &quot;max&quot;: 2, &quot;step&quot;: 0.1, &quot;tsType&quot;: &quot;number&quot;}}">
 class Component extends DCLogic {
-  state = { halfLife: 24, tab: 'long', regStep: 'email', email: '', code: '', token: '', faqOpen: 0, copied: false, copiedToken: false, menuOpen: false, sendError: '', verifyError: '' };
+  state = { halfLife: 24, tab: 'long', regStep: 'email', email: '', code: '', token: '', faqOpen: 0, copied: false, copiedToken: false, menuOpen: false, sendError: '', verifyError: '', calcText: '', calcSessions: 5, calcModel: 3 };
 
   componentWillUnmount() {
     this._running = false;
@@ -841,6 +920,20 @@ class Component extends DCLogic {
       return { label, onClick: () => this.setState({ halfLife: days }), fg: active ? '#061021' : '#cdd9e8', bg: active ? '#fbbf73' : 'rgba(255,255,255,0.04)', bd: active ? '#fbbf73' : 'rgba(255,255,255,0.14)' };
     };
 
+    const calcText = this.state.calcText || '';
+    const calcTokens = Math.ceil(calcText.length / 4);
+    const calcSessions = this.state.calcSessions || 5;
+    const calcModel = this.state.calcModel || 3;
+    const _S = 300;
+    const _ctx = calcTokens > 0 ? Math.ceil(calcTokens / calcSessions) : 0;
+    const _ym = Math.max(80, Math.ceil(_ctx * 0.12));
+    const _baseTotal = calcSessions * _S + _ctx * calcSessions * (calcSessions + 1) / 2;
+    const _ymTotal = calcSessions * (_S + _ctx + _ym);
+    const calcSavePct = _baseTotal > 0 ? Math.round((1 - _ymTotal / _baseTotal) * 100) : 0;
+    const _fmtTok = n => n >= 1e6 ? (n/1e6).toFixed(2)+'M' : n >= 1e3 ? (Math.round(n/100)/10).toFixed(1)+'k' : String(n);
+    const _fmtUSD = n => n <= 0 ? '$0.00' : n < 0.01 ? '<$0.01' : n < 100 ? '$'+n.toFixed(2) : '$'+Math.round(n).toLocaleString();
+    const _modelLabel = ({3:'Sonnet',15:'Opus',1:'Haiku',2.5:'GPT-4o'})[calcModel] || 'Sonnet';
+
     const em = this.state.email;
     const maskedEmail = em.includes('@') ? em.replace(/^(.)(.*)(@.*)$/, (m, a, b, c) => a + '•'.repeat(Math.max(b.length, 1)) + c) : em;
     const validEmail = /.+@.+\..+/.test(em);
@@ -925,7 +1018,23 @@ class Component extends DCLogic {
       install: d.install,
       entFeatures: d.entFeatures,
       marquee: d.marquee,
-      press: d.press
+      press: d.press,
+      calcTokens,
+      calcSessions,
+      calcTokensFmt: _fmtTok(calcTokens),
+      calcBaseTokFmt: _fmtTok(_baseTotal),
+      calcBaseCostFmt: _fmtUSD(_baseTotal * calcModel / 1e6),
+      calcYmTokFmt: _fmtTok(_ymTotal),
+      calcYmCostFmt: _fmtUSD(_ymTotal * calcModel / 1e6),
+      calcSavePct,
+      calcSaveTokFmt: _fmtTok(_baseTotal - _ymTotal),
+      calcSaveCostFmt: _fmtUSD((_baseTotal - _ymTotal) * calcModel / 1e6),
+      calcCtxPerSessFmt: _fmtTok(_ctx),
+      calcYmPerSessFmt: _fmtTok(_ym),
+      calcModelLabel: _modelLabel,
+      onCalcText: (e) => this.setState({ calcText: e.target.value }),
+      onCalcSessions: (e) => this.setState({ calcSessions: +e.target.value }),
+      onCalcModel: (e) => this.setState({ calcModel: +e.target.value })
     };
   }
 }
