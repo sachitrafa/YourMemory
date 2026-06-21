@@ -11,6 +11,7 @@ export interface Env {
   DB: D1Database;
   RESEND_API_KEY: string;
   EMAILS_SECRET: string;
+  ANTHROPIC_API_KEY: string;
 }
 
 const CORS = {
@@ -230,6 +231,63 @@ export default {
       }
 
       return json({ ok: true });
+    }
+
+    // ── POST /token-estimate
+    if (req.method === "POST" && url.pathname === "/token-estimate") {
+      let text: string, sessions: number;
+      try {
+        const body = await req.json() as { text?: string; sessions?: number };
+        text = (body.text ?? "").slice(0, 200_000);
+        sessions = Math.max(1, Math.min(30, Math.round(+(body.sessions ?? 5))));
+      } catch {
+        return json({ ok: false, reason: "Invalid request body." }, 400);
+      }
+      if (!text.trim()) return json({ ok: false, reason: "Text is required." }, 400);
+
+      let rawTokens: number;
+      try {
+        const tokRes = await fetch("https://api.anthropic.com/v1/messages/count_tokens", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": env.ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+          },
+          body: JSON.stringify({
+            model: "claude-haiku-4-5-20251001",
+            messages: [{ role: "user", content: text }],
+          }),
+        });
+        if (!tokRes.ok) throw new Error(`Anthropic ${tokRes.status}`);
+        const tokData = await tokRes.json() as { input_tokens: number };
+        rawTokens = tokData.input_tokens;
+      } catch {
+        rawTokens = Math.ceil(text.length / 4);
+      }
+
+      const S = 300;
+      const ctx = Math.ceil(rawTokens / sessions);
+      const ym = Math.max(80, Math.ceil(ctx * 0.12));
+      const baseTotal = sessions * S + ctx * sessions * (sessions + 1) / 2;
+      const ymTotal = sessions * (S + ctx + ym);
+      const savingsPct = Math.round((1 - ymTotal / baseTotal) * 100);
+
+      return json({
+        ok: true,
+        raw_tokens: rawTokens,
+        ym_context: ym,
+        sessions,
+        base_total: baseTotal,
+        ym_total: ymTotal,
+        savings_pct: savingsPct,
+        savings_tokens: baseTotal - ymTotal,
+        savings_usd: {
+          haiku: +((baseTotal - ymTotal) * 1 / 1e6).toFixed(4),
+          sonnet: +((baseTotal - ymTotal) * 3 / 1e6).toFixed(4),
+          opus: +((baseTotal - ymTotal) * 15 / 1e6).toFixed(4),
+        },
+      });
     }
 
     // ── POST /verify-otp
