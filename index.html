@@ -305,14 +305,9 @@
         <div>
           <label style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1.5px; color: #5a6b80; text-transform: uppercase; margin-bottom: 10px;">Paste conversation history</label>
           <textarea oninput="$h.onCalcText(event)" placeholder="Paste your Claude, ChatGPT, Cursor, or any AI chat history here…" style="width:100%;min-height:180px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#e6edf6;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;padding:14px 16px;resize:vertical;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='rgba(25,205,255,0.45)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
-          <div style="margin-top:10px;font-size:12px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-            <sc-if val="{{ calcTokens > 0 }}">
-              <span style="color:{{ calcIsExact ? '#5eead4' : '#5a6b80' }};">{{ calcTokensFmt }} {{ calcTokensLabel }}</span>
-            </sc-if>
+          <div style="margin-top:10px;font-size:12px;font-family:'JetBrains Mono',monospace;">
+            <sc-if val="{{ calcTokens > 0 }}"><span style="color:{{ calcIsExact ? '#5eead4' : '#5a6b80' }};">{{ calcTokensFmt }} {{ calcTokensLabel }}</span></sc-if>
             <sc-if val="{{ calcTokens === 0 }}"><span style="color:#3d4f60;">~4 characters per token</span></sc-if>
-            <sc-if val="{{ calcTokens > 0 }}">
-              <button onclick="$h.analyzeExact()" style="background:rgba(25,205,255,0.08);border:1px solid rgba(25,205,255,0.25);border-radius:8px;color:{{ calcLoading ? '#5a6b80' : '#19cdff' }};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:6px 13px;cursor:pointer;white-space:nowrap;letter-spacing:0.5px;">{{ calcLoading ? 'Counting tokens…' : (calcIsExact ? '↺ Re-analyze' : 'Get exact count →') }}</button>
-            </sc-if>
           </div>
         </div>
 
@@ -347,12 +342,6 @@
 
         <sc-if val="{{ calcTokens > 0 }}">
           <div style="display:flex;flex-direction:column;gap:12px;">
-
-            <sc-if val="{{ calcIsExact }}">
-              <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;background:rgba(94,234,212,0.06);border:1px solid rgba(94,234,212,0.2);border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#5eead4;">
-                <span>✓</span><span>Exact token counts via Claude tokenizer</span>
-              </div>
-            </sc-if>
 
             <div style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.2);border-radius:16px;padding:20px 22px;">
               <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#f87171;margin-bottom:8px;">Without YourMemory</div>
@@ -699,7 +688,7 @@ recall("customer edge case")
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1280, &quot;height&quot;: 900}, &quot;animate&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}, &quot;heroDensity&quot;: {&quot;editor&quot;: &quot;float&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0.5, &quot;max&quot;: 2, &quot;step&quot;: 0.1, &quot;tsType&quot;: &quot;number&quot;}}">
 class Component extends DCLogic {
-  state = { halfLife: 24, tab: 'long', regStep: 'email', email: '', code: '', token: '', faqOpen: 0, copied: false, copiedToken: false, menuOpen: false, sendError: '', verifyError: '', calcText: '', calcSessions: 5, calcModel: 3, calcLoading: false, calcExact: null };
+  state = { halfLife: 24, tab: 'long', regStep: 'email', email: '', code: '', token: '', faqOpen: 0, copied: false, copiedToken: false, menuOpen: false, sendError: '', verifyError: '', calcText: '', calcSessions: 5, calcModel: 3, calcTokensFast: null };
 
   componentWillUnmount() {
     this._running = false;
@@ -932,7 +921,8 @@ class Component extends DCLogic {
     };
 
     const calcText = this.state.calcText || '';
-    const calcTokens = Math.ceil(calcText.length / 4);
+    const _fast = this.state.calcTokensFast;
+    const calcTokens = (_fast !== null && _fast >= 0) ? _fast : Math.ceil(calcText.length / 4);
     const calcSessions = this.state.calcSessions || 5;
     const calcModel = this.state.calcModel || 3;
     const _S = 300;
@@ -944,10 +934,7 @@ class Component extends DCLogic {
     const _fmtTok = n => n >= 1e6 ? (n/1e6).toFixed(2)+'M' : n >= 1e3 ? (Math.round(n/100)/10).toFixed(1)+'k' : String(n);
     const _fmtUSD = n => n <= 0 ? '$0.00' : n < 0.01 ? '<$0.01' : n < 100 ? '$'+n.toFixed(2) : '$'+Math.round(n).toLocaleString();
     const _modelLabel = ({3:'Sonnet',15:'Opus',1:'Haiku',2.5:'GPT-4o'})[calcModel] || 'Sonnet';
-    const _ex = this.state.calcExact;
-    const _calcLoading = !!this.state.calcLoading;
-    const _calcIsExact = !!_ex;
-    const _disp = _ex ? { rawTok: _ex.raw_tokens, base: _ex.base_total, ym: _ex.ym_total, savePct: _ex.savings_pct, saveTok: _ex.savings_tokens, ymPer: _ex.ym_context } : { rawTok: calcTokens, base: _baseTotal, ym: _ymTotal, savePct: calcSavePct, saveTok: _baseTotal - _ymTotal, ymPer: _ym };
+    const calcIsExact = _fast !== null && calcText.length > 0;
 
     const em = this.state.email;
     const maskedEmail = em.includes('@') ? em.replace(/^(.)(.*)(@.*)$/, (m, a, b, c) => a + '•'.repeat(Math.max(b.length, 1)) + c) : em;
@@ -1036,40 +1023,33 @@ class Component extends DCLogic {
       press: d.press,
       calcTokens,
       calcSessions,
-      calcIsExact: _calcIsExact,
-      calcLoading: _calcLoading,
-      calcTokensFmt: _fmtTok(_disp.rawTok),
-      calcTokensLabel: _calcIsExact ? 'tokens · exact (Claude tokenizer)' : 'tokens detected (∼4 chars/token)',
-      calcBaseTokFmt: _fmtTok(_disp.base),
-      calcBaseCostFmt: _fmtUSD(_disp.base * calcModel / 1e6),
-      calcYmTokFmt: _fmtTok(_disp.ym),
-      calcYmCostFmt: _fmtUSD(_disp.ym * calcModel / 1e6),
-      calcSavePct: _disp.savePct,
-      calcSaveTokFmt: _fmtTok(_disp.saveTok),
-      calcSaveCostFmt: _fmtUSD(_disp.saveTok * calcModel / 1e6),
-      calcCtxPerSessFmt: _fmtTok(Math.ceil(_disp.rawTok / Math.max(1, calcSessions))),
-      calcYmPerSessFmt: _fmtTok(_disp.ymPer),
+      calcIsExact,
+      calcTokensFmt: _fmtTok(calcTokens),
+      calcTokensLabel: calcIsExact ? 'tokens · exact (GPT-4/Claude tokenizer)' : 'tokens (∼4 chars/token)',
+      calcBaseTokFmt: _fmtTok(_baseTotal),
+      calcBaseCostFmt: _fmtUSD(_baseTotal * calcModel / 1e6),
+      calcYmTokFmt: _fmtTok(_ymTotal),
+      calcYmCostFmt: _fmtUSD(_ymTotal * calcModel / 1e6),
+      calcSavePct,
+      calcSaveTokFmt: _fmtTok(_baseTotal - _ymTotal),
+      calcSaveCostFmt: _fmtUSD((_baseTotal - _ymTotal) * calcModel / 1e6),
+      calcCtxPerSessFmt: _fmtTok(_ctx),
+      calcYmPerSessFmt: _fmtTok(_ym),
       calcModelLabel: _modelLabel,
-      analyzeExact: async () => {
-        if (!this.state.calcText || this.state.calcLoading) return;
-        this.setState({ calcLoading: true });
-        try {
-          const res = await fetch('https://yourmemory-backend.yourmemoryai.workers.dev/token-estimate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: this.state.calcText, sessions: this.state.calcSessions })
-          });
-          const data = await res.json();
-          if (data.ok) this.setState({ calcExact: data, calcLoading: false });
-          else this.setState({ calcLoading: false });
-        } catch { this.setState({ calcLoading: false }); }
+      onCalcText: (e) => {
+        const text = e.target.value;
+        const fast = typeof window.__gptEncode === 'function' ? window.__gptEncode(text).length : null;
+        this.setState({ calcText: text, calcTokensFast: fast });
       },
-      onCalcText: (e) => this.setState({ calcText: e.target.value, calcExact: null }),
-      onCalcSessions: (e) => this.setState({ calcSessions: +e.target.value, calcExact: null }),
+      onCalcSessions: (e) => this.setState({ calcSessions: +e.target.value }),
       onCalcModel: (e) => this.setState({ calcModel: +e.target.value })
     };
   }
 }
+</script>
+<script type="module">
+  import { encode } from 'https://esm.sh/gpt-tokenizer/cl100k_base';
+  window.__gptEncode = encode;
 </script>
 </body>
 </html>
