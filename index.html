@@ -296,7 +296,25 @@
       <span>// YOUR NUMBERS</span>
     </div>
     <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 52px); letter-spacing: -1.2px; line-height: 1.04;">How much would <em>you</em> save?</h2>
-    <p style="margin: 0 0 42px; max-width: 580px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Paste any conversation history. We count the tokens and show you exactly what YourMemory would have saved — no signup needed.</p>
+    <p style="margin: 0 0 42px; max-width: 580px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Run this prompt at the end of any AI session, paste the response below, and see exactly what YourMemory would have saved.</p>
+
+    <!-- STEP 1: Copy prompt -->
+    <div style="margin-bottom: 36px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(25,205,255,0.15);border:1px solid rgba(25,205,255,0.35);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#19cdff;flex-shrink:0;">1</div>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;color:#5a6b80;text-transform:uppercase;">Copy this prompt → paste it at the end of your current AI session</span>
+      </div>
+      <div style="position:relative;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:20px 22px;">
+        <pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.7;color:#9fb0c3;white-space:pre-wrap;word-break:break-word;">{{ auditPrompt }}</pre>
+        <button onclick="$h.copyPrompt()" style="position:absolute;top:14px;right:14px;background:{{ promptCopied ? 'rgba(94,234,212,0.15)' : 'rgba(25,205,255,0.08)' }};border:1px solid {{ promptCopied ? 'rgba(94,234,212,0.4)' : 'rgba(25,205,255,0.25)' }};border-radius:8px;color:{{ promptCopied ? '#5eead4' : '#19cdff' }};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:6px 13px;cursor:pointer;letter-spacing:0.5px;white-space:nowrap;">{{ promptCopied ? '✓ Copied' : 'Copy' }}</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Paste and calculate -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+      <div style="width:22px;height:22px;border-radius:50%;background:rgba(25,205,255,0.15);border:1px solid rgba(25,205,255,0.35);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#19cdff;flex-shrink:0;">2</div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;color:#5a6b80;text-transform:uppercase;">Paste the AI's response (or full conversation) here to see your savings</span>
+    </div>
 
     <div data-r="split" style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(24px, 4vw, 48px); align-items: start;">
 
@@ -688,7 +706,7 @@ recall("customer edge case")
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1280, &quot;height&quot;: 900}, &quot;animate&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}, &quot;heroDensity&quot;: {&quot;editor&quot;: &quot;float&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0.5, &quot;max&quot;: 2, &quot;step&quot;: 0.1, &quot;tsType&quot;: &quot;number&quot;}}">
 class Component extends DCLogic {
-  state = { halfLife: 24, tab: 'long', regStep: 'email', email: '', code: '', token: '', faqOpen: 0, copied: false, copiedToken: false, menuOpen: false, sendError: '', verifyError: '', calcText: '', calcSessions: 5, calcModel: 3, calcTokensFast: null };
+  state = { halfLife: 24, tab: 'long', regStep: 'email', email: '', code: '', token: '', faqOpen: 0, copied: false, copiedToken: false, menuOpen: false, sendError: '', verifyError: '', calcText: '', calcSessions: 5, calcModel: 3, calcTokensFast: null, promptCopied: false };
 
   componentWillUnmount() {
     this._running = false;
@@ -875,6 +893,13 @@ class Component extends DCLogic {
         { tag: 'Hybrid Graph + Vector', title: 'Finds what you forgot to ask', desc: 'Two-round retrieval: semantic search surfaces exact matches, then graph traversal finds related memories that don’t share vocabulary with the query. Nothing slips through.', points: ['BM25 + dense vector hybrid', 'Entity graph expansion', 'Temporal reasoning boost'] },
         { tag: 'Multi-Agent Memory', title: 'Share context or keep secrets', desc: 'Multiple AI agents share context or stay private. Each agent gets a ym_ API key with its own visibility — shared memories visible to all, private to the owner.', points: ['Per-agent API keys (ym_ prefix)', 'shared / private visibility', 'Revoke any agent anytime'] }
       ],
+      auditPrompt: `Analyze our entire conversation and give me a YourMemory token audit in this exact format:
+
+Full session: ~X,XXX tokens
+YourMemory would store: ~XXX tokens
+Savings: XX% (~X,XXX fewer tokens injected per future session)
+
+Then write a compressed YourMemory memory block — all key facts, decisions, preferences, and context established in our conversation, as concise bullet points. This is what would be injected in future sessions instead of the full history.`,
       legacyPoints: ['Flat embeddings, no decay', 'Append-only — no pruning', 'Stale facts pollute context', 'No graph relationships'],
       ymPoints: ['Ebbinghaus decay by category', 'Auto-prunes below S < 0.05', 'Hybrid graph + vector recall', 'Per-agent shared / private'],
       install: [
@@ -1036,6 +1061,13 @@ class Component extends DCLogic {
       calcCtxPerSessFmt: _fmtTok(_ctx),
       calcYmPerSessFmt: _fmtTok(_ym),
       calcModelLabel: _modelLabel,
+      auditPrompt: d.auditPrompt,
+      promptCopied: this.state.promptCopied,
+      copyPrompt: () => {
+        try { navigator.clipboard.writeText(d.auditPrompt); } catch (e) {}
+        this.setState({ promptCopied: true });
+        setTimeout(() => this.setState({ promptCopied: false }), 1800);
+      },
       onCalcText: (e) => {
         const text = e.target.value;
         const fast = typeof window.__gptEncode === 'function' ? window.__gptEncode(text).length : null;
