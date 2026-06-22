@@ -168,20 +168,26 @@ def observe_endpoint(req: ObserveRequest):
         }, "required": ["fact", "importance", "category"]}}},
         "required": ["facts"],
     }
-    payload = json.dumps({
-        "model": OLLAMA_MODEL, "prompt": prompt, "stream": False, "format": schema,
-        "keep_alive": os.getenv("YOURMEMORY_OLLAMA_KEEPALIVE", "30m"),
-        "options": {"temperature": 0, "num_predict": 700},
-    }).encode()
+    EXTRACT_BACKEND = os.getenv("YOURMEMORY_EXTRACT_BACKEND", "ollama").lower()
 
-    try:
-        rq = _ur.Request(f"{OLLAMA_URL}/api/generate", data=payload,
-                         headers={"Content-Type": "application/json"})
-        with _ur.urlopen(rq, timeout=90) as r:
-            raw = json.loads(r.read()).get("response", "").strip()
-        facts = json.loads(raw).get("facts", [])
-    except Exception as exc:
-        return {"stored": 0, "error": str(exc)[:200]}
+    if EXTRACT_BACKEND == "rules":
+        from src.services.extract import extract_facts_rules
+        facts = extract_facts_rules(text)
+    else:
+        payload = json.dumps({
+            "model": OLLAMA_MODEL, "prompt": prompt, "stream": False, "format": schema,
+            "keep_alive": os.getenv("YOURMEMORY_OLLAMA_KEEPALIVE", "30m"),
+            "options": {"temperature": 0, "num_predict": 700},
+        }).encode()
+        try:
+            rq = _ur.Request(f"{OLLAMA_URL}/api/generate", data=payload,
+                             headers={"Content-Type": "application/json"})
+            with _ur.urlopen(rq, timeout=90) as r:
+                raw = json.loads(r.read()).get("response", "").strip()
+            facts = json.loads(raw).get("facts", [])
+        except Exception as exc:
+            return {"stored": 0, "error": str(exc)[:200]}
+
     if not facts:
         return {"stored": 0, "facts": []}
 
@@ -414,21 +420,25 @@ def auto_store_endpoint(req: AutoStoreRequest):
         "options": {"temperature": 0, "num_predict": 600},
     }).encode()
 
-    try:
-        ollama_req = urllib.request.Request(
-            f"{OLLAMA_URL}/api/generate",
-            data=payload,
-            headers={"Content-Type": "application/json"},
-        )
-        with urllib.request.urlopen(ollama_req, timeout=60) as resp:
-            raw_response = json.loads(resp.read()).get("response", "").strip()
-    except Exception as exc:
-        return {"stored": 0, "error": str(exc)}
+    if os.getenv("YOURMEMORY_EXTRACT_BACKEND", "ollama").lower() == "rules":
+        from src.services.extract import extract_facts_rules
+        facts_list = extract_facts_rules(f"{user_text}\n\n{asst_text}")
+    else:
+        try:
+            ollama_req = urllib.request.Request(
+                f"{OLLAMA_URL}/api/generate",
+                data=payload,
+                headers={"Content-Type": "application/json"},
+            )
+            with urllib.request.urlopen(ollama_req, timeout=60) as resp:
+                raw_response = json.loads(resp.read()).get("response", "").strip()
+        except Exception as exc:
+            return {"stored": 0, "error": str(exc)}
+        try:
+            facts_list = json.loads(raw_response).get("facts", [])
+        except Exception:
+            return {"stored": 0, "facts": [], "error": "non-JSON extraction response"}
 
-    try:
-        facts_list = json.loads(raw_response).get("facts", [])
-    except Exception:
-        return {"stored": 0, "facts": [], "error": "non-JSON extraction response"}
     if not facts_list:
         return {"stored": 0, "facts": []}
 
