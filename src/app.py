@@ -170,9 +170,12 @@ def observe_endpoint(req: ObserveRequest):
     }
     EXTRACT_BACKEND = os.getenv("YOURMEMORY_EXTRACT_BACKEND", "ollama").lower()
 
-    if EXTRACT_BACKEND == "rules":
-        from src.services.extract import extract_facts_rules
-        facts = extract_facts_rules(text)
+    if EXTRACT_BACKEND == "anthropic":
+        from src.services.extract import extract_facts_anthropic
+        try:
+            facts = extract_facts_anthropic(prompt)
+        except Exception as exc:
+            return {"stored": 0, "error": str(exc)[:200]}
     else:
         payload = json.dumps({
             "model": OLLAMA_MODEL, "prompt": prompt, "stream": False, "format": schema,
@@ -420,9 +423,12 @@ def auto_store_endpoint(req: AutoStoreRequest):
         "options": {"temperature": 0, "num_predict": 600},
     }).encode()
 
-    if os.getenv("YOURMEMORY_EXTRACT_BACKEND", "ollama").lower() == "rules":
-        from src.services.extract import extract_facts_rules
-        facts_list = extract_facts_rules(f"{user_text}\n\n{asst_text}")
+    if os.getenv("YOURMEMORY_EXTRACT_BACKEND", "ollama").lower() == "anthropic":
+        from src.services.extract import extract_facts_anthropic
+        try:
+            facts_list = extract_facts_anthropic(prompt)
+        except Exception as exc:
+            return {"stored": 0, "error": str(exc)}
     else:
         try:
             ollama_req = urllib.request.Request(
