@@ -296,115 +296,111 @@
       <span>// YOUR NUMBERS</span>
     </div>
     <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 52px); letter-spacing: -1.2px; line-height: 1.04;">How much would <em>you</em> save?</h2>
-    <p style="margin: 0 0 48px; max-width: 600px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Two ways to see your numbers — pick whichever fits.</p>
+    <p style="margin: 0 0 48px; max-width: 560px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Two ways to find out — a 30-second check inside your AI, or a full breakdown from your history.</p>
 
-    <!-- STEP 1: Instant audit — standalone, works entirely in your AI session -->
-    <div style="margin-bottom: 48px; background: rgba(25,205,255,0.03); border: 1px solid rgba(25,205,255,0.12); border-radius: 20px; padding: 28px 30px;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-        <div style="width:22px;height:22px;border-radius:50%;background:rgba(25,205,255,0.15);border:1px solid rgba(25,205,255,0.35);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#19cdff;flex-shrink:0;">1</div>
-        <span style="font-size:16px;font-weight:700;color:#e6edf6;">Instant audit — runs entirely in your AI session</span>
+    <!-- QUICK AUDIT -->
+    <div style="margin-bottom: 32px; background: rgba(25,205,255,0.03); border: 1px solid rgba(25,205,255,0.12); border-radius: 20px; padding: 28px 30px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+        <span style="font-size:17px;font-weight:700;color:#e6edf6;">Instant audit — runs inside any AI session</span>
+        <span style="background:rgba(25,205,255,0.12);border:1px solid rgba(25,205,255,0.3);border-radius:20px;padding:3px 11px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:#19cdff;text-transform:uppercase;white-space:nowrap;">30 sec</span>
       </div>
-      <p style="margin: 0 0 18px 32px; font-size:14px; color:#5a6b80; line-height:1.6;">Copy this prompt and paste it at the end of any Claude, ChatGPT, or Cursor session. Your AI will reply with the exact token breakdown and a compressed memory block — <strong style="color:#9fb0c3;">no need to paste anything back here.</strong></p>
-      <div style="position:relative;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px 20px 18px 20px;margin-left:32px;">
-        <pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.7;color:#9fb0c3;white-space:pre-wrap;word-break:break-word;padding-right:80px;">{{ auditPrompt }}</pre>
-        <button onclick="$h.copyPrompt()" style="position:absolute;top:14px;right:14px;background:{{ promptCopied ? 'rgba(94,234,212,0.15)' : 'rgba(25,205,255,0.08)' }};border:1px solid {{ promptCopied ? 'rgba(94,234,212,0.4)' : 'rgba(25,205,255,0.25)' }};border-radius:8px;color:{{ promptCopied ? '#5eead4' : '#19cdff' }};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:6px 13px;cursor:pointer;letter-spacing:0.5px;white-space:nowrap;">{{ promptCopied ? '✓ Copied' : 'Copy' }}</button>
+      <p style="margin: 0 0 18px; font-size:14px; color:#5a6b80; line-height:1.6;">Copy this prompt and paste it at the end of any session — <strong style="color:#9fb0c3;">Claude, ChatGPT, Gemini, Cursor, Copilot, any AI.</strong> It needs no knowledge of YourMemory. Your AI will measure and compress the conversation on its own.</p>
+      <div style="position:relative;background:rgba(0,0,0,0.28);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px 20px;">
+        <pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.75;color:#9fb0c3;white-space:pre-wrap;word-break:break-word;padding-right:80px;">{{ auditPrompt }}</pre>
+        <button onclick="$h.copyPrompt()" style="position:absolute;top:14px;right:14px;background:{{ promptCopied ? 'rgba(94,234,212,0.15)' : 'rgba(25,205,255,0.08)' }};border:1px solid {{ promptCopied ? 'rgba(94,234,212,0.4)' : 'rgba(25,205,255,0.25)' }};border-radius:8px;color:{{ promptCopied ? '#5eead4' : '#19cdff' }};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:6px 13px;cursor:pointer;letter-spacing:0.5px;white-space:nowrap;transition:all .2s;">{{ promptCopied ? '✓ Copied' : 'Copy' }}</button>
       </div>
-      <div style="margin-top:14px;margin-left:32px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#3d4f60;line-height:1.6;">
-        Your AI will respond with: <span style="color:#5a6b80;">Full session: ~X,XXX tokens · YourMemory would store: ~XXX tokens · Savings: XX%</span>
+      <div style="margin-top:12px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#3d4f60;">
+        Your AI replies with: <span style="color:#5a6b80;">Full conversation: ~X,XXX tokens · Compressed memory: ~XXX tokens · Savings: XX%</span>
       </div>
     </div>
 
-    <!-- Divider -->
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:40px;">
+    <!-- DIVIDER -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:32px;">
       <div style="flex:1;height:1px;background:rgba(255,255,255,0.06);"></div>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#3d4f60;text-transform:uppercase;">or calculate from your full history</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#3d4f60;text-transform:uppercase;white-space:nowrap;">or calculate from your history</span>
       <div style="flex:1;height:1px;background:rgba(255,255,255,0.06);"></div>
     </div>
 
-    <!-- STEP 2: Deep dive — independent calculator -->
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-      <div style="width:22px;height:22px;border-radius:50%;background:rgba(94,234,212,0.12);border:1px solid rgba(94,234,212,0.3);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#5eead4;flex-shrink:0;">2</div>
-      <span style="font-size:16px;font-weight:700;color:#e6edf6;">Deep dive — paste your full conversation history</span>
-    </div>
-    <p style="margin: 0 0 24px 32px; font-size:14px; color:#5a6b80; line-height:1.6;">Export or copy your full session transcript and paste it below. We tokenize it locally and show you the cumulative cost across sessions.</p>
-
-    <div data-r="split" style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(24px, 4vw, 48px); align-items: start;">
-
-      <!-- LEFT: Controls -->
-      <div style="display: flex; flex-direction: column; gap: 24px;">
-        <div>
-          <label style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1.5px; color: #5a6b80; text-transform: uppercase; margin-bottom: 10px;">Paste your full conversation history</label>
-          <textarea oninput="$h.onCalcText(event)" placeholder="Paste your Claude, ChatGPT, Cursor, or any AI chat history here…" style="width:100%;min-height:180px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#e6edf6;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;padding:14px 16px;resize:vertical;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='rgba(25,205,255,0.45)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
-          <div style="margin-top:10px;font-size:12px;font-family:'JetBrains Mono',monospace;">
-            <sc-if val="{{ calcTokens > 0 }}"><span style="color:{{ calcIsExact ? '#5eead4' : '#5a6b80' }};">{{ calcTokensFmt }} {{ calcTokensLabel }}</span></sc-if>
-            <sc-if val="{{ calcTokens === 0 }}"><span style="color:#3d4f60;">~4 characters per token</span></sc-if>
-          </div>
-        </div>
-
-        <div>
-          <label style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#5a6b80;text-transform:uppercase;margin-bottom:10px;">
-            <span>Sessions this spans</span><span style="color:#e6edf6;">{{ calcSessions }}</span>
-          </label>
-          <input type="range" min="1" max="20" value="{{ calcSessions }}" oninput="$h.onCalcSessions(event)" style="width:100%;-webkit-appearance:none;height:5px;border-radius:3px;background:rgba(255,255,255,0.08);outline:none;cursor:pointer;">
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:#3d4f60;margin-top:5px;font-family:'JetBrains Mono',monospace;"><span>1</span><span>20</span></div>
-          <div style="font-size:12px;color:#3d4f60;margin-top:6px;">How many separate chats does this history cover?</div>
-        </div>
-
-        <div>
-          <label style="display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#5a6b80;text-transform:uppercase;margin-bottom:10px;">Model</label>
-          <select onchange="$h.onCalcModel(event)" style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e6edf6;font-family:'JetBrains Mono',monospace;font-size:13px;padding:11px 14px;cursor:pointer;outline:none;-webkit-appearance:none;">
-            <option value="3">Claude Sonnet — $3 / 1M tokens</option>
-            <option value="15">Claude Opus — $15 / 1M tokens</option>
-            <option value="1">Claude Haiku — $1 / 1M tokens</option>
-            <option value="2.5">GPT-4o — $2.50 / 1M tokens</option>
-          </select>
-        </div>
-
-        <button onclick="$h.calculate()" style="width:100%;padding:15px;background:linear-gradient(135deg,#19cdff,#5eead4);border:none;border-radius:12px;color:#061021;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;letter-spacing:0.3px;cursor:pointer;">Calculate savings →</button>
+    <!-- DEEP CALCULATOR -->
+    <div style="background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:28px 30px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap;">
+        <span style="font-size:17px;font-weight:700;color:#e6edf6;">Paste your full conversation history</span>
+        <span style="background:rgba(94,234,212,0.1);border:1px solid rgba(94,234,212,0.25);border-radius:20px;padding:3px 11px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:#5eead4;text-transform:uppercase;white-space:nowrap;">local · private</span>
       </div>
+      <p style="margin:0 0 24px;font-size:13px;color:#5a6b80;line-height:1.6;">Export any AI chat and paste it below. Tokenized in your browser — nothing is sent anywhere.</p>
 
-      <!-- RIGHT: Results -->
-      <div>
-        <sc-if val="{{ calcTriggered !== true }}">
-          <div style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.07);border-radius:20px;padding:56px 32px;text-align:center;">
-            <div style="font-size:36px;margin-bottom:16px;opacity:0.2;">⌗</div>
-            <div style="font-size:15px;color:#3d4f60;line-height:1.7;">Paste your full conversation history,<br>set sessions &amp; model, then click <strong style="color:#5a6b80;">Calculate savings</strong>.</div>
-          </div>
-        </sc-if>
+      <div data-r="split" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,48px);align-items:start;">
 
-        <sc-if val="{{ calcTriggered === true && calcTokens === 0 }}">
-          <div style="background:rgba(251,191,115,0.05);border:1px solid rgba(251,191,115,0.2);border-radius:16px;padding:32px;text-align:center;">
-            <div style="font-size:22px;margin-bottom:12px;">⚠</div>
-            <div style="font-size:15px;color:#fbbf73;font-weight:600;margin-bottom:6px;">No text pasted yet</div>
-            <div style="font-size:13px;color:#5a6b80;line-height:1.6;">Paste your full conversation history in the textarea on the left, then click Calculate savings again.</div>
-          </div>
-        </sc-if>
-
-        <sc-if val="{{ calcTriggered === true && calcTokens > 0 }}">
-          <div style="display:flex;flex-direction:column;gap:12px;">
-
-            <div style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.2);border-radius:16px;padding:20px 22px;">
-              <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#f87171;margin-bottom:8px;">Without YourMemory</div>
-              <div style="font-size:34px;font-weight:800;color:#f87171;letter-spacing:-1px;line-height:1;">{{ calcBaseTokFmt }}</div>
-              <div style="font-size:13px;color:#9fb0c3;margin-top:6px;">tokens total · <span style="color:#f87171;">{{ calcBaseCostFmt }}</span> on {{ calcModelLabel }}</div>
-              <div style="font-size:12px;color:#4a5a6a;margin-top:7px;line-height:1.5;">Context grows each session — by session {{ calcSessions }}, you're re-sending {{ calcCtxPerSessFmt }} tokens of history every time.</div>
+        <!-- LEFT: Controls -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div>
+            <label style="display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#5a6b80;text-transform:uppercase;margin-bottom:10px;">Conversation history</label>
+            <textarea oninput="$h.onCalcText(event)" placeholder="Paste your Claude, ChatGPT, Cursor, or any AI chat history here…" style="width:100%;min-height:180px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#e6edf6;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;padding:14px 16px;resize:vertical;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='rgba(25,205,255,0.45)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
+            <div style="margin-top:8px;font-size:12px;font-family:'JetBrains Mono',monospace;">
+              <sc-if val="{{ calcTokens > 0 }}"><span style="color:{{ calcIsExact ? '#5eead4' : '#5a6b80' }};">{{ calcTokensFmt }} {{ calcTokensLabel }}</span></sc-if>
+              <sc-if val="{{ calcTokens === 0 }}"><span style="color:#3d4f60;">~0.75 tokens per word</span></sc-if>
             </div>
-
-            <div style="background:rgba(94,234,212,0.06);border:1px solid rgba(94,234,212,0.2);border-radius:16px;padding:20px 22px;">
-              <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#5eead4;margin-bottom:8px;">With YourMemory</div>
-              <div style="font-size:34px;font-weight:800;color:#5eead4;letter-spacing:-1px;line-height:1;">{{ calcYmTokFmt }}</div>
-              <div style="font-size:13px;color:#9fb0c3;margin-top:6px;">tokens total · <span style="color:#5eead4;">{{ calcYmCostFmt }}</span> on {{ calcModelLabel }}</div>
-              <div style="font-size:12px;color:#4a5a6a;margin-top:7px;line-height:1.5;">~{{ calcYmPerSessFmt }} recalled tokens injected per session — flat, never growing.</div>
-            </div>
-
-            <div style="background:linear-gradient(160deg,rgba(25,205,255,0.1),rgba(94,234,212,0.07));border:1px solid rgba(25,205,255,0.3);border-radius:16px;padding:20px 22px;">
-              <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#19cdff;margin-bottom:8px;">You save</div>
-              <div style="font-size:48px;font-weight:800;color:#19cdff;letter-spacing:-2px;line-height:1;">{{ calcSavePct }}%</div>
-              <div style="font-size:14px;color:#9fb0c3;margin-top:8px;">{{ calcSaveTokFmt }} tokens · {{ calcSaveCostFmt }}</div>
-            </div>
-
           </div>
-        </sc-if>
+
+          <div>
+            <label style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#5a6b80;text-transform:uppercase;margin-bottom:10px;">
+              <span>Sessions this spans</span><span style="color:#e6edf6;">{{ calcSessions }}</span>
+            </label>
+            <input type="range" min="1" max="20" value="{{ calcSessions }}" oninput="$h.onCalcSessions(event)" style="width:100%;-webkit-appearance:none;height:5px;border-radius:3px;background:rgba(255,255,255,0.08);outline:none;cursor:pointer;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#3d4f60;margin-top:5px;font-family:'JetBrains Mono',monospace;"><span>1</span><span>20</span></div>
+          </div>
+
+          <div>
+            <label style="display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#5a6b80;text-transform:uppercase;margin-bottom:10px;">Model</label>
+            <select onchange="$h.onCalcModel(event)" style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e6edf6;font-family:'JetBrains Mono',monospace;font-size:13px;padding:11px 14px;cursor:pointer;outline:none;-webkit-appearance:none;">
+              <option value="3">Claude Sonnet — $3 / 1M tokens</option>
+              <option value="15">Claude Opus — $15 / 1M tokens</option>
+              <option value="1">Claude Haiku — $1 / 1M tokens</option>
+              <option value="2.5">GPT-4o — $2.50 / 1M tokens</option>
+            </select>
+          </div>
+
+          <button onclick="$h.calculate()" style="width:100%;padding:15px;background:{{ calcHasText ? 'linear-gradient(135deg,#19cdff,#5eead4)' : 'rgba(255,255,255,0.06)' }};border:1px solid {{ calcHasText ? 'transparent' : 'rgba(255,255,255,0.1)' }};border-radius:12px;color:{{ calcHasText ? '#061021' : '#3d4f60' }};font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;letter-spacing:0.3px;cursor:{{ calcHasText ? 'pointer' : 'default' }};transition:all .2s;">{{ calcHasText ? 'Calculate savings →' : 'Paste a conversation first' }}</button>
+        </div>
+
+        <!-- RIGHT: Results -->
+        <div>
+          <sc-if val="{{ calcTriggered !== true }}">
+            <div style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.06);border-radius:20px;padding:56px 32px;text-align:center;">
+              <div style="font-size:32px;margin-bottom:16px;opacity:0.12;">⌗</div>
+              <div style="font-size:14px;color:#3d4f60;line-height:1.8;">Paste your history, set sessions &amp; model,<br>then click <strong style="color:#4a5a6a;">Calculate savings</strong>.</div>
+            </div>
+          </sc-if>
+
+          <sc-if val="{{ calcTriggered === true && calcTokens === 0 }}">
+            <div style="background:rgba(251,191,115,0.05);border:1px solid rgba(251,191,115,0.2);border-radius:16px;padding:32px;text-align:center;">
+              <div style="font-size:15px;color:#fbbf73;font-weight:700;margin-bottom:8px;">Nothing to calculate yet</div>
+              <div style="font-size:13px;color:#5a6b80;line-height:1.6;">Paste your conversation history in the textarea on the left, then click Calculate again.</div>
+            </div>
+          </sc-if>
+
+          <sc-if val="{{ calcTriggered === true && calcTokens > 0 }}">
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.2);border-radius:16px;padding:20px 22px;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#f87171;margin-bottom:8px;">Without YourMemory</div>
+                <div style="font-size:34px;font-weight:800;color:#f87171;letter-spacing:-1px;line-height:1;">{{ calcBaseTokFmt }}</div>
+                <div style="font-size:13px;color:#9fb0c3;margin-top:6px;">tokens total · <span style="color:#f87171;">{{ calcBaseCostFmt }}</span> on {{ calcModelLabel }}</div>
+                <div style="font-size:12px;color:#4a5a6a;margin-top:7px;line-height:1.5;">Context grows each session — by session {{ calcSessions }}, you're re-sending {{ calcCtxPerSessFmt }} tokens of history every time.</div>
+              </div>
+              <div style="background:rgba(94,234,212,0.06);border:1px solid rgba(94,234,212,0.2);border-radius:16px;padding:20px 22px;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#5eead4;margin-bottom:8px;">With YourMemory</div>
+                <div style="font-size:34px;font-weight:800;color:#5eead4;letter-spacing:-1px;line-height:1;">{{ calcYmTokFmt }}</div>
+                <div style="font-size:13px;color:#9fb0c3;margin-top:6px;">tokens total · <span style="color:#5eead4;">{{ calcYmCostFmt }}</span> on {{ calcModelLabel }}</div>
+                <div style="font-size:12px;color:#4a5a6a;margin-top:7px;line-height:1.5;">~{{ calcYmPerSessFmt }} recalled tokens injected per session — flat, never growing.</div>
+              </div>
+              <div style="background:linear-gradient(160deg,rgba(25,205,255,0.1),rgba(94,234,212,0.07));border:1px solid rgba(25,205,255,0.3);border-radius:16px;padding:20px 22px;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#19cdff;margin-bottom:8px;">You save</div>
+                <div style="font-size:48px;font-weight:800;color:#19cdff;letter-spacing:-2px;line-height:1;">{{ calcSavePct }}%</div>
+                <div style="font-size:14px;color:#9fb0c3;margin-top:8px;">{{ calcSaveTokFmt }} tokens · {{ calcSaveCostFmt }}</div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
       </div>
     </div>
   </section>
@@ -915,13 +911,20 @@ class Component extends DCLogic {
         { tag: 'Hybrid Graph + Vector', title: 'Finds what you forgot to ask', desc: 'Two-round retrieval: semantic search surfaces exact matches, then graph traversal finds related memories that don’t share vocabulary with the query. Nothing slips through.', points: ['BM25 + dense vector hybrid', 'Entity graph expansion', 'Temporal reasoning boost'] },
         { tag: 'Multi-Agent Memory', title: 'Share context or keep secrets', desc: 'Multiple AI agents share context or stay private. Each agent gets a ym_ API key with its own visibility — shared memories visible to all, private to the owner.', points: ['Per-agent API keys (ym_ prefix)', 'shared / private visibility', 'Revoke any agent anytime'] }
       ],
-      auditPrompt: `Analyze our entire conversation and give me a YourMemory token audit in this exact format:
+      auditPrompt: `Analyze our entire conversation and produce a memory compression report.
 
-Full session: ~X,XXX tokens
-YourMemory would store: ~XXX tokens
-Savings: XX% (~X,XXX fewer tokens injected per future session)
+Count the approximate tokens in this full conversation (estimate ~0.75 tokens per word).
 
-Then write a compressed YourMemory memory block — all key facts, decisions, preferences, and context established in our conversation, as concise bullet points. This is what would be injected in future sessions instead of the full history.`,
+Then compress everything worth remembering — decisions, preferences, configs, goals, names, technical details — into the tightest possible bullet list. Cut anything obvious or one-off.
+
+Reply in exactly this format:
+
+Full conversation: ~X,XXX tokens
+Compressed memory: ~XXX tokens
+Savings: XX% (~X,XXX fewer tokens per future session)
+
+--- MEMORY BLOCK ---
+• [each key fact as one bullet]`,
       legacyPoints: ['Flat embeddings, no decay', 'Append-only — no pruning', 'Stale facts pollute context', 'No graph relationships'],
       ymPoints: ['Ebbinghaus decay by category', 'Auto-prunes below S < 0.05', 'Hybrid graph + vector recall', 'Per-agent shared / private'],
       install: [
@@ -1090,6 +1093,7 @@ Then write a compressed YourMemory memory block — all key facts, decisions, pr
         this.setState({ promptCopied: true });
         setTimeout(() => this.setState({ promptCopied: false }), 1800);
       },
+      calcHasText: calcText.length > 0,
       calculate: () => this.setState({ calcTriggered: true }),
       calcTriggered: this.state.calcTriggered,
       onCalcText: (e) => {
