@@ -309,7 +309,8 @@
         <pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.75;color:#9fb0c3;white-space:pre-wrap;word-break:break-word;padding-right:80px;">{{ auditPrompt }}</pre>
         <button onclick="$h.copyPrompt()" style="position:absolute;top:14px;right:14px;background:{{ promptCopied ? 'rgba(94,234,212,0.15)' : 'rgba(25,205,255,0.08)' }};border:1px solid {{ promptCopied ? 'rgba(94,234,212,0.4)' : 'rgba(25,205,255,0.25)' }};border-radius:8px;color:{{ promptCopied ? '#5eead4' : '#19cdff' }};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:6px 13px;cursor:pointer;letter-spacing:0.5px;white-space:nowrap;transition:all .2s;">{{ promptCopied ? '✓ Copied' : 'Copy' }}</button>
       </div>
-      <div style="margin-top:12px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#3d4f60;">
+      <button onclick="$h.copyPrompt()" style="width:100%;margin-top:14px;padding:14px;background:{{ promptCopied ? 'rgba(94,234,212,0.12)' : 'rgba(25,205,255,0.08)' }};border:1px solid {{ promptCopied ? 'rgba(94,234,212,0.35)' : 'rgba(25,205,255,0.25)' }};border-radius:12px;color:{{ promptCopied ? '#5eead4' : '#19cdff' }};font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;letter-spacing:0.3px;cursor:pointer;transition:all .2s;">{{ promptCopied ? '✓ Prompt copied — paste it in your AI' : 'Copy audit prompt →' }}</button>
+      <div style="margin-top:10px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#3d4f60;">
         Your AI replies with: <span style="color:#5a6b80;">Full conversation: ~X,XXX tokens · Compressed memory: ~XXX tokens · Savings: XX%</span>
       </div>
     </div>
