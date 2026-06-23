@@ -307,9 +307,9 @@
       <p style="margin: 0 0 18px; font-size:14px; color:#5a6b80; line-height:1.6;">Copy this prompt and paste it at the end of any session — <strong style="color:#9fb0c3;">Claude, ChatGPT, Gemini, Cursor, Copilot, any AI.</strong> It needs no knowledge of YourMemory. Your AI will measure and compress the conversation on its own.</p>
       <div style="position:relative;background:rgba(0,0,0,0.28);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px 20px;">
         <pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.75;color:#9fb0c3;white-space:pre-wrap;word-break:break-word;padding-right:80px;">{{ auditPrompt }}</pre>
-        <button onclick="$h.copyPrompt()" style="position:absolute;top:14px;right:14px;background:{{ promptCopied ? 'rgba(94,234,212,0.15)' : 'rgba(25,205,255,0.08)' }};border:1px solid {{ promptCopied ? 'rgba(94,234,212,0.4)' : 'rgba(25,205,255,0.25)' }};border-radius:8px;color:{{ promptCopied ? '#5eead4' : '#19cdff' }};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:6px 13px;cursor:pointer;letter-spacing:0.5px;white-space:nowrap;transition:all .2s;">{{ promptCopied ? '✓ Copied' : 'Copy' }}</button>
+        <button onclick="$h.copyPrompt()" style="position:absolute;top:14px;right:14px;background:{{ cpInlineBg }};border:1px solid {{ cpInlineBorder }};border-radius:8px;color:{{ cpInlineColor }};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:6px 13px;cursor:pointer;letter-spacing:0.5px;white-space:nowrap;transition:all .2s;">{{ cpInlineLabel }}</button>
       </div>
-      <button onclick="$h.copyPrompt()" style="width:100%;margin-top:14px;padding:14px;background:{{ promptCopied ? 'rgba(94,234,212,0.12)' : 'rgba(25,205,255,0.08)' }};border:1px solid {{ promptCopied ? 'rgba(94,234,212,0.35)' : 'rgba(25,205,255,0.25)' }};border-radius:12px;color:{{ promptCopied ? '#5eead4' : '#19cdff' }};font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;letter-spacing:0.3px;cursor:pointer;transition:all .2s;">{{ promptCopied ? '✓ Prompt copied — paste it in your AI' : 'Copy audit prompt →' }}</button>
+      <button onclick="$h.copyPrompt()" style="width:100%;margin-top:14px;padding:14px;background:{{ cpBtnBg }};border:1px solid {{ cpBtnBorder }};border-radius:12px;color:{{ cpBtnColor }};font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;letter-spacing:0.3px;cursor:pointer;transition:all .2s;">{{ cpBtnLabel }}</button>
       <div style="margin-top:10px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#3d4f60;">
         Your AI replies with: <span style="color:#5a6b80;">Full conversation: ~X,XXX tokens · Compressed memory: ~XXX tokens · Savings: XX%</span>
       </div>
@@ -361,7 +361,7 @@
             </select>
           </div>
 
-          <button onclick="$h.calculate()" style="width:100%;padding:15px;background:{{ calcHasText ? 'linear-gradient(135deg,#19cdff,#5eead4)' : 'rgba(255,255,255,0.06)' }};border:1px solid {{ calcHasText ? 'transparent' : 'rgba(255,255,255,0.1)' }};border-radius:12px;color:{{ calcHasText ? '#061021' : '#3d4f60' }};font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;letter-spacing:0.3px;cursor:{{ calcHasText ? 'pointer' : 'default' }};transition:all .2s;">{{ calcHasText ? 'Calculate savings →' : 'Paste a conversation first' }}</button>
+          <button onclick="$h.calculate()" style="width:100%;padding:15px;background:{{ calcBtnBg }};border:1px solid {{ calcBtnBorder }};border-radius:12px;color:{{ calcBtnColor }};font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;letter-spacing:0.3px;cursor:{{ calcBtnCursor }};transition:all .2s;">{{ calcBtnLabel }}</button>
         </div>
 
         <!-- RIGHT: Results -->
@@ -1089,12 +1089,25 @@ Savings: XX% (~X,XXX fewer tokens per future session)
       calcModelLabel: _modelLabel,
       auditPrompt: d.auditPrompt,
       promptCopied: this.state.promptCopied,
+      cpBtnBg: this.state.promptCopied ? 'rgba(94,234,212,0.12)' : 'rgba(25,205,255,0.08)',
+      cpBtnBorder: this.state.promptCopied ? 'rgba(94,234,212,0.35)' : 'rgba(25,205,255,0.25)',
+      cpBtnColor: this.state.promptCopied ? '#5eead4' : '#19cdff',
+      cpBtnLabel: this.state.promptCopied ? '✓ Prompt copied — paste it in your AI' : 'Copy audit prompt →',
+      cpInlineBg: this.state.promptCopied ? 'rgba(94,234,212,0.15)' : 'rgba(25,205,255,0.08)',
+      cpInlineBorder: this.state.promptCopied ? 'rgba(94,234,212,0.4)' : 'rgba(25,205,255,0.25)',
+      cpInlineColor: this.state.promptCopied ? '#5eead4' : '#19cdff',
+      cpInlineLabel: this.state.promptCopied ? '✓ Copied' : 'Copy',
       copyPrompt: () => {
         try { navigator.clipboard.writeText(d.auditPrompt); } catch (e) {}
         this.setState({ promptCopied: true });
         setTimeout(() => this.setState({ promptCopied: false }), 1800);
       },
       calcHasText: calcText.length > 0,
+      calcBtnBg: calcText.length > 0 ? 'linear-gradient(135deg,#19cdff,#5eead4)' : 'rgba(255,255,255,0.06)',
+      calcBtnBorder: calcText.length > 0 ? 'transparent' : 'rgba(255,255,255,0.1)',
+      calcBtnColor: calcText.length > 0 ? '#061021' : '#3d4f60',
+      calcBtnCursor: calcText.length > 0 ? 'pointer' : 'default',
+      calcBtnLabel: calcText.length > 0 ? 'Calculate savings →' : 'Paste a conversation first',
       calculate: () => this.setState({ calcTriggered: true }),
       calcTriggered: this.state.calcTriggered,
       onCalcText: (e) => {
