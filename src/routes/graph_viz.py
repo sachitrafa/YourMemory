@@ -50,15 +50,22 @@ def get_graph_data(memory_id: int, user_id: str, depth: int = 2):
                 nodes_to_include.add(nbr)
                 frontier.append((nbr, dist + 1))
 
-    # Fetch memory content from DB
+    # Fetch memory content from DB — filter by user_id to prevent cross-user exposure
     from src.db.connection import get_conn
     conn = get_conn()
+    placeholders = ",".join("?" * len(nodes_to_include))
     rows = conn.execute(
-        f"SELECT id, content, category FROM memories WHERE id IN ({','.join(map(str, nodes_to_include))})"
+        f"SELECT id, content, category FROM memories WHERE id IN ({placeholders}) AND user_id = ?",
+        [*nodes_to_include, user_id],
     ).fetchall()
     conn.close()
 
     content_map = {r[0]: {"content": r[1], "category": r[2]} for r in rows}
+    # Only expose nodes confirmed to belong to this user
+    nodes_to_include = {nid for nid in nodes_to_include if nid in content_map}
+
+    if memory_id not in nodes_to_include:
+        return {"nodes": [], "edges": []}
 
     # Build Cytoscape.js elements
     nodes = []
@@ -215,31 +222,41 @@ _GRAPH_HTML = """<!DOCTYPE html>
           }
         });
 
+        function escHtml(s) {
+          return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+        const SAFE_CATS = new Set(['fact', 'assumption', 'failure', 'strategy']);
+        function safeCat(c) { return SAFE_CATS.has(c) ? c : 'fact'; }
+
         // Show root label
         const rootNode = data.nodes.find(n => n.data.isRoot);
         if (rootNode) {
-          const cat = rootNode.data.category;
+          const cat = safeCat(rootNode.data.category);
           document.getElementById('rootLabel').innerHTML =
-            `<span class="badge ${cat}">${cat}</span><br><span style="color:#c9d1d9; font-size:13px; margin-top:4px; display:block;">${rootNode.data.label}</span>`;
+            `<span class="badge ${cat}">${cat}</span><br><span style="color:#c9d1d9; font-size:13px; margin-top:4px; display:block;">${escHtml(rootNode.data.label)}</span>`;
         }
 
         // Click handler
         cy.on('tap', 'node', function(evt) {
           const node = evt.target;
           const info = document.getElementById('info');
-          const cat = node.data('category');
+          const cat = safeCat(node.data('category'));
           info.innerHTML = `
-            <h3>Memory #${node.data('id')}</h3>
+            <h3>Memory #${escHtml(node.data('id'))}</h3>
             <span class="badge ${cat}">${cat}</span>
             <div class="label">Content</div>
-            <div style="color:#c9d1d9; font-size:12px; margin-top:4px;">${node.data('label')}</div>
+            <div style="color:#c9d1d9; font-size:12px; margin-top:4px;">${escHtml(node.data('label'))}</div>
             ${node.data('isRoot') ? '<div style="margin-top:8px; color:#00D4FF; font-size:11px;">⬤ ROOT NODE</div>' : ''}
           `;
         });
       })
       .catch(err => {
-        document.getElementById('info').innerHTML =
-          `<h3 style="color:#f85149;">Error</h3><div style="color:#8b949e; font-size:12px;">${err.message}</div>`;
+        const info = document.getElementById('info');
+        info.innerHTML = '<h3 style="color:#f85149;">Error</h3>';
+        const msg = document.createElement('div');
+        msg.style.cssText = 'color:#8b949e; font-size:12px;';
+        msg.textContent = err.message;
+        info.appendChild(msg);
       });
   </script>
 </body>

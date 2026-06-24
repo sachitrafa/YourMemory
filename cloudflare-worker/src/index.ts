@@ -5,7 +5,7 @@
 // POST /             → record a unique install
 // POST /send-otp     → send 6-digit OTP to email
 // POST /verify-otp   → verify OTP, return activation token
-// GET  /verify-token → verify CLI token
+// POST /verify-token → verify CLI token (token in body)
 
 export interface Env {
   DB: D1Database;
@@ -52,6 +52,7 @@ async function ensureTable(db: D1Database): Promise<void> {
     )`),
   ]);
   try { await db.exec("ALTER TABLE emails ADD COLUMN token TEXT"); } catch {}
+  try { await db.exec("ALTER TABLE otp ADD COLUMN attempts INTEGER NOT NULL DEFAULT 0"); } catch {}
   tableReady = true;
 }
 
@@ -171,10 +172,13 @@ export default {
       ).all<{ email: string; instance_id: string; created_at: string }>();
 
       const emailList = rows.results;
+      const escHtml = (s: string) =>
+        String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
       const emailRows = emailList.length === 0
         ? `<tr><td colspan="3" class="empty">No registrations yet.</td></tr>`
         : emailList.map((r) =>
-            `<tr><td>${r.email}</td><td class="dim">${r.instance_id ? r.instance_id.slice(0, 8) + "••••••••" : "—"}</td><td class="dim">${r.created_at}</td></tr>`,
+            `<tr><td>${escHtml(r.email)}</td><td class="dim">${r.instance_id ? escHtml(r.instance_id.slice(0, 8)) + "••••••••" : "—"}</td><td class="dim">${escHtml(r.created_at)}</td></tr>`,
           ).join("");
 
       return new Response(
@@ -191,9 +195,15 @@ export default {
       );
     }
 
-    // ── GET /verify-token
-    if (req.method === "GET" && url.pathname === "/verify-token") {
-      const token = url.searchParams.get("token");
+    // ── POST /verify-token  (token in body — never in URL/logs)
+    if (req.method === "POST" && url.pathname === "/verify-token") {
+      let token: string;
+      try {
+        const body = await req.json() as { token?: string };
+        token = body.token?.trim() ?? "";
+      } catch {
+        return json({ valid: false });
+      }
       if (!token) return json({ valid: false });
       const row = await env.DB.prepare(
         "SELECT email FROM emails WHERE token = ?",
@@ -304,13 +314,28 @@ export default {
       if (!email || !code)
         return json({ ok: false, reason: "Email and code are required." }, 422);
 
-      const row = await env.DB.prepare(
-        "SELECT id FROM otp WHERE email = ? AND code = ? AND used = 0 AND created_at >= datetime('now', '-10 minutes') ORDER BY created_at DESC LIMIT 1",
-      ).bind(email, code).first<{ id: number }>();
+      // Brute-force guard: a 6-digit OTP is only 1e6 combinations, so every
+      // verification attempt against the most-recent code must be counted and
+      // capped. After 5 wrong guesses the code is burned and a new one is required.
+      const MAX_OTP_ATTEMPTS = 5;
+      const latest = await env.DB.prepare(
+        "SELECT id, code, attempts FROM otp WHERE email = ? AND used = 0 AND created_at >= datetime('now', '-10 minutes') ORDER BY created_at DESC LIMIT 1",
+      ).bind(email).first<{ id: number; code: string; attempts: number }>();
 
-      if (!row)
+      if (!latest)
         return json({ ok: false, reason: "Invalid or expired code. Request a new one." }, 422);
 
+      if ((latest.attempts ?? 0) >= MAX_OTP_ATTEMPTS) {
+        await env.DB.prepare("UPDATE otp SET used = 1 WHERE id = ?").bind(latest.id).run();
+        return json({ ok: false, reason: "Too many incorrect attempts. Request a new code." }, 429);
+      }
+
+      if (latest.code !== code) {
+        await env.DB.prepare("UPDATE otp SET attempts = attempts + 1 WHERE id = ?").bind(latest.id).run();
+        return json({ ok: false, reason: "Invalid or expired code. Request a new one." }, 422);
+      }
+
+      const row = { id: latest.id };
       await env.DB.prepare("UPDATE otp SET used = 1 WHERE id = ?").bind(row.id).run();
 
       const token = crypto.randomUUID();

@@ -321,6 +321,10 @@ async def list_tools() -> list[types.Tool]:
                             "0.2–0.3 — transient context, one-off notes"
                         ),
                     },
+                    "user_id": {
+                        "type": "string",
+                        "description": f"User identifier (default: '{DEFAULT_USER}').",
+                    },
                 },
                 "required": ["memory_id", "new_content"],
             },
@@ -351,7 +355,12 @@ def _check_registration() -> types.TextContent | None:
     try:
         import urllib.request as _ur
         token = open(_TOKEN_PATH).read().strip()
-        _vreq = _ur.Request(f"{_VERIFY_ENDPOINT}?token={token}", headers={"User-Agent": _HTTP_UA})
+        _body = json.dumps({"token": token}).encode()
+        _vreq = _ur.Request(
+            _VERIFY_ENDPOINT,
+            data=_body,
+            headers={"User-Agent": _HTTP_UA, "Content-Type": "application/json"},
+        )
         with _ur.urlopen(_vreq, timeout=5) as resp:
             data = json.loads(resp.read())
         if not data.get("valid"):
@@ -712,6 +721,14 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
             return [types.TextContent(type="text", text=json.dumps(
                 {"error": f"Memory {memory_id} not found."}))]
         user_id_owner = owner[0]
+
+        # Ownership check — caller must own the memory
+        caller_user_id = arguments.get("user_id", DEFAULT_USER).strip().lower()
+        if user_id_owner != caller_user_id:
+            if cur: cur.close()
+            conn.close()
+            return [types.TextContent(type="text", text=json.dumps(
+                {"error": "You do not own this memory."}))]
 
         # Check if new content clashes with a *different* row
         resolution = resolve(user_id_owner, new_content, embedding, conn)
@@ -1096,7 +1113,12 @@ def register():
 
     import urllib.request as _ureq, json as _json
     try:
-        _vreq = _ureq.Request(f"{_VERIFY_ENDPOINT}?token={token}", headers={"User-Agent": _HTTP_UA})
+        _body = _json.dumps({"token": token}).encode()
+        _vreq = _ureq.Request(
+            _VERIFY_ENDPOINT,
+            data=_body,
+            headers={"User-Agent": _HTTP_UA, "Content-Type": "application/json"},
+        )
         with _ureq.urlopen(_vreq, timeout=10) as resp:
             data = _json.loads(resp.read())
         if data.get("valid"):

@@ -254,8 +254,10 @@ def update_memory(memory_id: int, req: UpdateMemoryRequest, userId: str = Query(
                         "INSERT INTO memory_history (memory_id, old_content, reason) VALUES (?, ?, 'update')",
                         (memory_id, old_content),
                     )
+        except HTTPException:
+            raise
         except Exception:
-            pass  # never block the update
+            pass  # never block the update on DB errors
 
         if backend == "postgres":
             cur.execute("""
