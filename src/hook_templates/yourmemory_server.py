@@ -46,6 +46,13 @@ REPO_ROOT = str(Path(__file__).resolve().parents[2])
 # not real closes, so we ignore them to avoid needless stop/start churn.
 NON_TERMINAL = {"clear", "compact", "resume"}
 
+# A session that dies without a clean SessionEnd (hard reload, crash, kill, terminal
+# close) leaves a stale marker, which would otherwise pin the server up forever. We
+# reap markers whose session has shown no activity for this long. Claude appends to the
+# session transcript on every message, so its mtime is a free, no-coupling liveness
+# signal. Generous default so an active (even slow) session is never reaped.
+STALE_TTL = int(os.environ.get("YOURMEMORY_SESSION_TTL", str(6 * 3600)))  # seconds
+
 
 def _stdin_json() -> dict:
     try:
@@ -121,11 +128,53 @@ def _kill(pid: int) -> None:
         pass
 
 
+def _write_marker(sid: str, transcript: str) -> None:
+    """One marker per live session, recording its transcript path for liveness checks."""
+    payload = json.dumps({"transcript": transcript or "", "ts": int(time.time())})
+    (SESS_DIR / sid).write_text(payload)
+
+
+def _marker_is_live(marker: Path) -> bool:
+    """A session is live if its transcript was touched within STALE_TTL. Falls back to
+    the marker's own write time when the transcript path is unknown/missing."""
+    now = time.time()
+    transcript, ts = "", None
+    try:
+        raw = marker.read_text().strip()
+        if raw.startswith("{"):
+            d = json.loads(raw)
+            transcript, ts = d.get("transcript", ""), d.get("ts")
+        elif raw.isdigit():           # legacy marker: bare epoch
+            ts = int(raw)
+    except Exception:
+        pass
+    if transcript:
+        try:
+            return (now - os.path.getmtime(transcript)) <= STALE_TTL
+        except OSError:
+            return False              # transcript gone → session gone
+    ref = ts if ts is not None else marker.stat().st_mtime
+    return (now - ref) <= STALE_TTL
+
+
+def _sweep_stale() -> None:
+    """Drop markers for sessions that ended without a clean SessionEnd."""
+    if not SESS_DIR.exists():
+        return
+    for m in SESS_DIR.glob("*"):
+        try:
+            if not _marker_is_live(m):
+                m.unlink()
+        except Exception:
+            pass
+
+
 def start() -> None:
     SESS_DIR.mkdir(parents=True, exist_ok=True)
+    _sweep_stale()
     data = _stdin_json()
     sid = (data.get("session_id") or f"pid-{os.getpid()}").replace("/", "_")
-    (SESS_DIR / sid).write_text(str(int(time.time())))
+    _write_marker(sid, data.get("transcript_path", ""))
 
     if _server_up():
         return
@@ -153,6 +202,7 @@ def stop() -> None:
         except Exception:
             pass
 
+    _sweep_stale()   # also reap any sessions that died without a clean SessionEnd
     remaining = list(SESS_DIR.glob("*")) if SESS_DIR.exists() else []
     if remaining:
         return  # other sessions still open — keep the server up
