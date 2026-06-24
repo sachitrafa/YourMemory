@@ -163,11 +163,15 @@ _HTML = """<!DOCTYPE html>
 
     tabs.innerHTML = defs.map(t => `
       <button
-        onclick="setTab('${t.id}')"
-        id="tab-${t.id}"
+        data-tab-id="${escHtml(t.id)}"
+        id="tab-${escHtml(t.id)}"
         class="tab border border-gray-800 rounded-lg px-3 py-1.5 text-sm mono text-gray-400 flex items-center gap-1.5"
       >${t.icon} ${escHtml(t.label)}</button>
     `).join('');
+
+    tabs.querySelectorAll('.tab[data-tab-id]').forEach(btn => {
+      btn.addEventListener('click', () => setTab(btn.dataset.tabId));
+    });
 
     row.classList.remove('hidden');
   }

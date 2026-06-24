@@ -88,9 +88,10 @@ def _run_sse(port: int):
         Mount("/messages/",  app=sse.handle_post_message),
     ])
 
-    print(f"YourMemory MCP server running on http://0.0.0.0:{port}/sse", file=sys.stderr, flush=True)
-    print(f"Memory browser:          http://localhost:{port}/ui", file=sys.stderr, flush=True)
-    uvicorn.run(app, host="0.0.0.0", port=port, log_level="warning")
+    host = os.getenv("YOURMEMORY_HOST", "127.0.0.1")
+    print(f"YourMemory MCP server running on http://{host}:{port}/sse", file=sys.stderr, flush=True)
+    print(f"Memory browser:          http://{host}:{port}/ui", file=sys.stderr, flush=True)
+    uvicorn.run(app, host=host, port=port, log_level="warning")
 
 # Add project root so src.services imports work
 sys.path.insert(0, os.path.dirname(__file__))
@@ -362,10 +363,10 @@ def _check_registration() -> types.TextContent | None:
                     "yourmemory-register <your-token>"
                 ),
             )
+        _token_verified = True
     except Exception:
-        pass
+        pass  # network error — allow this call but do not cache as verified
 
-    _token_verified = True
     return None
 
 

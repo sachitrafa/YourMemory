@@ -212,7 +212,7 @@ def add_memory(req: MemoryRequest):
 # ── PUT /memories/{id} ─────────────────────────────────────────────────────────
 
 @router.put("/memories/{memory_id}")
-def update_memory(memory_id: int, req: UpdateMemoryRequest):
+def update_memory(memory_id: int, req: UpdateMemoryRequest, userId: str = Query(...)):
     req.importance = max(0.0, min(1.0, req.importance))
     category  = categorize(req.content)
     embedding = embed(req.content)
@@ -237,6 +237,8 @@ def update_memory(memory_id: int, req: UpdateMemoryRequest):
 
             if old_row:
                 owner_id, old_content = old_row[0], old_row[1]
+                if owner_id != userId:
+                    raise HTTPException(status_code=403, detail="You do not own this memory.")
                 if backend == "postgres":
                     cur.execute(
                         "INSERT INTO memory_history (memory_id, old_content, reason) VALUES (%s, %s, 'update')",
@@ -403,20 +405,27 @@ def list_memories(
 # ── DELETE /memories/{id} ──────────────────────────────────────────────────────
 
 @router.delete("/memories/{memory_id}")
-def delete_memory(memory_id: int):
+def delete_memory(memory_id: int, userId: str = Query(...)):
     backend = get_backend()
     conn    = get_conn()
     cur     = conn.cursor()
 
     try:
         if backend == "postgres":
-            cur.execute("DELETE FROM memories WHERE id = %s RETURNING id", (memory_id,))
+            cur.execute(
+                "DELETE FROM memories WHERE id = %s AND user_id = %s RETURNING id",
+                (memory_id, userId),
+            )
             row = cur.fetchone()
         else:
-            cur.execute("SELECT id FROM memories WHERE id = ?", (memory_id,))
+            cur.execute(
+                "SELECT id FROM memories WHERE id = ? AND user_id = ?", (memory_id, userId)
+            )
             row = cur.fetchone()
             if row:
-                cur.execute("DELETE FROM memories WHERE id = ?", (memory_id,))
+                cur.execute(
+                    "DELETE FROM memories WHERE id = ? AND user_id = ?", (memory_id, userId)
+                )
         conn.commit()
     finally:
         cur.close()
