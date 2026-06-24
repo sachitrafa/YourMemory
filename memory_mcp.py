@@ -1222,9 +1222,11 @@ def _check_ollama_model(model: str) -> None:
 
 
 def _install_claude_hooks(home: str) -> None:
-    """Install the recall + store hooks into ~/.claude/hooks and register them in
-    settings.json. These drive automatic recall (UserPromptSubmit) and store (Stop)
-    so memory works without the agent calling MCP tools explicitly. Idempotent."""
+    """Install the recall + store + server-lifecycle hooks into ~/.claude/hooks and
+    register them in settings.json. These drive automatic recall (UserPromptSubmit),
+    store (Stop), and a session-scoped HTTP server (SessionStart/SessionEnd) so memory
+    works without the agent calling MCP tools explicitly. All hooks are pure-Python
+    (platform-agnostic — Windows/macOS/Linux, no bash/jq). Idempotent."""
     import json as _json
     hooks_dir = os.path.join(home, ".claude", "hooks")
     os.makedirs(hooks_dir, exist_ok=True)
@@ -1236,11 +1238,14 @@ def _install_claude_hooks(home: str) -> None:
         print(f"  ⚠  Could not locate hook templates ({exc}); skipping hook install.")
         return
 
-    # (filename, make executable)
-    for fname, is_exec in (("yourmemory_recall.sh", True),
-                           ("yourmemory_user.sh", True),
+    # (filename, make executable). Python hooks are platform-agnostic; the legacy
+    # .sh variants are still copied for users on existing bash-based setups.
+    for fname, is_exec in (("yourmemory_recall.py", False),
+                           ("yourmemory_server.py", False),
                            ("yourmemory_store.py", False),
-                           ("yourmemory_observe.py", False)):
+                           ("yourmemory_observe.py", False),
+                           ("yourmemory_recall.sh", True),
+                           ("yourmemory_user.sh", True)):
         try:
             dest = os.path.join(hooks_dir, fname)
             with open(dest, "w") as f:
@@ -1261,9 +1266,12 @@ def _install_claude_hooks(home: str) -> None:
             data = {}
     hooks = data.setdefault("hooks", {})
 
-    recall_cmd  = os.path.join(hooks_dir, "yourmemory_recall.sh")
+    recall_cmd  = "python3 " + os.path.join(hooks_dir, "yourmemory_recall.py")
     store_cmd   = "python3 " + os.path.join(hooks_dir, "yourmemory_store.py")
     observe_cmd = "python3 " + os.path.join(hooks_dir, "yourmemory_observe.py")
+    server_py   = os.path.join(hooks_dir, "yourmemory_server.py")
+    start_cmd   = "python3 " + server_py + " start"
+    stop_cmd    = "python3 " + server_py + " stop"
 
     def _ensure(event, command, extra, matcher=None):
         arr = hooks.setdefault(event, [])
@@ -1278,6 +1286,10 @@ def _install_claude_hooks(home: str) -> None:
             group["matcher"] = matcher
         arr.append(group)
 
+    # Session-scoped HTTP server: start when a session opens, stop when the last closes.
+    # Reference-counted and ownership-guarded, so it never kills an MCP-started server.
+    _ensure("SessionStart", start_cmd, {"timeout": 30})
+    _ensure("SessionEnd", stop_cmd, {"timeout": 15})
     _ensure("UserPromptSubmit", recall_cmd, {"timeout": 8, "statusMessage": "Recalling memories…"})
     _ensure("Stop", store_cmd, {"timeout": 30})
     # PostToolUse capture — async, so it never blocks the tool call; distills file/command
