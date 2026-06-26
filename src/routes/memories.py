@@ -409,7 +409,8 @@ def list_memories(
         })
 
     log_event("read", "list", userId,
-              detail={"count": len(memories), "category": category, "agent_id": agent_id})
+              detail={"count": len(memories), "category": category, "agent_id": agent_id,
+                      "ids": [m["id"] for m in memories][:10]})
 
     return {"total": len(memories), "memories": memories}
 

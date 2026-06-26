@@ -588,10 +588,17 @@ def auto_store_endpoint(req: AutoStoreRequest):
         except Exception as _ie:
             print(f"[graph] auto-store graph import failed: {_ie}", file=sys.stderr)
 
+    # Audit one clickable event per stored/updated memory (target_id = memory id),
+    # so each write in the trail links straight to its memory. Falls back to a single
+    # batch event if no ids were captured (e.g. only reinforcements).
     try:
         from src.services.audit import log_event
-        log_event("write", "auto_store", user_id,
-                  detail={"count": len(stored)})
+        if to_index:
+            for mem_id, content, _imp, cat, _emb in to_index:
+                log_event("write", "store", user_id, target_id=mem_id,
+                          detail={"category": cat, "len": len(content or "")})
+        elif stored:
+            log_event("write", "auto_store", user_id, detail={"count": len(stored)})
     except Exception:
         pass
 

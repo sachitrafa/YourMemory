@@ -401,15 +401,28 @@ _HTML = """<!DOCTYPE html>
     body.innerHTML = events.map(e => {
       const cls = ACTION_COLORS[e.action] || 'text-gray-300 border-gray-700 bg-gray-800/40';
       const ts  = (e.ts || '').replace('T', ' ').replace(/\\.\\d+Z?$/, '');
+      const uid = escHtml(e.actor_user_id);
+      const link = id => `<button onclick="showMemory('${uid}',${id})" class="text-cyan-400 hover:underline">#${escHtml(id)}</button>`;
+      // Single target id (write/delete/get) → one link. Otherwise pull ids out of the
+      // detail blob (read/list/retrieve span several memories) → render each as a chip.
+      let target = '<span class="text-gray-600">—</span>';
+      if (e.target_id != null) {
+        target = link(e.target_id);
+      } else {
+        let ids = [];
+        try { ids = (JSON.parse(e.detail || '{}').ids) || []; } catch (_) {}
+        if (ids.length) {
+          target = ids.map(link).join('<span class="text-gray-700"> </span>');
+        }
+      }
       return `
       <tr class="border-b border-gray-800/60 hover:bg-gray-800/30">
         <td class="px-4 py-2 text-gray-400">${escHtml(ts)}</td>
         <td class="px-4 py-2"><span class="px-2 py-0.5 rounded-full border text-[11px] ${cls}">${escHtml(e.action)}</span></td>
         <td class="px-4 py-2 text-gray-200">${escHtml(e.operation)}</td>
-        <td class="px-4 py-2 text-gray-300">${escHtml(e.actor_user_id)}</td>
+        <td class="px-4 py-2 text-gray-300">${uid}</td>
         <td class="px-4 py-2 text-gray-500">${e.actor_agent_id ? escHtml(e.actor_agent_id) : '—'}</td>
-        <td class="px-4 py-2">${e.target_id == null ? '<span class="text-gray-600">—</span>'
-          : `<button onclick="showMemory('${escHtml(e.actor_user_id)}',${e.target_id})" class="text-cyan-400 hover:underline">#${escHtml(e.target_id)}</button>`}</td>
+        <td class="px-4 py-2 leading-relaxed">${target}</td>
         <td class="px-4 py-2 text-gray-600">${escHtml(e.source)}</td>
       </tr>`;
     }).join('');

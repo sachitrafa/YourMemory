@@ -51,8 +51,10 @@ def retrieve_memories(req: RetrieveRequest):
     # ── Audit (read) ───────────────────────────────────────────────────────
     try:
         from src.services.audit import log_event
+        mems = result.get("memories", [])
         log_event("read", "retrieve", user_id,
-                  detail={"count": len(result.get("memories", [])), "qlen": len(req.query or "")})
+                  detail={"count": len(mems), "qlen": len(req.query or ""),
+                          "ids": [m["id"] for m in mems][:10]})
     except Exception:
         pass
 
