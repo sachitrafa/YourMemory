@@ -334,7 +334,7 @@ class AutoStoreRequest(BaseModel):
 def auto_store_endpoint(req: AutoStoreRequest):
     """Extract and store memorable facts from a conversation exchange using the local LLM."""
     import getpass
-    from src.services.extract import categorize
+    from src.services.extract import categorize, is_question, should_store_llm
     from src.services.embed import embed
     from src.services.resolve import resolve
     from src.db.connection import get_conn, get_backend, emb_to_db
@@ -482,6 +482,14 @@ def auto_store_endpoint(req: AutoStoreRequest):
         if len(fact) < 12 or len(fact.split()) < 2:
             continue
         if fact.lower().startswith(BAD_PREFIXES):
+            continue
+        # Drop verbatim questions cheaply, then run the mandatory LLM relevance judge —
+        # it gates out meta-observations ("the user asked about X") and ephemeral filler
+        # that the extractor leaks. Runs in the fire-and-forget worker, so no turn latency;
+        # fails open (stores) only if Ollama is unreachable.
+        if is_question(fact):
+            continue
+        if not should_store_llm(fact):
             continue
         try:
             embedding  = embed(fact)

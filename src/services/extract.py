@@ -52,7 +52,10 @@ def should_store_llm(content: str) -> bool:
         "STORE if it contains: a user preference, a project decision, a technical config value, "
         "a tool or library choice, a bug fix, a workflow rule, or any recurring fact.\n"
         "SKIP if it is: a greeting, a vague question with no new information, "
-        "a one-time ephemeral action, or generic filler.\n\n"
+        "a one-time ephemeral action, or generic filler.\n"
+        "SKIP if it is a meta-observation ABOUT the conversation itself rather than a durable "
+        "fact — e.g. 'The user asked about X', 'The user wants to know Y', 'The assistant "
+        "explained Z', or anything describing what was discussed in this session.\n\n"
         f"Text: {content}\n\n"
         "Reply with exactly one word: STORE or SKIP"
     )
