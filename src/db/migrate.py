@@ -92,6 +92,74 @@ def _create_buffer_table(conn, backend: str) -> None:
         """)
 
 
+def _create_audit_table(conn, backend: str) -> None:
+    """Append-only, hash-chained audit log: every read/write/delete on a memory.
+    Tamper-evident (each row chains the prior row's hash) and retained >=90 days.
+    Never UPDATEd or DELETEd by the app except the controlled retention prune.
+    Idempotent across all backends."""
+    if backend == "postgres":
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS audit_log (
+                id              BIGSERIAL PRIMARY KEY,
+                ts              TEXT NOT NULL,
+                actor_user_id   TEXT NOT NULL,
+                actor_agent_id  TEXT,
+                action          TEXT NOT NULL,
+                operation       TEXT NOT NULL,
+                target_id       BIGINT,
+                detail          TEXT,
+                source          TEXT NOT NULL DEFAULT 'http',
+                prev_hash       TEXT NOT NULL,
+                row_hash        TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_audit_ts    ON audit_log(ts);
+            CREATE INDEX IF NOT EXISTS idx_audit_actor ON audit_log(actor_user_id, ts);
+        """)
+        conn.commit()
+        cur.close()
+    elif backend == "duckdb":
+        try:
+            conn.execute("CREATE SEQUENCE IF NOT EXISTS audit_log_seq")
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS audit_log (
+                    id              BIGINT DEFAULT nextval('audit_log_seq'),
+                    ts              VARCHAR NOT NULL,
+                    actor_user_id   VARCHAR NOT NULL,
+                    actor_agent_id  VARCHAR,
+                    action          VARCHAR NOT NULL,
+                    operation       VARCHAR NOT NULL,
+                    target_id       BIGINT,
+                    detail          VARCHAR,
+                    source          VARCHAR NOT NULL DEFAULT 'http',
+                    prev_hash       VARCHAR NOT NULL,
+                    row_hash        VARCHAR NOT NULL
+                )
+            """)
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_audit_ts ON audit_log(ts)")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_audit_actor ON audit_log(actor_user_id, ts)")
+        except Exception as exc:
+            print(f"audit table (duckdb) skipped: {exc}", file=sys.stderr)
+    else:  # sqlite
+        conn.executescript("""
+            CREATE TABLE IF NOT EXISTS audit_log (
+                id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                ts              TEXT NOT NULL,
+                actor_user_id   TEXT NOT NULL,
+                actor_agent_id  TEXT,
+                action          TEXT NOT NULL,
+                operation       TEXT NOT NULL,
+                target_id       INTEGER,
+                detail          TEXT,
+                source          TEXT NOT NULL DEFAULT 'http',
+                prev_hash       TEXT NOT NULL,
+                row_hash        TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_audit_ts    ON audit_log(ts);
+            CREATE INDEX IF NOT EXISTS idx_audit_actor ON audit_log(actor_user_id, ts);
+        """)
+
+
 def migrate():
     backend = get_backend()
 
@@ -127,6 +195,9 @@ def migrate():
 
     # ── Verbatim conversation buffer (opt-in headless lean-window mode) ────
     _create_buffer_table(conn, backend)
+
+    # ── Append-only, hash-chained audit log (read/write/delete, 90-day+ retention) ──
+    _create_audit_table(conn, backend)
 
     # ── Post-schema FTS setup ─────────────────────────────────────────────
     if backend == "sqlite":

@@ -9,6 +9,7 @@ from src.services.extract import is_question, categorize
 from src.services.embed import embed
 from src.services.decay import compute_strength, record_activity
 from src.services.resolve import resolve
+from src.services.audit import log_event
 from src.db.connection import get_backend, get_conn, emb_to_db, duckdb_rows
 
 load_dotenv()
@@ -200,6 +201,9 @@ def add_memory(req: MemoryRequest):
     except Exception:
         pass
 
+    log_event("write", action, req.userId, target_id=memory_id,
+              detail={"category": category, "len": len(final_content or "")})
+
     return {
         "stored":   1,
         "id":       memory_id,
@@ -328,6 +332,9 @@ def update_memory(memory_id: int, req: UpdateMemoryRequest, userId: str = Query(
     except Exception:
         pass
 
+    log_event("write", "update", userId, target_id=row[0],
+              detail={"category": row[2], "len": len(row[1] or "")})
+
     return {"updated": 1, "id": row[0], "content": row[1], "category": row[2], "importance": row[3]}
 
 
@@ -401,6 +408,9 @@ def list_memories(
             "agent_id":         m.get("agent_id") or "user",
         })
 
+    log_event("read", "list", userId,
+              detail={"count": len(memories), "category": category, "agent_id": agent_id})
+
     return {"total": len(memories), "memories": memories}
 
 
@@ -435,5 +445,7 @@ def delete_memory(memory_id: int, userId: str = Query(...)):
 
     if row is None:
         raise HTTPException(status_code=404, detail=f"Memory {memory_id} not found.")
+
+    log_event("delete", "delete", userId, target_id=memory_id)
 
     return {"deleted": 1, "id": memory_id}

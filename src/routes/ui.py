@@ -36,6 +36,12 @@ _HTML = """<!DOCTYPE html>
       </svg>
       <span class="text-xl font-bold tracking-tight">YourMemory</span>
       <span class="text-xs mono text-gray-500 border border-gray-700 px-2 py-0.5 rounded-full">Memory Browser</span>
+      <div class="flex items-center gap-1 ml-2 bg-gray-900 border border-gray-800 rounded-lg p-0.5">
+        <button id="viewMem"   onclick="setView('memories')"
+          class="text-xs mono px-2.5 py-1 rounded-md bg-cyan-500/20 text-cyan-300">🧠 Memories</button>
+        <button id="viewAudit" onclick="setView('audit')"
+          class="text-xs mono px-2.5 py-1 rounded-md text-gray-400 hover:text-gray-200">📜 Audit</button>
+      </div>
     </div>
     <div class="flex items-center gap-3">
       <input id="userInput" type="text" placeholder="user_id"
@@ -95,6 +101,46 @@ _HTML = """<!DOCTYPE html>
     <p class="font-medium">No memories found.</p>
   </div>
   <div id="loading" class="hidden text-center text-gray-600 py-24 mono text-sm">Loading…</div>
+
+  <!-- Audit view -->
+  <div id="auditView" class="hidden">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <span id="auditVerify" class="text-xs mono px-2 py-1 rounded-full border border-gray-700 text-gray-400">checking integrity…</span>
+        <span id="auditRetention" class="text-xs mono text-gray-500"></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <select id="auditAction" onchange="loadAudit()"
+          class="mono text-xs bg-gray-900 border border-gray-700 rounded-lg px-2 py-1 text-gray-200">
+          <option value="">All actions</option>
+          <option value="read">read</option>
+          <option value="write">write</option>
+          <option value="delete">delete</option>
+        </select>
+        <button onclick="loadAudit()" class="text-xs mono bg-gray-800 hover:bg-gray-700 border border-gray-700 px-3 py-1 rounded-lg text-gray-200">Refresh</button>
+      </div>
+    </div>
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="text-[11px] uppercase tracking-wider text-gray-500 mono border-b border-gray-800">
+            <th class="px-4 py-2.5">Timestamp (UTC)</th>
+            <th class="px-4 py-2.5">Action</th>
+            <th class="px-4 py-2.5">Operation</th>
+            <th class="px-4 py-2.5">User</th>
+            <th class="px-4 py-2.5">Agent</th>
+            <th class="px-4 py-2.5">Target</th>
+            <th class="px-4 py-2.5">Src</th>
+          </tr>
+        </thead>
+        <tbody id="auditBody" class="mono text-xs text-gray-300"></tbody>
+      </table>
+    </div>
+    <div id="auditEmpty" class="hidden text-center text-gray-600 py-20">
+      <p class="text-4xl mb-3">📜</p>
+      <p class="font-medium">No audit events yet.</p>
+    </div>
+  </div>
 
 </div>
 
@@ -264,6 +310,89 @@ _HTML = """<!DOCTYPE html>
 
   function escHtml(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Audit view ─────────────────────────────────────────────────────────────
+  let currentView = 'memories';
+  const ACTION_COLORS = {
+    read:   'text-blue-300 border-blue-800 bg-blue-900/40',
+    write:  'text-green-300 border-green-800 bg-green-900/40',
+    delete: 'text-red-300 border-red-800 bg-red-900/40',
+    admin:  'text-purple-300 border-purple-800 bg-purple-900/40',
+  };
+
+  function setView(v) {
+    currentView = v;
+    const isAudit = v === 'audit';
+    document.getElementById('viewMem').className =
+      'text-xs mono px-2.5 py-1 rounded-md ' + (isAudit ? 'text-gray-400 hover:text-gray-200' : 'bg-cyan-500/20 text-cyan-300');
+    document.getElementById('viewAudit').className =
+      'text-xs mono px-2.5 py-1 rounded-md ' + (isAudit ? 'bg-cyan-500/20 text-cyan-300' : 'text-gray-400 hover:text-gray-200');
+    // toggle memory-only chrome
+    ['catFilter','sortBy'].forEach(id => document.getElementById(id).classList.toggle('hidden', isAudit));
+    ['stats','tabsRow','grid','empty'].forEach(id => document.getElementById(id).classList.toggle('hidden', isAudit));
+    document.getElementById('auditView').classList.toggle('hidden', !isAudit);
+    if (isAudit) loadAudit(); else render();
+  }
+
+  async function loadAudit() {
+    const uid = document.getElementById('userInput').value.trim().toLowerCase();
+    const action = document.getElementById('auditAction').value;
+    const qs = new URLSearchParams({ limit: '200' });
+    if (uid) qs.set('userId', uid);
+    if (action) qs.set('action', action);
+    const body = document.getElementById('auditBody');
+    body.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-600">Loading…</td></tr>';
+    try {
+      const [aRes, vRes] = await Promise.all([
+        fetch('/audit?' + qs.toString()),
+        fetch('/audit/verify'),
+      ]);
+      const data = await aRes.json();
+      const v = vRes.ok ? await vRes.json() : { ok: false };
+      renderVerify(v);
+      document.getElementById('auditRetention').textContent =
+        'retention: ' + (data.retention_days || 90) + ' days';
+      renderAudit(data.events || []);
+    } catch (e) {
+      body.innerHTML = `<tr><td colspan="7" class="px-4 py-8 text-center text-red-400">Error: ${escHtml(e.message)}</td></tr>`;
+    }
+  }
+
+  function renderVerify(v) {
+    const el = document.getElementById('auditVerify');
+    if (v && v.ok) {
+      el.className = 'text-xs mono px-2 py-1 rounded-full border border-green-800 bg-green-900/40 text-green-300';
+      el.textContent = '✓ chain verified · ' + (v.rows || 0) + ' rows';
+    } else {
+      el.className = 'text-xs mono px-2 py-1 rounded-full border border-red-800 bg-red-900/40 text-red-300';
+      el.textContent = '✗ tamper detected' + (v && v.broken_at ? ' @ id ' + v.broken_at : '');
+    }
+  }
+
+  function renderAudit(events) {
+    const body  = document.getElementById('auditBody');
+    const empty = document.getElementById('auditEmpty');
+    if (!events.length) {
+      body.innerHTML = '';
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+    body.innerHTML = events.map(e => {
+      const cls = ACTION_COLORS[e.action] || 'text-gray-300 border-gray-700 bg-gray-800/40';
+      const ts  = (e.ts || '').replace('T', ' ').replace(/\\.\\d+Z?$/, '');
+      return `
+      <tr class="border-b border-gray-800/60 hover:bg-gray-800/30">
+        <td class="px-4 py-2 text-gray-400">${escHtml(ts)}</td>
+        <td class="px-4 py-2"><span class="px-2 py-0.5 rounded-full border text-[11px] ${cls}">${escHtml(e.action)}</span></td>
+        <td class="px-4 py-2 text-gray-200">${escHtml(e.operation)}</td>
+        <td class="px-4 py-2 text-gray-300">${escHtml(e.actor_user_id)}</td>
+        <td class="px-4 py-2 text-gray-500">${e.actor_agent_id ? escHtml(e.actor_agent_id) : '—'}</td>
+        <td class="px-4 py-2 text-gray-500">${e.target_id == null ? '—' : escHtml(e.target_id)}</td>
+        <td class="px-4 py-2 text-gray-600">${escHtml(e.source)}</td>
+      </tr>`;
+    }).join('');
   }
 
   const p = new URLSearchParams(location.search);

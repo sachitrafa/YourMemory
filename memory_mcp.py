@@ -379,6 +379,15 @@ def _check_registration() -> types.TextContent | None:
     return None
 
 
+def _audit(action: str, operation: str, user_id: str, **kw) -> None:
+    """Lazy, fail-open audit logging for MCP tool calls (source='mcp')."""
+    try:
+        from src.services.audit import log_event
+        log_event(action, operation, user_id, source="mcp", **kw)
+    except Exception:
+        pass
+
+
 @server.call_tool()
 async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
     gate = _check_registration()
@@ -440,6 +449,8 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         except Exception:
             pass
 
+        _audit("read", "recall", user_id, agent_id=agent_id,
+               detail={"count": len(result.get("memories", [])), "qlen": len(query or "")})
         return [types.TextContent(type="text", text=json.dumps(result, default=str))]
 
     elif name == "memory_search":
@@ -457,6 +468,7 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                 "category":  m.get("category"),
                 "via_graph": bool(m.get("via_graph", False)),
             })
+        _audit("read", "search", user_id, detail={"count": len(hits), "qlen": len(query or "")})
         return [types.TextContent(type="text",
                 text=json.dumps({"results": hits, "count": len(hits)}, default=str))]
 
@@ -473,6 +485,7 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         nb   = [(nid, ew) for nid, ew in expand_with_graph([mem_id], user_id, top_k=n + 1)
                 if nid != mem_id][:n]
         nbrs = _fetch_by_ids(nb, user_id, backend) if nb else []
+        _audit("read", "get", user_id, target_id=mem_id, detail={"neighbors": len(nbrs)})
         return [types.TextContent(type="text",
                 text=json.dumps({"memory": main[0], "neighbors": nbrs}, default=str))]
 
@@ -685,6 +698,8 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         except Exception:
             pass
 
+        _audit("write", "store", user_id, agent_id=agent_id, target_id=memory_id,
+               detail={"category": category, "visibility": visibility, "action": action})
         return [types.TextContent(type="text", text=json.dumps(
             {"stored": 1, "id": memory_id, "content": final_content, "category": category,
              "importance": importance, "agent_id": agent_id, "visibility": visibility,
@@ -761,6 +776,8 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                 conn.commit()
                 cur.close()
             conn.close()
+            _audit("write", "update", caller_user_id, target_id=row[0],
+                   detail={"action": "reinforce_existing"})
             return [types.TextContent(type="text", text=json.dumps(
                 {"updated": 1, "id": row[0], "content": row[1], "category": row[2],
                  "importance": row[3], "action": "reinforce_existing"}))]
@@ -861,6 +878,8 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         except Exception:
             pass
 
+        _audit("write", "update", caller_user_id, target_id=row[0],
+               detail={"category": row[2]})
         return [types.TextContent(type="text", text=json.dumps(
             {"updated": 1, "id": row[0], "content": row[1], "category": row[2], "importance": row[3]}))]
 
@@ -898,11 +917,20 @@ def _start_decay_scheduler():
     """Run the decay job once immediately, then every 24 hours in a background thread."""
     from src.jobs.decay_job import run as run_decay
 
+    def _audit_prune():
+        try:
+            from src.services.audit import prune_expired
+            prune_expired()   # retention: drop audit rows older than the (>=90-day) window
+        except Exception:
+            pass
+
     def loop():
         run_decay()
+        _audit_prune()
         timer = threading.Event()
         while not timer.wait(timeout=86400):
             run_decay()
+            _audit_prune()
 
     t = threading.Thread(target=loop, daemon=True, name="decay-scheduler")
     t.start()
@@ -1273,6 +1301,26 @@ def _install_claude_hooks(home: str) -> None:
     start_cmd   = "python3 " + server_py + " start"
     stop_cmd    = "python3 " + server_py + " stop"
 
+    # ── Upgrade existing installs ──────────────────────────────────────────
+    # Strip any previously-registered YourMemory hooks (e.g. the legacy bash
+    # `yourmemory_recall.sh`, or older command paths) so the current canonical set is
+    # re-installed cleanly. Non-YourMemory hooks are preserved untouched. This makes
+    # `yourmemory-setup` an idempotent UPGRADE, not just a first-time install.
+    migrated = 0
+    for event in list(hooks.keys()):
+        new_groups = []
+        for group in hooks.get(event, []):
+            kept = [h for h in group.get("hooks", [])
+                    if "yourmemory" not in h.get("command", "")]
+            migrated += len(group.get("hooks", [])) - len(kept)
+            if kept:
+                group["hooks"] = kept
+                new_groups.append(group)
+        if new_groups:
+            hooks[event] = new_groups
+        else:
+            hooks.pop(event, None)
+
     def _ensure(event, command, extra, matcher=None):
         arr = hooks.setdefault(event, [])
         for group in arr:                       # idempotent — skip if already present
@@ -1300,7 +1348,9 @@ def _install_claude_hooks(home: str) -> None:
     try:
         with open(settings_path, "w") as f:
             _json.dump(data, f, indent=2)
-        print(f"  ✓  Hooks installed → {hooks_dir} (automatic recall + store)")
+        suffix = f" (upgraded {migrated} legacy hook(s))" if migrated else ""
+        print(f"  ✓  Hooks installed → {hooks_dir} "
+              f"(server lifecycle + recall + store + observe){suffix}")
     except Exception as exc:
         print(f"  ⚠  Could not update settings.json with hooks: {exc}")
 

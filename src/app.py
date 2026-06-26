@@ -8,18 +8,27 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from src.routes import memories, retrieve, agents, ui, graph_viz, proxy
+from src.routes import memories, retrieve, agents, ui, graph_viz, proxy, audit
 from src.jobs.decay_job import run as run_decay
+from src.services.audit import prune_expired as prune_audit
 from src.db.migrate import migrate
 
 
 scheduler = AsyncIOScheduler()
 
 
+def _daily_jobs():
+    run_decay()
+    try:
+        prune_audit()   # retention: drop audit rows older than the (>=90-day) window
+    except Exception:
+        pass
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     migrate()
-    scheduler.add_job(run_decay, "interval", hours=24, id="decay_job")
+    scheduler.add_job(_daily_jobs, "interval", hours=24, id="decay_job")
     scheduler.start()
     yield
     scheduler.shutdown()
@@ -33,6 +42,7 @@ app.include_router(agents.router)
 app.include_router(ui.router)
 app.include_router(graph_viz.router)
 app.include_router(proxy.router)
+app.include_router(audit.router)
 
 
 @app.get("/health")
@@ -577,5 +587,12 @@ def auto_store_endpoint(req: AutoStoreRequest):
                     print(f"[graph] auto-store index_memory failed: {_ge}", file=sys.stderr)
         except Exception as _ie:
             print(f"[graph] auto-store graph import failed: {_ie}", file=sys.stderr)
+
+    try:
+        from src.services.audit import log_event
+        log_event("write", "auto_store", user_id,
+                  detail={"count": len(stored)})
+    except Exception:
+        pass
 
     return {"stored": len(stored), "facts": stored}
