@@ -296,7 +296,7 @@
       <span>// YOUR NUMBERS</span>
     </div>
     <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 52px); letter-spacing: -1.2px; line-height: 1.04;">How much would <em>you</em> save?</h2>
-    <p style="margin: 0 0 48px; max-width: 560px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Two ways to find out — a 30-second check inside your AI, or a full breakdown from your history.</p>
+    <p style="margin: 0 0 48px; max-width: 560px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Run a 30-second check inside any AI session — it measures and compresses the conversation on its own.</p>
 
     <!-- QUICK AUDIT -->
     <div style="margin-bottom: 32px; background: rgba(25,205,255,0.03); border: 1px solid rgba(25,205,255,0.12); border-radius: 20px; padding: 28px 30px;">
@@ -315,95 +315,6 @@
       </div>
     </div>
 
-    <!-- DIVIDER -->
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:32px;">
-      <div style="flex:1;height:1px;background:rgba(255,255,255,0.06);"></div>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#3d4f60;text-transform:uppercase;white-space:nowrap;">or calculate from your history</span>
-      <div style="flex:1;height:1px;background:rgba(255,255,255,0.06);"></div>
-    </div>
-
-    <!-- DEEP CALCULATOR -->
-    <div style="background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:28px 30px;">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap;">
-        <span style="font-size:17px;font-weight:700;color:#e6edf6;">Paste your full conversation history</span>
-        <span style="background:rgba(94,234,212,0.1);border:1px solid rgba(94,234,212,0.25);border-radius:20px;padding:3px 11px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:#5eead4;text-transform:uppercase;white-space:nowrap;">local · private</span>
-      </div>
-      <p style="margin:0 0 24px;font-size:13px;color:#5a6b80;line-height:1.6;">Export any AI chat and paste it below. Tokenized in your browser — nothing is sent anywhere.</p>
-
-      <div data-r="split" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,48px);align-items:start;">
-
-        <!-- LEFT: Controls -->
-        <div style="display:flex;flex-direction:column;gap:20px;">
-          <div>
-            <label style="display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#5a6b80;text-transform:uppercase;margin-bottom:10px;">Conversation history</label>
-            <textarea oninput="$h.onCalcText(event)" placeholder="Paste your Claude, ChatGPT, Cursor, or any AI chat history here…" style="width:100%;min-height:180px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#e6edf6;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;padding:14px 16px;resize:vertical;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='rgba(25,205,255,0.45)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
-            <div style="margin-top:8px;font-size:12px;font-family:'JetBrains Mono',monospace;">
-              <sc-if val="{{ calcTokens > 0 }}"><span style="color:{{ calcIsExact ? '#5eead4' : '#5a6b80' }};">{{ calcTokensFmt }} {{ calcTokensLabel }}</span></sc-if>
-              <sc-if val="{{ calcTokens === 0 }}"><span style="color:#3d4f60;">~0.75 tokens per word</span></sc-if>
-            </div>
-          </div>
-
-          <div>
-            <label style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#5a6b80;text-transform:uppercase;margin-bottom:10px;">
-              <span>Sessions this spans</span><span style="color:#e6edf6;">{{ calcSessions }}</span>
-            </label>
-            <input type="range" min="1" max="20" value="{{ calcSessions }}" oninput="$h.onCalcSessions(event)" style="width:100%;-webkit-appearance:none;height:5px;border-radius:3px;background:rgba(255,255,255,0.08);outline:none;cursor:pointer;">
-            <div style="display:flex;justify-content:space-between;font-size:11px;color:#3d4f60;margin-top:5px;font-family:'JetBrains Mono',monospace;"><span>1</span><span>20</span></div>
-          </div>
-
-          <div>
-            <label style="display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#5a6b80;text-transform:uppercase;margin-bottom:10px;">Model</label>
-            <select onchange="$h.onCalcModel(event)" style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e6edf6;font-family:'JetBrains Mono',monospace;font-size:13px;padding:11px 14px;cursor:pointer;outline:none;-webkit-appearance:none;">
-              <option value="3">Claude Sonnet — $3 / 1M tokens</option>
-              <option value="15">Claude Opus — $15 / 1M tokens</option>
-              <option value="1">Claude Haiku — $1 / 1M tokens</option>
-              <option value="2.5">GPT-4o — $2.50 / 1M tokens</option>
-            </select>
-          </div>
-
-          <button onclick="$h.calculate()" style="width:100%;padding:15px;background:{{ calcBtnBg }};border:1px solid {{ calcBtnBorder }};border-radius:12px;color:{{ calcBtnColor }};font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;letter-spacing:0.3px;cursor:{{ calcBtnCursor }};transition:all .2s;">{{ calcBtnLabel }}</button>
-        </div>
-
-        <!-- RIGHT: Results -->
-        <div>
-          <sc-if val="{{ calcTriggered !== true }}">
-            <div style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.06);border-radius:20px;padding:56px 32px;text-align:center;">
-              <div style="font-size:32px;margin-bottom:16px;opacity:0.12;">⌗</div>
-              <div style="font-size:14px;color:#3d4f60;line-height:1.8;">Paste your history, set sessions &amp; model,<br>then click <strong style="color:#4a5a6a;">Calculate savings</strong>.</div>
-            </div>
-          </sc-if>
-
-          <sc-if val="{{ calcTriggered === true && calcTokens === 0 }}">
-            <div style="background:rgba(251,191,115,0.05);border:1px solid rgba(251,191,115,0.2);border-radius:16px;padding:32px;text-align:center;">
-              <div style="font-size:15px;color:#fbbf73;font-weight:700;margin-bottom:8px;">Nothing to calculate yet</div>
-              <div style="font-size:13px;color:#5a6b80;line-height:1.6;">Paste your conversation history in the textarea on the left, then click Calculate again.</div>
-            </div>
-          </sc-if>
-
-          <sc-if val="{{ calcTriggered === true && calcTokens > 0 }}">
-            <div style="display:flex;flex-direction:column;gap:12px;">
-              <div style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.2);border-radius:16px;padding:20px 22px;">
-                <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#f87171;margin-bottom:8px;">Without YourMemory</div>
-                <div style="font-size:34px;font-weight:800;color:#f87171;letter-spacing:-1px;line-height:1;">{{ calcBaseTokFmt }}</div>
-                <div style="font-size:13px;color:#9fb0c3;margin-top:6px;">tokens total · <span style="color:#f87171;">{{ calcBaseCostFmt }}</span> on {{ calcModelLabel }}</div>
-                <div style="font-size:12px;color:#4a5a6a;margin-top:7px;line-height:1.5;">Context grows each session — by session {{ calcSessions }}, you're re-sending {{ calcCtxPerSessFmt }} tokens of history every time.</div>
-              </div>
-              <div style="background:rgba(94,234,212,0.06);border:1px solid rgba(94,234,212,0.2);border-radius:16px;padding:20px 22px;">
-                <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#5eead4;margin-bottom:8px;">With YourMemory</div>
-                <div style="font-size:34px;font-weight:800;color:#5eead4;letter-spacing:-1px;line-height:1;">{{ calcYmTokFmt }}</div>
-                <div style="font-size:13px;color:#9fb0c3;margin-top:6px;">tokens total · <span style="color:#5eead4;">{{ calcYmCostFmt }}</span> on {{ calcModelLabel }}</div>
-                <div style="font-size:12px;color:#4a5a6a;margin-top:7px;line-height:1.5;">~{{ calcYmPerSessFmt }} recalled tokens injected per session — flat, never growing.</div>
-              </div>
-              <div style="background:linear-gradient(160deg,rgba(25,205,255,0.1),rgba(94,234,212,0.07));border:1px solid rgba(25,205,255,0.3);border-radius:16px;padding:20px 22px;">
-                <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#19cdff;margin-bottom:8px;">You save</div>
-                <div style="font-size:48px;font-weight:800;color:#19cdff;letter-spacing:-2px;line-height:1;">{{ calcSavePct }}%</div>
-                <div style="font-size:14px;color:#9fb0c3;margin-top:8px;">{{ calcSaveTokFmt }} tokens · {{ calcSaveCostFmt }}</div>
-              </div>
-            </div>
-          </sc-if>
-        </div>
-      </div>
-    </div>
   </section>
 
   <!-- 05 COMPARISON -->
