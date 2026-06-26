@@ -344,6 +344,13 @@ _HTML = """<!DOCTYPE html>
     ['catFilter','sortBy'].forEach(id => document.getElementById(id).classList.toggle('hidden', isAudit));
     ['stats','tabsRow','grid','empty'].forEach(id => document.getElementById(id).classList.toggle('hidden', isAudit));
     document.getElementById('auditView').classList.toggle('hidden', !isAudit);
+    // Reflect the view in the URL so it's shareable/bookmarkable (preserve ?user).
+    const params = new URLSearchParams(location.search);
+    if (isAudit) params.set('view', 'audit'); else params.delete('view');
+    const uid = document.getElementById('userInput').value.trim();
+    if (uid) params.set('user', uid); else params.delete('user');
+    const qs = params.toString();
+    history.replaceState(null, '', qs ? '?' + qs : location.pathname);
     if (isAudit) loadAudit(); else render();
   }
 
@@ -450,6 +457,10 @@ _HTML = """<!DOCTYPE html>
   if (p.get('user')) {
     document.getElementById('userInput').value = p.get('user');
     load();
+  }
+  // Deep-link the Audit view: /ui?view=audit  (optionally with &user=…)
+  if (p.get('view') === 'audit') {
+    setView('audit');
   }
 </script>
 </body>
