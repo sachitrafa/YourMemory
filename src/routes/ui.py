@@ -144,6 +144,18 @@ _HTML = """<!DOCTYPE html>
 
 </div>
 
+<!-- Memory detail modal (opened from an audit row's target id) -->
+<div id="memModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6"
+     style="background:rgba(0,0,0,0.6)" onclick="if(event.target===this) closeMemory()">
+  <div class="bg-gray-900 border border-gray-700 rounded-xl max-w-lg w-full p-6 shadow-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <h3 id="memModalTitle" class="text-sm font-bold text-cyan-400 mono">Memory</h3>
+      <button onclick="closeMemory()" class="text-gray-500 hover:text-gray-200 text-lg leading-none">✕</button>
+    </div>
+    <div id="memModalBody" class="text-sm text-gray-200 leading-relaxed"></div>
+  </div>
+</div>
+
 <script>
   let allMemories = [];
   let agents = [];
@@ -389,11 +401,50 @@ _HTML = """<!DOCTYPE html>
         <td class="px-4 py-2 text-gray-200">${escHtml(e.operation)}</td>
         <td class="px-4 py-2 text-gray-300">${escHtml(e.actor_user_id)}</td>
         <td class="px-4 py-2 text-gray-500">${e.actor_agent_id ? escHtml(e.actor_agent_id) : '—'}</td>
-        <td class="px-4 py-2 text-gray-500">${e.target_id == null ? '—' : escHtml(e.target_id)}</td>
+        <td class="px-4 py-2">${e.target_id == null ? '<span class="text-gray-600">—</span>'
+          : `<button onclick="showMemory('${escHtml(e.actor_user_id)}',${e.target_id})" class="text-cyan-400 hover:underline">#${escHtml(e.target_id)}</button>`}</td>
         <td class="px-4 py-2 text-gray-600">${escHtml(e.source)}</td>
       </tr>`;
     }).join('');
   }
+
+  // Click a target id in an audit row → pull up that memory's content.
+  async function showMemory(userId, id) {
+    const modal = document.getElementById('memModal');
+    const title = document.getElementById('memModalTitle');
+    const body  = document.getElementById('memModalBody');
+    title.textContent = 'Memory #' + id;
+    body.innerHTML = '<p class="text-gray-500 mono text-xs">Loading…</p>';
+    modal.classList.remove('hidden');
+    try {
+      const r = await fetch(`/memory/get?userId=${encodeURIComponent(userId)}&id=${encodeURIComponent(id)}`);
+      const d = await r.json();
+      const m = d.memory;
+      if (!m) {
+        body.innerHTML = '<p class="text-gray-400">This memory no longer exists — it was deleted or is not owned by <span class="mono text-gray-300">' + escHtml(userId) + '</span>.</p>';
+        return;
+      }
+      const nb = (d.neighbors || []).slice(0, 5);
+      body.innerHTML = `
+        <p class="text-gray-100 mb-4">${escHtml(m.content || '')}</p>
+        <div class="flex flex-wrap gap-2 text-[11px] mono text-gray-500 mb-1">
+          ${m.category   != null ? `<span class="border border-gray-700 rounded-full px-2 py-0.5">${escHtml(m.category)}</span>` : ''}
+          ${m.importance != null ? `<span class="border border-gray-700 rounded-full px-2 py-0.5">importance ${escHtml(m.importance)}</span>` : ''}
+          ${m.agent_id   ? `<span class="border border-purple-800 bg-purple-900/40 text-purple-300 rounded-full px-2 py-0.5">🤖 ${escHtml(m.agent_id)}</span>` : ''}
+        </div>
+        ${nb.length ? `<div class="mt-4 pt-3 border-t border-gray-800">
+          <p class="text-[11px] uppercase tracking-wider text-gray-500 mono mb-2">Linked memories</p>
+          ${nb.map(n => `<p class="text-xs text-gray-400 mb-1">• ${escHtml(n.content || '')}</p>`).join('')}
+        </div>` : ''}`;
+    } catch (e) {
+      body.innerHTML = '<p class="text-red-400">Error: ' + escHtml(e.message) + '</p>';
+    }
+  }
+
+  function closeMemory() {
+    document.getElementById('memModal').classList.add('hidden');
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMemory(); });
 
   const p = new URLSearchParams(location.search);
   if (p.get('user')) {
