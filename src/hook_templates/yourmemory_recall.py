@@ -69,12 +69,26 @@ def main():
 
     memories = result.get("memories") or []
 
-    lines = [
-        f"- {m['content']}"
-        for m in memories
-        if (m.get("score", 0) >= 0.5 and m.get("similarity", 0) >= 0.50)
-        or m.get("via_graph")
-    ]
+    # Direct hits must clear the similarity threshold. Graph-expanded (linked) memories
+    # used to be injected unconditionally — that dragged in low-relevance noise from
+    # co-occurrence edges (anything stored in the same session). Now a linked memory must
+    # also clear a modest score floor, and we cap how many graph hits ride along, so the
+    # connected region surfaces useful neighbours without flooding the prompt.
+    MIN_GRAPH_SCORE = 0.30
+    MAX_GRAPH       = 3
+
+    direct, graph = [], []
+    for m in memories:
+        content = m.get("content")
+        if not content:
+            continue
+        if m.get("score", 0) >= 0.5 and m.get("similarity", 0) >= 0.50:
+            direct.append(content)
+        elif m.get("via_graph") and m.get("score", 0) >= MIN_GRAPH_SCORE:
+            graph.append((m.get("score", 0), content))
+
+    graph.sort(key=lambda x: x[0], reverse=True)
+    lines = [f"- {c}" for c in direct] + [f"- {c}" for _, c in graph[:MAX_GRAPH]]
 
     if not lines:
         return

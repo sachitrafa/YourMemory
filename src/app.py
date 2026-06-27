@@ -204,6 +204,8 @@ def observe_endpoint(req: ObserveRequest):
     if not facts:
         return {"stored": 0, "facts": []}
 
+    from src.services.extract import is_question as _is_question, should_store_llm as _judge
+
     IMP = {"HIGH": 0.8, "MED": 0.6, "LOW": 0.4}
     stored = 0
     ids = []
@@ -212,6 +214,10 @@ def observe_endpoint(req: ObserveRequest):
             continue
         c = str(it.get("fact", "")).strip()
         if len(c) < 12:
+            continue
+        # Same mandatory relevance gate as /auto-store: work-output capture tends to
+        # surface transient status notes ("/retrieve returned 6 hits") that aren't durable.
+        if _is_question(c) or not _judge(c):
             continue
         imp = IMP.get(str(it.get("importance", "MED")).upper(), 0.6)
         cat = str(it.get("category", "fact")).strip().lower()

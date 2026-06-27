@@ -36,18 +36,18 @@ _HTML = """<!DOCTYPE html>
       </svg>
       <span class="text-xl font-bold tracking-tight">YourMemory</span>
       <span class="text-xs mono text-gray-500 border border-gray-700 px-2 py-0.5 rounded-full">Memory Browser</span>
-      <div class="flex items-center gap-1 ml-2 bg-gray-900 border border-gray-800 rounded-lg p-0.5">
+      <div class="flex items-center gap-1.5 ml-2 bg-gray-900 border border-gray-800 rounded-lg p-1">
         <button id="viewMem"   onclick="setView('memories')"
-          class="text-xs mono px-2.5 py-1 rounded-md bg-cyan-500/20 text-cyan-300">🧠 Memories</button>
+          class="text-xs mono px-3 py-1.5 rounded-md bg-cyan-500/20 text-cyan-300">🧠 Memories</button>
         <button id="viewAudit" onclick="setView('audit')"
-          class="text-xs mono px-2.5 py-1 rounded-md text-gray-400 hover:text-gray-200">📜 Audit</button>
+          class="text-xs mono px-3 py-1.5 rounded-md text-gray-400 hover:text-gray-200">📜 Audit</button>
       </div>
     </div>
     <div class="flex items-center gap-3">
       <input id="userInput" type="text" placeholder="user_id"
         class="mono text-sm bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 w-36 focus:outline-none focus:border-cyan-500 text-gray-200"
         onkeydown="if(event.key==='Enter') load()">
-      <select id="catFilter" onchange="render()"
+      <select id="catFilter" onchange="memPage=0;render()"
         class="mono text-sm bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 focus:outline-none focus:border-cyan-500 text-gray-200">
         <option value="">All categories</option>
         <option value="fact">fact</option>
@@ -55,7 +55,7 @@ _HTML = """<!DOCTYPE html>
         <option value="assumption">assumption</option>
         <option value="failure">failure</option>
       </select>
-      <select id="sortBy" onchange="render()"
+      <select id="sortBy" onchange="memPage=0;render()"
         class="mono text-sm bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 focus:outline-none focus:border-cyan-500 text-gray-200">
         <option value="strength">Sort: strength</option>
         <option value="recent">Sort: recent</option>
@@ -101,6 +101,7 @@ _HTML = """<!DOCTYPE html>
     <p class="font-medium">No memories found.</p>
   </div>
   <div id="loading" class="hidden text-center text-gray-600 py-24 mono text-sm">Loading…</div>
+  <div id="memPager" class="hidden"></div>
 
   <!-- Audit view -->
   <div id="auditView" class="hidden">
@@ -109,15 +110,15 @@ _HTML = """<!DOCTYPE html>
         <span id="auditVerify" class="text-xs mono px-2 py-1 rounded-full border border-gray-700 text-gray-400">checking integrity…</span>
         <span id="auditRetention" class="text-xs mono text-gray-500"></span>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <select id="auditAction" onchange="loadAudit()"
-          class="mono text-xs bg-gray-900 border border-gray-700 rounded-lg px-2 py-1 text-gray-200">
+          class="mono text-xs bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-gray-200">
           <option value="">All actions</option>
           <option value="read">read</option>
           <option value="write">write</option>
           <option value="delete">delete</option>
         </select>
-        <button onclick="loadAudit()" class="text-xs mono bg-gray-800 hover:bg-gray-700 border border-gray-700 px-3 py-1 rounded-lg text-gray-200">Refresh</button>
+        <button onclick="loadAudit()" class="text-xs mono bg-gray-800 hover:bg-gray-700 border border-gray-700 px-4 py-1.5 rounded-lg text-gray-200">Refresh</button>
       </div>
     </div>
     <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
@@ -136,6 +137,7 @@ _HTML = """<!DOCTYPE html>
         <tbody id="auditBody" class="mono text-xs text-gray-300"></tbody>
       </table>
     </div>
+    <div id="auditPager" class="hidden"></div>
     <div id="auditEmpty" class="hidden text-center text-gray-600 py-20">
       <p class="text-4xl mb-3">📜</p>
       <p class="font-medium">No audit events yet.</p>
@@ -160,6 +162,37 @@ _HTML = """<!DOCTYPE html>
   let allMemories = [];
   let agents = [];
   let activeTab = 'all';
+
+  // ── Pagination (client-side over already-fetched data, so no page loads everything) ──
+  const MEM_PAGE_SIZE = 18;
+  const AUDIT_PAGE_SIZE = 25;
+  let memPage = 0;
+  let auditPage = 0;
+  let auditEvents = [];
+
+  // Render a Prev / page-x-of-y / Next bar into `containerId`. `onGo(newPage)` re-renders.
+  function renderPager(containerId, total, page, pageSize, onGoName) {
+    const el = document.getElementById(containerId);
+    const pages = Math.max(1, Math.ceil(total / pageSize));
+    if (total <= pageSize) { el.classList.add('hidden'); el.innerHTML = ''; return; }
+    el.classList.remove('hidden');
+    const from = page * pageSize + 1;
+    const to   = Math.min((page + 1) * pageSize, total);
+    const btn = (label, target, disabled) =>
+      `<button onclick="${onGoName}(${target})" ${disabled ? 'disabled' : ''}
+         class="mono text-sm px-4 py-1.5 rounded-lg border ${disabled
+           ? 'border-gray-800 text-gray-700 cursor-not-allowed'
+           : 'border-gray-700 text-gray-300 hover:border-cyan-500 hover:text-cyan-300'}">${label}</button>`;
+    el.innerHTML = `
+      <div class="flex items-center justify-center gap-5 py-6">
+        ${btn('← Prev', page - 1, page === 0)}
+        <span class="mono text-xs text-gray-500">${from}–${to} of ${total} · page ${page + 1}/${pages}</span>
+        ${btn('Next →', page + 1, page >= pages - 1)}
+      </div>`;
+  }
+
+  function goMemPage(p) { memPage = p; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+  function goAuditPage(p) { auditPage = p; renderAudit(auditEvents); window.scrollTo({top:0,behavior:'smooth'}); }
 
   const CAT_COLORS = {
     fact:       'bg-blue-900/50 text-blue-300 border-blue-800',
@@ -200,6 +233,7 @@ _HTML = """<!DOCTYPE html>
 
       buildTabs();
       activeTab = 'all';
+      memPage = 0;
       render();
     } catch(e) {
       document.getElementById('grid').innerHTML =
@@ -236,6 +270,7 @@ _HTML = """<!DOCTYPE html>
 
   function setTab(id) {
     activeTab = id;
+    memPage = 0;
     document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
     const el = document.getElementById('tab-' + id);
     if (el) el.classList.add('active');
@@ -285,11 +320,18 @@ _HTML = """<!DOCTYPE html>
     if (!mems.length) {
       grid.innerHTML = '';
       document.getElementById('empty').classList.remove('hidden');
+      document.getElementById('memPager').classList.add('hidden');
       return;
     }
     document.getElementById('empty').classList.add('hidden');
 
-    grid.innerHTML = mems.map(m => {
+    // Clamp the page (filters may have shrunk the set) and show only this page's slice.
+    const pageCount = Math.max(1, Math.ceil(mems.length / MEM_PAGE_SIZE));
+    if (memPage >= pageCount) memPage = pageCount - 1;
+    const pageMems = mems.slice(memPage * MEM_PAGE_SIZE, (memPage + 1) * MEM_PAGE_SIZE);
+    renderPager('memPager', mems.length, memPage, MEM_PAGE_SIZE, 'goMemPage');
+
+    grid.innerHTML = pageMems.map(m => {
       const pct     = Math.round(m.strength * 100);
       const barCol  = strengthColor(m.strength);
       const catCls  = CAT_COLORS[m.category] || 'bg-gray-800 text-gray-300 border-gray-700';
@@ -362,6 +404,7 @@ _HTML = """<!DOCTYPE html>
     if (action) qs.set('action', action);
     const body = document.getElementById('auditBody');
     body.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-600">Loading…</td></tr>';
+    auditPage = 0;   // fresh fetch → back to first page
     try {
       const [aRes, vRes] = await Promise.all([
         fetch('/audit?' + qs.toString()),
@@ -390,15 +433,21 @@ _HTML = """<!DOCTYPE html>
   }
 
   function renderAudit(events) {
+    auditEvents = events;
     const body  = document.getElementById('auditBody');
     const empty = document.getElementById('auditEmpty');
     if (!events.length) {
       body.innerHTML = '';
       empty.classList.remove('hidden');
+      document.getElementById('auditPager').classList.add('hidden');
       return;
     }
     empty.classList.add('hidden');
-    body.innerHTML = events.map(e => {
+    const pageCount = Math.max(1, Math.ceil(events.length / AUDIT_PAGE_SIZE));
+    if (auditPage >= pageCount) auditPage = pageCount - 1;
+    const pageEvents = events.slice(auditPage * AUDIT_PAGE_SIZE, (auditPage + 1) * AUDIT_PAGE_SIZE);
+    renderPager('auditPager', events.length, auditPage, AUDIT_PAGE_SIZE, 'goAuditPage');
+    body.innerHTML = pageEvents.map(e => {
       const cls = ACTION_COLORS[e.action] || 'text-gray-300 border-gray-700 bg-gray-800/40';
       const ts  = (e.ts || '').replace('T', ' ').replace(/\\.\\d+Z?$/, '');
       const uid = escHtml(e.actor_user_id);
