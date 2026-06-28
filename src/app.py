@@ -13,7 +13,7 @@ from collections import defaultdict, deque
 from threading import Lock
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from src.routes import memories, retrieve, agents, ui, graph_viz, proxy, audit, dsar
+from src.routes import memories, retrieve, agents, ui, graph_viz, proxy, audit, dsar, compact
 from src.jobs.decay_job import run as run_decay
 from src.services.audit import prune_expired as prune_audit
 from src.db.migrate import migrate
@@ -28,6 +28,25 @@ def _daily_jobs():
         prune_audit()   # retention: drop audit rows older than the (>=90-day) window
     except Exception:
         pass
+    # Opt-in: compress clusters of related memories so the store stays lean over time.
+    if os.getenv("YOURMEMORY_COMPACTION", "0") == "1":
+        try:
+            from src.services.compaction import compact_user
+            from src.db.connection import get_conn, get_backend
+            b = get_backend(); conn = get_conn()
+            try:
+                if b == "duckdb":
+                    users = [r[0] for r in conn.execute("SELECT DISTINCT user_id FROM memories").fetchall()]
+                else:
+                    cur = conn.cursor(); cur.execute("SELECT DISTINCT user_id FROM memories")
+                    users = [r[0] for r in cur.fetchall()]; cur.close()
+            finally:
+                conn.close()
+            for u in users:
+                try: compact_user(u)
+                except Exception: pass
+        except Exception:
+            pass
 
 
 @asynccontextmanager
@@ -49,6 +68,7 @@ app.include_router(graph_viz.router)
 app.include_router(proxy.router)
 app.include_router(audit.router)
 app.include_router(dsar.router)
+app.include_router(compact.router)
 
 
 # ── Rate limiting (abuse prevention) ────────────────────────────────────────────

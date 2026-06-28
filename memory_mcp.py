@@ -924,13 +924,36 @@ def _start_decay_scheduler():
         except Exception:
             pass
 
+    def _compact():
+        if os.getenv("YOURMEMORY_COMPACTION", "0") != "1":
+            return
+        try:
+            from src.services.compaction import compact_user
+            from src.db.connection import get_conn, get_backend
+            b = get_backend(); conn = get_conn()
+            try:
+                if b == "duckdb":
+                    users = [r[0] for r in conn.execute("SELECT DISTINCT user_id FROM memories").fetchall()]
+                else:
+                    cur = conn.cursor(); cur.execute("SELECT DISTINCT user_id FROM memories")
+                    users = [r[0] for r in cur.fetchall()]; cur.close()
+            finally:
+                conn.close()
+            for u in users:
+                try: compact_user(u)
+                except Exception: pass
+        except Exception:
+            pass
+
     def loop():
         run_decay()
         _audit_prune()
+        _compact()
         timer = threading.Event()
         while not timer.wait(timeout=86400):
             run_decay()
             _audit_prune()
+            _compact()
 
     t = threading.Thread(target=loop, daemon=True, name="decay-scheduler")
     t.start()

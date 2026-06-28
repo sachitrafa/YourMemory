@@ -160,6 +160,66 @@ def _create_audit_table(conn, backend: str) -> None:
         """)
 
 
+def _create_archive_table(conn, backend: str) -> None:
+    """Holds originals that were compressed into a summary memory. Lets the live
+    `memories` table stay lean (so recall stays fast and clean) while keeping the
+    pre-compression facts for reversibility and audit. Idempotent across backends."""
+    if backend == "postgres":
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS memory_archive (
+                orig_id     BIGINT,
+                user_id     TEXT NOT NULL,
+                content     TEXT NOT NULL,
+                category    TEXT,
+                importance  DOUBLE PRECISION,
+                agent_id    TEXT,
+                visibility  TEXT,
+                created_at  TIMESTAMPTZ,
+                archived_at TIMESTAMPTZ DEFAULT NOW(),
+                summary_id  BIGINT
+            );
+            CREATE INDEX IF NOT EXISTS idx_archive_user ON memory_archive(user_id);
+        """)
+        conn.commit()
+        cur.close()
+    elif backend == "duckdb":
+        try:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS memory_archive (
+                    orig_id     BIGINT,
+                    user_id     VARCHAR NOT NULL,
+                    content     VARCHAR NOT NULL,
+                    category    VARCHAR,
+                    importance  DOUBLE,
+                    agent_id    VARCHAR,
+                    visibility  VARCHAR,
+                    created_at  TIMESTAMP,
+                    archived_at TIMESTAMP DEFAULT now(),
+                    summary_id  BIGINT
+                )
+            """)
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_archive_user ON memory_archive(user_id)")
+        except Exception as exc:
+            print(f"archive table (duckdb) skipped: {exc}", file=sys.stderr)
+    else:  # sqlite
+        conn.executescript("""
+            CREATE TABLE IF NOT EXISTS memory_archive (
+                orig_id     INTEGER,
+                user_id     TEXT NOT NULL,
+                content     TEXT NOT NULL,
+                category    TEXT,
+                importance  REAL,
+                agent_id    TEXT,
+                visibility  TEXT,
+                created_at  TIMESTAMP,
+                archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                summary_id  INTEGER
+            );
+            CREATE INDEX IF NOT EXISTS idx_archive_user ON memory_archive(user_id);
+        """)
+
+
 def migrate():
     backend = get_backend()
 
@@ -198,6 +258,9 @@ def migrate():
 
     # ── Append-only, hash-chained audit log (read/write/delete, 90-day+ retention) ──
     _create_audit_table(conn, backend)
+
+    # ── Archive of originals compressed into summaries (memory compaction) ──
+    _create_archive_table(conn, backend)
 
     # ── Post-schema FTS setup ─────────────────────────────────────────────
     if backend == "sqlite":
