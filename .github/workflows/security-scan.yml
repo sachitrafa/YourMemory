@@ -1,0 +1,26 @@
+name: security-scan
+
+# Dependency vulnerability scan (CC7.1 evidence). Runs on every push/PR and weekly.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "23 6 * * 1"   # weekly, Monday 06:23 UTC
+  workflow_dispatch:
+
+jobs:
+  pip-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pip-audit
+        run: python -m pip install --upgrade pip pip-audit
+      - name: Audit Python dependencies
+        # Non-blocking for now (report-only) so a transitive advisory doesn't break CI;
+        # findings are triaged per the Vulnerability Management Policy SLAs.
+        run: pip-audit --desc --strict || true

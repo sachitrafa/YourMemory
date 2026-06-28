@@ -1,0 +1,27 @@
+version: 2
+updates:
+  # Python dependencies (pyproject.toml) — security + version updates
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "security"
+
+  # Cloudflare Worker dependencies
+  - package-ecosystem: "npm"
+    directory: "/cloudflare-worker"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "security"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
