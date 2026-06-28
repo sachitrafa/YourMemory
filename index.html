@@ -8,206 +8,300 @@
 <body>
 <x-dc>
 <helmet>
-<meta name="theme-color" content="#070b13">
-<meta name="robots" content="index, follow">
-<meta name="smithery-verification" content="c50f8dc447365cbfb0bcf6cef19473d719ad5e83656c1054a5973ff7784d9d78">
-<title>YourMemory — Persistent Memory for AI Agents | MCP Compatible</title>
-<meta name="description" content="YourMemory gives your AI assistant persistent memory that survives across sessions. 89.4% Recall@5 on LongMemEval. Works with Claude, Cursor, Cline and any MCP client. Open source, self-hostable.">
-<meta name="keywords" content="AI memory, persistent memory AI, MCP memory server, Claude memory, agent memory, Ebbinghaus decay, memory layer AI agents, yourmemory">
-<meta name="author" content="Sachit Misra">
-<link rel="canonical" href="https://yourmemoryai.xyz/">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://yourmemoryai.xyz/">
-<meta property="og:title" content="YourMemory — Persistent Memory for AI Agents">
-<meta property="og:description" content="Your AI assistant forgets you after every session. YourMemory fixes that — biologically-inspired memory decay, hybrid graph + vector retrieval, 89.4% Recall@5 on LongMemEval. MCP compatible.">
-<meta property="og:image" content="https://yourmemoryai.xyz/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:site_name" content="YourMemory">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="YourMemory — Persistent Memory for AI Agents">
-<meta name="twitter:description" content="Your AI assistant forgets you after every session. YourMemory fixes that — 89.4% Recall@5 on LongMemEval. MCP compatible. Self-hostable.">
-<meta name="twitter:image" content="https://yourmemoryai.xyz/og-image.png">
-<link rel="icon" type="image/svg+xml" href="./favicon.svg">
-<link rel="icon" type="image/png" href="./favicon.png">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta name="theme-color" content="#070b13">
+  <meta name="robots" content="index, follow">
+  <meta name="smithery-verification" content="c50f8dc447365cbfb0bcf6cef19473d719ad5e83656c1054a5973ff7784d9d78">
+  <title>YourMemory — Persistent Memory for AI Agents | MCP Compatible</title>
+  <meta name="description" content="YourMemory gives your AI assistant persistent memory that survives across sessions. 89.4% Recall@5 on LongMemEval. Works with Claude, Cursor, Cline and any MCP client. Open source, self-hostable.">
+  <meta name="keywords" content="AI memory, persistent memory AI, MCP memory server, Claude memory, agent memory, Ebbinghaus decay, memory layer AI agents, yourmemory">
+  <meta name="author" content="Sachit Misra">
+  <link rel="canonical" href="https://yourmemoryai.xyz/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yourmemoryai.xyz/">
+  <meta property="og:title" content="YourMemory — Persistent Memory for AI Agents">
+  <meta property="og:description" content="Your AI assistant forgets you after every session. YourMemory fixes that — biologically-inspired memory decay, hybrid graph + vector retrieval, 89.4% Recall@5 on LongMemEval. MCP compatible.">
+  <meta property="og:image" content="https://yourmemoryai.xyz/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="YourMemory">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="YourMemory — Persistent Memory for AI Agents">
+  <meta name="twitter:description" content="Your AI assistant forgets you after every session. YourMemory fixes that — 89.4% Recall@5 on LongMemEval. MCP compatible. Self-hostable.">
+  <meta name="twitter:image" content="https://yourmemoryai.xyz/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Space+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin: 0; padding: 0; background: #070b13; color: #e6edf6; font-family: 'Figtree', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-  ::selection { background: rgba(25,205,255,0.32); color: #fff; }
-  a { color: inherit; text-decoration: none; }
+  body { margin: 0; padding: 0; background: #ffffff; color: #0a2540; font-family: 'Google Sans', 'Figtree', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  ::selection { background: rgba(25,205,255,0.3); }
+  @keyframes ymFadeUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
   @keyframes ymBlink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
-  @keyframes ymMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-  @keyframes ymFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-  /* ---- responsive ---- */
-  @media (max-width: 900px) {
-    [data-r="split"] { grid-template-columns: 1fr !important; }
+  a { color: inherit; text-decoration: none; }
+  .ym-burger { display: none !important; }
+  @media (max-width: 1024px) {
+    .ym-navlinks { display: none !important; }
+    .ym-navcta { display: none !important; }
+    .ym-burger { display: inline-flex !important; }
   }
-  @media (max-width: 820px) {
-    [data-nav="links"], [data-nav="star"] { display: none !important; }
-    [data-nav="burger"] { display: inline-flex !important; }
-  }
-  @media (min-width: 821px) {
-    [data-nav="menu"] { display: none !important; }
-  }
-  @media (max-width: 860px) {
-    [data-r="svgwrap"] { overflow-x: auto !important; overflow-y: visible !important; -webkit-overflow-scrolling: touch; }
-    [data-r="svgwrap"] svg { min-width: 600px; width: 600px; }
-  }
-  @media (max-width: 600px) {
-    [data-r="matrix-head"] > div, [data-r="matrix-row"] > div { padding-left: 9px !important; padding-right: 9px !important; font-size: 12px !important; }
-    [data-r="matrix-row"] > div:first-child, [data-r="matrix-head"] > div:first-child { padding-left: 13px !important; }
+  @media (min-width: 1025px) {
+    .ym-mobile-panel { display: none !important; }
   }
 </style>
 </helmet>
 
-<div style="position: relative; width: 100%; overflow: hidden; background: #070b13;">
-
-  <!-- backdrop glow -->
-  <div style="position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(60% 50% at 78% 12%, rgba(25,205,255,0.1) 0%, rgba(25,205,255,0) 60%), radial-gradient(50% 40% at 10% 80%, rgba(94,234,212,0.06) 0%, rgba(94,234,212,0) 60%);"></div>
+<div data-v="4" style="position: relative; width: 100%; overflow: hidden; background: #ffffff;">
 
   <!-- NAV -->
-  <nav style="position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; padding: 14px clamp(18px, 4vw, 56px); background: rgba(7,11,19,0.72); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.07);">
+  <nav style="position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; padding: 16px clamp(20px, 5vw, 72px); background: rgba(255,255,255,0.82); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(10,37,64,0.09);">
     <a href="#top" style="display: flex; align-items: center; gap: 11px;">
-      <img src="assets/logo.png" alt="YourMemory" style="width: 28px; height: 28px; border-radius: 8px; box-shadow: 0 0 18px rgba(25,205,255,0.45);">
-      <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.6px;">Your<span style="color: #19cdff;">Memory</span></span>
+      <img src="assets/logo.png" alt="YourMemory" style="width: 30px; height: 30px; border-radius: 9px; box-shadow: 0 0 18px rgba(25,205,255,0.4);">
+      <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 19px; letter-spacing: -0.6px;">Your<span style="color: #0a87cc;">Memory</span></span>
     </a>
-    <div data-nav="links" style="display: flex; align-items: center; gap: clamp(12px, 1.8vw, 28px); font-size: 14px; color: #9fb0c3; font-weight: 500;">
-      <a href="#how" style="transition: color .2s;" style-hover="color: #19cdff;">How it works</a>
-      <a href="#engine" style="transition: color .2s;" style-hover="color: #19cdff;">Engine</a>
-      <a href="#benchmarks" style="transition: color .2s;" style-hover="color: #19cdff;">Benchmarks</a>
-      <a href="#compare" style="transition: color .2s;" style-hover="color: #19cdff;">Compare</a>
-      <a href="#enterprise" style="transition: color .2s;" style-hover="color: #19cdff;">Enterprise</a>
-      <a href="#faq" style="transition: color .2s;" style-hover="color: #19cdff;">FAQ</a>
+    <div class="ym-navlinks" style="display: flex; align-items: center; gap: clamp(14px, 2.2vw, 34px); font-size: 14.5px; color: #44566e; font-weight: 500;">
+      <a href="#how" style="transition: color .2s;" style-hover="color: #0a87cc;">How it works</a>
+      <a href="#engine" style="transition: color .2s;" style-hover="color: #0a87cc;">Engine</a>
+      <a href="#benchmarks" style="transition: color .2s;" style-hover="color: #0a87cc;">Benchmarks</a>
+      <a href="#savings" style="transition: color .2s;" style-hover="color: #0a87cc;">Savings</a>
+      <a href="#compare" style="transition: color .2s;" style-hover="color: #0a87cc;">Compare</a>
+      <a href="#enterprise" style="transition: color .2s;" style-hover="color: #0a87cc;">Enterprise</a>
+      <a href="#audit" style="transition: color .2s;" style-hover="color: #0a87cc;">Audit</a>
+      <a href="#faq" style="transition: color .2s;" style-hover="color: #0a87cc;">FAQ</a>
     </div>
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <a data-nav="star" href="https://github.com/sachitrafa/YourMemory" style="display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 600; color: #cdd9e8; border: 1px solid rgba(255,255,255,0.14); padding: 8px 13px; border-radius: 9px; transition: border-color .2s;" style-hover="border-color: rgba(25,205,255,0.5);">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="#cdd9e8"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-        Star
-      </a>
-      <a href="#setup" style="font-size: 13.5px; font-weight: 600; white-space: nowrap; color: #061021; background: #19cdff; padding: 9px 16px; border-radius: 9px; box-shadow: 0 0 22px rgba(25,205,255,0.35); transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-1px); box-shadow: 0 0 30px rgba(25,205,255,0.55);">Get started</a>
-      <button data-nav="burger" onClick="{{ toggleMenu }}" style="display: none; cursor: pointer; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 9px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); color: #cdd9e8;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
+    <div class="ym-navcta" style="display: flex; align-items: center; gap: 14px;">
+      <a href="https://github.com/sachitrafa/YourMemory" style="font-size: 14.5px; font-weight: 600; color: #37485c;">GitHub</a>
+      <a href="#start" style="font-size: 14.5px; font-weight: 600; white-space: nowrap; color: #ffffff; background: #19cdff; padding: 9px 18px; border-radius: 999px; box-shadow: 0 0 22px rgba(25,205,255,0.35); transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-1px); box-shadow: 0 0 30px rgba(25,205,255,0.55);">Get started</a>
     </div>
+    <button class="ym-burger" onClick="{{ toggleMenu }}" aria-label="Menu" style="align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(10,37,64,0.05); border: 1px solid rgba(10,37,64,0.12); cursor: pointer; color: #0a2540; padding: 0;">
+      <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}"><span style="font-size: 18px; line-height: 1;">✕</span></sc-if>
+      <sc-if value="{{ menuClosed }}" hint-placeholder-val="{{ true }}"><span style="font-size: 20px; line-height: 1;">☰</span></sc-if>
+    </button>
+
     <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
-      <div data-nav="menu" style="position: absolute; top: 100%; left: 0; right: 0; display: flex; flex-direction: column; padding: 8px 18px 16px; background: rgba(7,11,19,0.97); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <a href="#how" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.06);">How it works</a>
-        <a href="#engine" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.06);">Engine</a>
-        <a href="#benchmarks" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.06);">Benchmarks</a>
-        <a href="#compare" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.06);">Compare</a>
-        <a href="#enterprise" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.06);">Enterprise</a>
-        <a href="#faq" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.06);">FAQ</a>
-        <a href="https://github.com/sachitrafa/YourMemory" onClick="{{ closeMenu }}" style="padding: 13px 6px; font-size: 15px; color: #cdd9e8;">GitHub</a>
+      <div class="ym-mobile-panel" style="position: fixed; top: 63px; left: 0; right: 0; z-index: 49; display: flex; flex-direction: column; padding: 10px clamp(20px, 5vw, 72px) 22px; background: rgba(255,255,255,0.98); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(10,37,64,0.09); box-shadow: 0 22px 44px rgba(10,37,64,0.13);">
+        <sc-for list="{{ mobileLinks }}" as="ml" hint-placeholder-count="7">
+          <a href="{{ ml.href }}" onClick="{{ closeMenu }}" style="padding: 13px 4px; font-size: 16px; font-weight: 600; color: #37485c; border-bottom: 1px solid rgba(10,37,64,0.07); transition: color .2s;" style-hover="color: #0a87cc;">{{ ml.label }}</a>
+        </sc-for>
+        <div style="display: flex; gap: 12px; margin-top: 18px;">
+          <a href="https://github.com/sachitrafa/YourMemory" onClick="{{ closeMenu }}" style="flex: 1; text-align: center; font-size: 15px; font-weight: 600; color: #0a2540; background: rgba(10,37,64,0.06); border: 1px solid rgba(10,37,64,0.14); padding: 13px 18px; border-radius: 999px;">GitHub</a>
+          <a href="#start" onClick="{{ closeMenu }}" style="flex: 1; text-align: center; font-size: 15px; font-weight: 600; color: #ffffff; background: #19cdff; padding: 13px 18px; border-radius: 999px; box-shadow: 0 0 22px rgba(25,205,255,0.35);">Get started</a>
+        </div>
       </div>
     </sc-if>
   </nav>
 
   <!-- HERO -->
-  <header id="top" style="position: relative; z-index: 1; min-height: 100vh; display: flex; align-items: center; padding: 130px clamp(18px, 4vw, 56px) 70px; isolation: isolate;">
-    <canvas ref="{{ heroCanvasRef }}" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1;"></canvas>
-    <div style="position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(60% 70% at 16% 50%, rgba(7,11,19,0.85) 0%, rgba(7,11,19,0.3) 45%, rgba(7,11,19,0) 72%), linear-gradient(180deg, rgba(7,11,19,0) 55%, #070b13 100%);"></div>
+  <header id="top" style="position: relative; min-height: 100vh; display: flex; align-items: center; padding: 120px clamp(20px, 5vw, 72px) 80px; isolation: isolate;">
+    <canvas ref="{{ heroCanvasRef }}" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2;"></canvas>
+    <div style="position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(70% 80% at 18% 45%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0) 70%), linear-gradient(180deg, rgba(255,255,255,0) 60%, #ffffff 100%);"></div>
 
-    <div style="max-width: 720px;">
-      <div style="display: inline-flex; align-items: center; gap: 9px; padding: 6px 13px; border: 1px solid rgba(25,205,255,0.28); border-radius: 999px; background: rgba(25,205,255,0.06); margin-bottom: 28px; backdrop-filter: blur(6px);">
-        <span style="width: 6px; height: 6px; border-radius: 50%; background: #19cdff; box-shadow: 0 0 9px #19cdff;"></span>
-        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 500; letter-spacing: 0.5px; color: #bfe6f9;">MCP COMPATIBLE</span>
-        <span style="width: 1px; height: 12px; background: rgba(255,255,255,0.18);"></span>
-        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 500; letter-spacing: 0.3px; color: #19cdff;">89.4% RECALL@5</span>
+    <div style="max-width: 760px;">
+      <div style="display: inline-flex; align-items: center; gap: 10px; padding: 7px 15px; border: 1px solid rgba(25,205,255,0.3); border-radius: 999px; background: rgba(25,205,255,0.07); margin-bottom: 30px; backdrop-filter: blur(6px);">
+        <span style="width: 7px; height: 7px; border-radius: 50%; background: #19cdff; box-shadow: 0 0 10px #19cdff;"></span>
+        <span style="font-size: 12.5px; font-weight: 600; letter-spacing: 0.6px; color: #0a5a8a;">MCP COMPATIBLE</span>
+        <span style="width: 1px; height: 13px; background: rgba(10,37,64,0.18);"></span>
+        <span style="font-size: 12.5px; font-weight: 600; letter-spacing: 0.4px; color: #0a87cc;">89.4% Recall@5</span>
       </div>
 
-      <h1 style="margin: 0; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(42px, 6.2vw, 88px); line-height: 0.98; letter-spacing: -2px; text-wrap: balance;">
-        Your AI should<br><span style="background: linear-gradient(100deg, #19cdff, #5eead4 55%, #7fe3ff); -webkit-background-clip: text; background-clip: text; color: transparent;">remember you.</span>
+      <h1 style="margin: 0; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(42px, 6.4vw, 92px); line-height: 0.98; letter-spacing: -2px; text-wrap: balance;">
+        Your AI should<br><span style="background: linear-gradient(100deg, #0d8fd6, #0fb5a8 55%, #0a87cc); -webkit-background-clip: text; background-clip: text; color: transparent;">remember you.</span>
       </h1>
 
-      <p style="margin: 26px 0 0; max-width: 540px; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.55; color: #9fb0c3; font-weight: 450;">
-        YourMemory gives any AI assistant persistent, intelligent memory across sessions — with biologically-inspired decay that forgets the right things at the right time. Open source. Runs entirely on your machine.
+      <p style="margin: 28px 0 0; max-width: 540px; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.55; color: #566375; font-weight: 450;">
+        Persistent, intelligent memory for any AI agent — with biologically-inspired decay that forgets the right things at the right time. Open source. Runs entirely on your machine.
       </p>
 
-      <div style="display: flex; gap: 13px; margin-top: 32px; flex-wrap: wrap; align-items: center;">
-        <a href="#setup" style="font-size: 15.5px; font-weight: 600; color: #061021; background: #19cdff; padding: 13px 24px; border-radius: 11px; box-shadow: 0 8px 30px rgba(25,205,255,0.32); transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-2px); box-shadow: 0 12px 38px rgba(25,205,255,0.5);">Get started free</a>
-        <div style="display: inline-flex; align-items: center; gap: 12px; padding: 11px 12px 11px 16px; border-radius: 11px; background: #0c1320; border: 1px solid rgba(255,255,255,0.1); font-family: 'JetBrains Mono', monospace; font-size: 14px;">
-          <span style="color: #5a6b80;">$</span><span style="color: #e6edf6;">pip install yourmemory</span>
-          <button onClick="{{ copyInstall }}" style="cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 500; color: {{ copyColor }}; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); padding: 5px 10px; border-radius: 7px; transition: all .2s;">{{ copyLabel }}</button>
-        </div>
+      <div style="display: flex; gap: 14px; margin-top: 36px; flex-wrap: wrap;">
+        <a href="#start" style="display: inline-flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 600; color: #ffffff; background: #19cdff; padding: 14px 26px; border-radius: 999px; box-shadow: 0 8px 30px rgba(25,205,255,0.35); transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-2px); box-shadow: 0 12px 38px rgba(25,205,255,0.5);">Get started free →</a>
+        <a href="https://github.com/sachitrafa/YourMemory" style="display: inline-flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 600; color: #0a2540; background: rgba(10,37,64,0.09); border: 1px solid rgba(10,37,64,0.16); padding: 14px 26px; border-radius: 999px; transition: background .2s, border-color .2s;" style-hover="background: rgba(10,37,64,0.12); border-color: rgba(255,255,255,0.28);">View on GitHub</a>
       </div>
 
-      <div style="display: flex; gap: clamp(18px, 3.5vw, 46px); margin-top: 50px; flex-wrap: wrap;">
+      <div style="display: flex; gap: clamp(20px, 4vw, 52px); margin-top: 56px; flex-wrap: wrap;">
         <div>
-          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(24px, 2.8vw, 36px); color: #19cdff; line-height: 1;">89.4%</div>
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #64748b; margin-top: 7px; letter-spacing: 0.3px;">Recall@5 · LongMemEval</div>
+          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(26px, 3vw, 40px); color: #0a87cc; line-height: 1;">89.4%</div>
+          <div style="font-size: 13px; color: #6b7d92; margin-top: 6px;">Recall@5 · LongMemEval</div>
         </div>
-        <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
+        <div style="width: 1px; background: rgba(10,37,64,0.12);"></div>
         <div>
-          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(24px, 2.8vw, 36px); color: #e6edf6; line-height: 1;">−84%</div>
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #64748b; margin-top: 7px; letter-spacing: 0.3px;">Token waste · 30 sessions</div>
+          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(26px, 3vw, 40px); color: #0a2540; line-height: 1;">−84%</div>
+          <div style="font-size: 13px; color: #6b7d92; margin-top: 6px;">Token waste at 30 sessions</div>
         </div>
-        <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
+        <div style="width: 1px; background: rgba(10,37,64,0.12);"></div>
         <div>
-          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(24px, 2.8vw, 36px); color: #e6edf6; line-height: 1;">7</div>
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #64748b; margin-top: 7px; letter-spacing: 0.3px;">MCP clients</div>
-        </div>
-        <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
-        <div>
-          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(24px, 2.8vw, 36px); color: #e6edf6; line-height: 1;">2 cmds</div>
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #64748b; margin-top: 7px; letter-spacing: 0.3px;">To full setup</div>
+          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(26px, 3vw, 40px); color: #0a2540; line-height: 1;">7</div>
+          <div style="font-size: 13px; color: #6b7d92; margin-top: 6px;">MCP clients supported</div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- PRESS MARQUEE -->
-  <div style="position: relative; z-index: 1; border-top: 1px solid rgba(255,255,255,0.07); border-bottom: 1px solid rgba(255,255,255,0.07); padding: 22px 0; overflow: hidden; background: rgba(255,255,255,0.012);">
-    <div style="text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1.5px; color: #5a6b80; margin-bottom: 18px;">// WRITTEN ABOUT BY</div>
-    <div style="display: flex; width: max-content; animation: ymMarquee 32s linear infinite;">
-      <sc-for list="{{ marquee }}" as="m" hint-placeholder-count="14">
-        <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 18px; color: #6b7d92; padding: 0 30px; white-space: nowrap;">{{ m }}</span>
-      </sc-for>
-    </div>
-  </div>
+  <!-- HOW IT WORKS -->
+  <section id="how" style="position: relative; padding: clamp(80px, 11vw, 150px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0a87cc; text-transform: uppercase; margin-bottom: 16px;">Simple by design</div>
+    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">Memory that works like yours.</h2>
+    <p style="margin: 0; max-width: 560px; font-size: 18px; color: #566375; line-height: 1.5;">Three steps. Your agent learns, remembers, and naturally forgets what it no longer needs.</p>
 
-  <!-- 01 HOW IT WORKS -->
-  <section id="how" style="position: relative; z-index: 1; padding: clamp(70px, 9vw, 120px) clamp(18px, 4vw, 56px); max-width: 1180px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
-      <span>// HOW IT WORKS</span><span style="margin-left: auto; color: #5a6b80;">[ 01 / 07 ]</span>
-    </div>
-    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 52px); letter-spacing: -1.2px; line-height: 1.04;">Memory that works like yours.</h2>
-    <p style="margin: 0; max-width: 560px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Three steps. Your AI agent learns, remembers, and naturally forgets what it no longer needs.</p>
+    <!-- ✦ MEMORY LIFECYCLE GRAPHIC -->
+    <div style="margin: 44px 0 0; padding: 28px 32px 22px; border-radius: 24px; background: linear-gradient(135deg, #f0f8ff 0%, #e8f5fc 55%, #f4fefd 100%); border: 1px solid rgba(13,143,214,0.13); overflow: hidden;">
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #0a87cc; margin-bottom: 18px;">Memory lifecycle</div>
+      <svg width="100%" viewBox="0 0 900 138" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="ymrg1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#19cdff" stop-opacity=".2"/><stop offset="100%" stop-color="#19cdff" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ymrg2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0a87cc" stop-opacity=".2"/><stop offset="100%" stop-color="#0a87cc" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ymrg3" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0fb5a8" stop-opacity=".2"/><stop offset="100%" stop-color="#0fb5a8" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ymrg4" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0d8fd6" stop-opacity=".2"/><stop offset="100%" stop-color="#0d8fd6" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ymrg5" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fbbf73" stop-opacity=".3"/><stop offset="100%" stop-color="#fbbf73" stop-opacity="0"/></radialGradient>
+          <marker id="yma1" markerWidth="9" markerHeight="7" refX="7.5" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#0a87cc" opacity=".85"/></marker>
+          <marker id="yma2" markerWidth="9" markerHeight="7" refX="7.5" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#0fb5a8" opacity=".85"/></marker>
+          <marker id="yma3" markerWidth="9" markerHeight="7" refX="7.5" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#fbbf73" opacity=".85"/></marker>
+        </defs>
+        <!-- connectors -->
+        <line x1="128" y1="50" x2="232" y2="50" stroke="#0a87cc" stroke-width="2" stroke-dasharray="6 4" opacity=".55" marker-end="url(#yma1)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1s" repeatCount="indefinite"/></line>
+        <line x1="308" y1="50" x2="412" y2="50" stroke="#0fb5a8" stroke-width="2" stroke-dasharray="6 4" opacity=".55" marker-end="url(#yma2)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line>
+        <line x1="488" y1="50" x2="592" y2="50" stroke="#0d8fd6" stroke-width="2" stroke-dasharray="6 4" opacity=".55" marker-end="url(#yma1)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.1s" repeatCount="indefinite"/></line>
+        <line x1="668" y1="50" x2="772" y2="50" stroke="#fbbf73" stroke-width="2" stroke-dasharray="5 5" opacity=".5" marker-end="url(#yma3)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite"/></line>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; margin-top: 48px;">
+        <!-- Node 1: User Input -->
+        <ellipse cx="90" cy="50" rx="46" ry="46" fill="url(#ymrg1)"/>
+        <circle cx="90" cy="50" r="32" fill="white" stroke="#0a87cc" stroke-width="1.5"/>
+        <g transform="translate(90,50)" stroke="#0a87cc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M-12 -9 h24 a3 3 0 0 1 3 3 v10 a3 3 0 0 1 -3 3 h-14 l-7 5 v-5 h-3 a3 3 0 0 1 -3 -3 v-10 a3 3 0 0 1 3 -3 z"/>
+        </g>
+        <circle cx="85" cy="49" r="1.3" fill="#0a87cc"/><circle cx="90" cy="49" r="1.3" fill="#0a87cc"/><circle cx="95" cy="49" r="1.3" fill="#0a87cc"/>
+        <text x="90" y="100" text-anchor="middle" font-size="12" fill="#415062" font-family="Figtree,sans-serif" font-weight="600">User Input</text>
+
+        <!-- Node 2: Memory Born -->
+        <ellipse cx="270" cy="50" rx="46" ry="46" fill="url(#ymrg2)"/>
+        <circle cx="270" cy="50" r="32" fill="white" stroke="#0a87cc" stroke-width="1.5"/>
+        <circle cx="270" cy="50" r="24" fill="none" stroke="#19cdff" stroke-width="1" stroke-dasharray="4 3" opacity=".5"><animateTransform attributeName="transform" type="rotate" from="0 270 50" to="360 270 50" dur="8s" repeatCount="indefinite"/></circle>
+        <g transform="translate(270,50)" fill="#0a87cc">
+          <path d="M0 -13 L3 -3 L13 0 L3 3 L0 13 L-3 3 L-13 0 L-3 -3 Z"/>
+        </g>
+        <text x="270" y="100" text-anchor="middle" font-size="12" fill="#415062" font-family="Figtree,sans-serif" font-weight="600">Memory Born</text>
+        <rect x="242" y="114" width="56" height="3.5" rx="1.75" fill="#dce8f5"/>
+        <rect x="242" y="114" width="56" height="3.5" rx="1.75" fill="#0a87cc"/>
+
+        <!-- Node 3: Stored + Linked -->
+        <ellipse cx="450" cy="50" rx="46" ry="46" fill="url(#ymrg3)"/>
+        <circle cx="450" cy="50" r="32" fill="white" stroke="#0fb5a8" stroke-width="1.5"/>
+        <g transform="translate(450,50)" stroke="#0fb5a8" stroke-width="1.8">
+          <line x1="-9" y1="-7" x2="8" y2="-3"/><line x1="8" y1="-3" x2="-3" y2="9"/><line x1="-9" y1="-7" x2="-3" y2="9"/>
+          <circle cx="-9" cy="-7" r="3.4" fill="#0fb5a8" stroke="none"/><circle cx="8" cy="-3" r="3.4" fill="#0fb5a8" stroke="none"/><circle cx="-3" cy="9" r="3.4" fill="#0fb5a8" stroke="none"/>
+        </g>
+        <text x="450" y="100" text-anchor="middle" font-size="12" fill="#415062" font-family="Figtree,sans-serif" font-weight="600">Stored + Linked</text>
+        <rect x="422" y="114" width="56" height="3.5" rx="1.75" fill="#dce8f5"/>
+        <rect x="422" y="114" width="56" height="3.5" rx="1.75" fill="#0fb5a8"/>
+
+        <!-- Node 4: Recalled -->
+        <ellipse cx="630" cy="50" rx="46" ry="46" fill="url(#ymrg4)"/>
+        <circle cx="630" cy="50" r="32" fill="white" stroke="#0d8fd6" stroke-width="1.5"/>
+        <g transform="translate(630,50)" stroke="#0d8fd6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M0 10 V-8"/><path d="M-6 -2 L0 -8 L6 -2"/>
+        </g>
+        <text x="630" y="100" text-anchor="middle" font-size="12" fill="#415062" font-family="Figtree,sans-serif" font-weight="600">Recalled</text>
+        <rect x="602" y="114" width="56" height="3.5" rx="1.75" fill="#dce8f5"/>
+        <rect x="602" y="114" width="56" height="3.5" rx="1.75" fill="#0d8fd6"/>
+
+        <!-- Node 5: Fades Naturally -->
+        <ellipse cx="810" cy="50" rx="46" ry="46" fill="url(#ymrg5)"/>
+        <circle cx="810" cy="50" r="32" fill="#fffdf9" stroke="#fbbf73" stroke-width="1.5"><animate attributeName="opacity" values="1;.55;1" dur="2.6s" repeatCount="indefinite"/></circle>
+        <g transform="translate(810,50)" fill="#b8690a">
+          <circle cx="-11" cy="0" r="3"/><circle cx="-2" cy="0" r="2.4" opacity=".7"/><circle cx="6" cy="0" r="1.8" opacity=".45"/><circle cx="12" cy="0" r="1.2" opacity=".22"/>
+        </g>
+        <text x="810" y="100" text-anchor="middle" font-size="12" fill="#415062" font-family="Figtree,sans-serif" font-weight="600">Fades Naturally</text>
+        <rect x="782" y="114" width="56" height="3.5" rx="1.75" fill="#f3e6d2"/>
+        <rect x="782" y="114" width="20" height="3.5" rx="1.75" fill="#fbbf73"><animate attributeName="width" values="44;8;44" dur="3.5s" repeatCount="indefinite"/></rect>
+      </svg>
+      <div style="display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 12px; color: #6b7d92; font-family: 'Figtree', sans-serif;">
+        <span style="display: inline-block; width: 22px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, #0a87cc, #fbbf73);"></span>
+        Bars show memory strength — full when recently created or recalled, fading as it ages unused.
+      </div>
+    </div>
+
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 22px; margin-top: 56px;">
       <sc-for list="{{ steps }}" as="step" hint-placeholder-count="3">
-        <div style="position: relative; padding: 28px; border-radius: 18px; background: #0c1320; border: 1px solid rgba(255,255,255,0.08); transition: transform .25s, border-color .25s; overflow: hidden;" style-hover="transform: translateY(-5px); border-color: rgba(25,205,255,0.4);">
-          <div style="display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(25,205,255,0.1); border: 1px solid rgba(25,205,255,0.3); font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 16px; color: #19cdff;">{{ step.n }}</div>
-          <h3 style="margin: 20px 0 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.3px;">{{ step.title }}</h3>
-          <p style="margin: 0 0 18px; font-size: 14.5px; line-height: 1.55; color: #9fb0c3;">{{ step.desc }}</p>
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.95; color: #7fe3ff; background: #060a12; border: 1px solid rgba(255,255,255,0.07); border-radius: 11px; padding: 13px 15px; white-space: pre-wrap;">{{ step.code }}</div>
+        <div style="position: relative; padding: 30px; border-radius: 20px; background: linear-gradient(180deg, rgba(10,37,64,0.045), rgba(10,37,64,0.02)); border: 1px solid rgba(10,37,64,0.1); transition: transform .25s, border-color .25s, box-shadow .25s;" style-hover="transform: translateY(-6px); border-color: rgba(25,205,255,0.35); box-shadow: 0 18px 50px rgba(0,0,0,0.4);">
+          <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(25,205,255,0.12); border: 1px solid rgba(25,205,255,0.3); font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 19px; color: #0a87cc;">{{ step.n }}</div>
+          <h3 style="margin: 22px 0 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.4px;">{{ step.title }}</h3>
+          <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.55; color: #5b6b80;">{{ step.desc }}</p>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #0d8fd6; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre-wrap;">{{ step.code }}</div>
         </div>
       </sc-for>
     </div>
   </section>
 
-  <!-- 02 ENGINE -->
-  <section id="engine" style="position: relative; z-index: 1; padding: clamp(60px, 7vw, 100px) clamp(18px, 4vw, 56px); max-width: 1180px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
-      <span>// THE ENGINE</span><span style="margin-left: auto; color: #5a6b80;">[ 02 / 07 ]</span>
-    </div>
-    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 52px); letter-spacing: -1.2px; line-height: 1.04;">Three layers. One engine.</h2>
-    <p style="margin: 0; max-width: 620px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Vector search finds what you asked for. The graph finds what you forgot to ask for. Ebbinghaus decides what survives.</p>
+  <!-- ENGINE / THREE LAYERS -->
+  <section id="engine" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0a87cc; text-transform: uppercase; margin-bottom: 16px;">Under the hood</div>
+    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">Three layers. One engine.</h2>
+    <p style="margin: 0; max-width: 620px; font-size: 18px; color: #566375; line-height: 1.5;">Vector search finds what you asked for. The graph finds what you forgot to ask for. Ebbinghaus decides what survives.</p>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; margin-top: 48px;">
+    <!-- ✦ ARCHITECTURE DIAGRAM -->
+    <div style="margin: 44px 0 0; padding: 28px 32px 28px; border-radius: 24px; background: linear-gradient(135deg, #f4fefd 0%, #e8f5fc 60%, #f0f8ff 100%); border: 1px solid rgba(15,181,168,0.15); overflow: hidden;">
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #0fb5a8; margin-bottom: 20px;">How the engine works</div>
+      <svg width="100%" viewBox="0 0 900 188" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ymcyan" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8f9ff"/><stop offset="100%" stop-color="#f0f8ff"/></linearGradient>
+          <linearGradient id="ymteal" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8fdf9"/><stop offset="100%" stop-color="#f0fefd"/></linearGradient>
+          <linearGradient id="ymamb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fef9ee"/><stop offset="100%" stop-color="#fdfaf4"/></linearGradient>
+          <marker id="ymeng" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#0a87cc" opacity=".5"/></marker>
+        </defs>
+        <!-- Query flows right → -->
+        <text x="14" y="100" font-size="10" fill="#8298b3" font-family="Figtree,sans-serif">Query →</text>
+
+        <!-- Layer 1: Vector Search -->
+        <rect x="64" y="20" width="234" height="148" rx="16" fill="url(#ymcyan)" stroke="#19cdff" stroke-width="1.5"/>
+        <rect x="64" y="20" width="234" height="4" rx="2" fill="#19cdff" opacity=".6"/>
+        <g transform="translate(96,53)" stroke="#19cdff" stroke-width="1.8" fill="none" stroke-linecap="round"><circle cx="-2" cy="-2" r="6"/><line x1="2.5" y1="2.5" x2="7" y2="7"/></g>
+        <text x="116" y="58" font-size="13" fill="#0a2540" font-family="Figtree,sans-serif" font-weight="700">Vector Search</text>
+        <text x="84" y="87" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Dense + BM25 hybrid</text>
+        <text x="84" y="104" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Semantic similarity</text>
+        <text x="84" y="121" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Top-K candidates</text>
+        <text x="84" y="155" font-size="10" fill="#19cdff" font-family="JetBrains Mono,monospace">score ≥ 0.72</text>
+
+        <!-- Connector 1→2 -->
+        <line x1="300" y1="94" x2="370" y2="94" stroke="#0a87cc" stroke-width="1.5" stroke-dasharray="5 3" opacity=".5" marker-end="url(#ymeng)"><animate attributeName="stroke-dashoffset" from="0" to="-16" dur="1s" repeatCount="indefinite"/></line>
+        <text x="314" y="88" font-size="9" fill="#8298b3" font-family="Figtree,sans-serif">expand</text>
+
+        <!-- Layer 2: Entity Graph -->
+        <rect x="374" y="20" width="234" height="148" rx="16" fill="url(#ymteal)" stroke="#0fb5a8" stroke-width="1.5"/>
+        <rect x="374" y="20" width="234" height="4" rx="2" fill="#0fb5a8" opacity=".6"/>
+        <g transform="translate(404,53)" stroke="#0fb5a8" stroke-width="1.6"><line x1="-6" y1="-4" x2="6" y2="-5"/><line x1="6" y1="-5" x2="-1" y2="6"/><line x1="-6" y1="-4" x2="-1" y2="6"/><circle cx="-6" cy="-4" r="2.6" fill="#0fb5a8" stroke="none"/><circle cx="6" cy="-5" r="2.6" fill="#0fb5a8" stroke="none"/><circle cx="-1" cy="6" r="2.6" fill="#0fb5a8" stroke="none"/></g>
+        <text x="422" y="58" font-size="13" fill="#0a2540" font-family="Figtree,sans-serif" font-weight="700">Entity Graph</text>
+        <text x="394" y="87" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Node expansion</text>
+        <text x="394" y="104" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Related memory hops</text>
+        <text x="394" y="121" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Temporal reasoning</text>
+        <text x="394" y="155" font-size="10" fill="#0fb5a8" font-family="JetBrains Mono,monospace">depth ≤ 2 hops</text>
+
+        <!-- Connector 2→3 -->
+        <line x1="610" y1="94" x2="680" y2="94" stroke="#b8690a" stroke-width="1.5" stroke-dasharray="5 3" opacity=".5" marker-end="url(#ymeng)"><animate attributeName="stroke-dashoffset" from="0" to="-16" dur="1.2s" repeatCount="indefinite"/></line>
+        <text x="622" y="88" font-size="9" fill="#8298b3" font-family="Figtree,sans-serif">filter</text>
+
+        <!-- Layer 3: Decay -->
+        <rect x="684" y="20" width="202" height="148" rx="16" fill="url(#ymamb)" stroke="#fbbf73" stroke-width="1.5"/>
+        <rect x="684" y="20" width="202" height="4" rx="2" fill="#fbbf73" opacity=".7"/>
+        <g transform="translate(712,53)" stroke="#b8690a" stroke-width="1.8" fill="none" stroke-linecap="round"><path d="M-7 -5 C -2 -5, -1 5, 6 5"/><circle cx="6" cy="5" r="1.6" fill="#b8690a" stroke="none"/></g>
+        <text x="730" y="58" font-size="13" fill="#0a2540" font-family="Figtree,sans-serif" font-weight="700">Decay Filter</text>
+        <text x="704" y="87" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Ebbinghaus S(t)</text>
+        <text x="704" y="104" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Prune S &lt; 0.05</text>
+        <text x="704" y="121" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Ranked output</text>
+        <text x="704" y="155" font-size="10" fill="#b8690a" font-family="JetBrains Mono,monospace">e^(−λt)</text>
+      </svg>
+    </div>
+
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 22px; margin-top: 56px;">
       <sc-for list="{{ layers }}" as="layer" hint-placeholder-count="3">
-        <div style="padding: 28px; border-radius: 18px; background: #0c1320; border: 1px solid rgba(255,255,255,0.08); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-5px); border-color: rgba(94,234,212,0.4);">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1px; color: #5eead4; text-transform: uppercase;">{{ layer.tag }}</div>
-          <h3 style="margin: 12px 0 12px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 21px; letter-spacing: -0.3px;">{{ layer.title }}</h3>
-          <p style="margin: 0 0 20px; font-size: 14.5px; line-height: 1.6; color: #9fb0c3;">{{ layer.desc }}</p>
-          <div style="display: flex; flex-direction: column; gap: 9px;">
+        <div style="padding: 30px; border-radius: 20px; background: rgba(10,37,64,0.03); border: 1px solid rgba(10,37,64,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-6px); border-color: rgba(94,234,212,0.35);">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 1px; color: #0fb5a8; text-transform: uppercase;">{{ layer.tag }}</div>
+          <h3 style="margin: 12px 0 12px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 23px; letter-spacing: -0.4px;">{{ layer.title }}</h3>
+          <p style="margin: 0 0 20px; font-size: 15px; line-height: 1.6; color: #5b6b80;">{{ layer.desc }}</p>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
             <sc-for list="{{ layer.points }}" as="pt" hint-placeholder-count="3">
-              <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: #b6c5d6;">
-                <span style="width: 5px; height: 5px; border-radius: 50%; background: #5eead4; flex: none; box-shadow: 0 0 6px #5eead4;"></span>{{ pt }}
+              <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #37485c;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: #0fb5a8; flex: none;"></span>{{ pt }}
               </div>
             </sc-for>
           </div>
@@ -216,72 +310,68 @@
     </div>
   </section>
 
-  <!-- 03 MEMORY DECAY -->
-  <section id="decay" style="position: relative; z-index: 1; padding: clamp(60px, 7vw, 100px) clamp(18px, 4vw, 56px); max-width: 1180px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
-      <span>// MEMORY DECAY</span><span style="margin-left: auto; color: #5a6b80;">[ 03 / 07 ]</span>
-    </div>
-    <div data-r="split" style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.2fr); gap: clamp(28px, 4vw, 64px); align-items: center;">
+  <!-- INTERACTIVE DECAY -->
+  <section id="decay" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
+    <div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.25fr); gap: clamp(30px, 5vw, 70px); align-items: center;">
       <div>
-        <h2 style="margin: 0 0 16px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(28px, 3.6vw, 48px); letter-spacing: -1.2px; line-height: 1.05;">Watch memory fade.</h2>
-        <p style="margin: 0 0 26px; font-size: 16px; line-height: 1.6; color: #9fb0c3;">Every memory carries a strength score <span style="font-family: 'JetBrains Mono', monospace; color: #7fe3ff;">S(t) = e<sup>−λt</sup></span>. Different categories age at different rates. Drag the half-life — when strength drops below the prune line, the memory fades from retrieval.</p>
+        <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #b8690a; text-transform: uppercase; margin-bottom: 16px;">The forgetting curve</div>
+        <h2 style="margin: 0 0 16px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 54px); letter-spacing: -1.4px; line-height: 1.03;">Watch memory fade.</h2>
+        <p style="margin: 0 0 28px; font-size: 17px; line-height: 1.6; color: #566375;">Every memory carries a strength score <span style="font-family: 'JetBrains Mono', monospace; color: #0d8fd6;">S(t) = e<sup>−λt</sup></span>. Different categories age at different rates. Drag to set the half-life — when strength drops below the prune line, the memory fades from retrieval.</p>
 
-        <div style="display: flex; gap: 9px; flex-wrap: wrap; margin-bottom: 26px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 26px;">
           <sc-for list="{{ presets }}" as="p" hint-placeholder-count="3">
-            <button onClick="{{ p.onClick }}" style="cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 500; color: {{ p.fg }}; background: {{ p.bg }}; border: 1px solid {{ p.bd }}; padding: 8px 14px; border-radius: 9px; transition: all .2s;">{{ p.label }}</button>
+            <button onClick="{{ p.onClick }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 13.5px; font-weight: 600; color: {{ p.fg }}; background: {{ p.bg }}; border: 1px solid {{ p.bd }}; padding: 9px 16px; border-radius: 999px; transition: all .2s;">{{ p.label }}</button>
           </sc-for>
         </div>
 
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: #64748b; margin-bottom: 8px; display: flex; justify-content: space-between;"><span>half-life</span><span style="color: #e6edf6;">{{ halfLifeLabel }}</span></div>
-        <input type="range" min="3" max="60" step="1" value="{{ halfLife }}" onInput="{{ onHalfLife }}" style="width: 100%; accent-color: #19cdff; cursor: pointer;">
+        <div style="font-size: 13px; color: #6b7d92; margin-bottom: 8px; display: flex; justify-content: space-between;"><span>Half-life</span><span style="font-family: 'JetBrains Mono', monospace; color: #0a2540;">{{ halfLifeLabel }}</span></div>
+        <input type="range" min="3" max="60" step="1" value="{{ halfLife }}" onInput="{{ onHalfLife }}" style="width: 100%; accent-color: #0a87cc; cursor: pointer;">
 
-        <div style="margin-top: 26px; display: flex; gap: 30px;">
+        <div style="margin-top: 26px; display: flex; gap: 26px;">
           <div>
-            <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 28px; color: #fbbf73;">{{ strengthLabel }}</div>
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #64748b; margin-top: 5px;">strength @ 14d</div>
+            <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 30px; color: #b8690a;">{{ strengthLabel }}</div>
+            <div style="font-size: 13px; color: #6b7d92; margin-top: 4px;">Strength after 14 days</div>
           </div>
           <div>
-            <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 28px; color: #e6edf6;">{{ pruneDayLabel }}</div>
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #64748b; margin-top: 5px;">pruned at S &lt; 0.05</div>
+            <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 30px; color: #0a2540;">{{ pruneDayLabel }}</div>
+            <div style="font-size: 13px; color: #6b7d92; margin-top: 4px;">Pruned at S &lt; 0.05</div>
           </div>
         </div>
       </div>
 
-      <div style="position: relative; border-radius: 18px; background: #0a0f1a; border: 1px solid rgba(255,255,255,0.09); padding: 20px;">
-        <canvas ref="{{ decayCanvasRef }}" style="width: 100%; height: 340px; display: block;"></canvas>
+      <div style="position: relative; border-radius: 22px; background: linear-gradient(180deg, rgba(10,37,64,0.04), rgba(255,255,255,0.01)); border: 1px solid rgba(10,37,64,0.1); padding: 22px;">
+        <canvas ref="{{ decayCanvasRef }}" style="width: 100%; height: 360px; display: block;"></canvas>
       </div>
     </div>
   </section>
 
-  <!-- 04 BENCHMARKS -->
-  <section id="benchmarks" style="position: relative; z-index: 1; padding: clamp(60px, 7vw, 100px) clamp(18px, 4vw, 56px); max-width: 1180px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
-      <span>// BENCHMARKS</span><span style="margin-left: auto; color: #5a6b80;">[ 04 / 07 ]</span>
-    </div>
-    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 52px); letter-spacing: -1.2px; line-height: 1.04;">Measured, not claimed.</h2>
-    <p style="margin: 0 0 36px; max-width: 580px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Evaluated on three public datasets. Every number independently reproducible — benchmark code lives in the repo.</p>
+  <!-- BENCHMARKS -->
+  <section id="benchmarks" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0a87cc; text-transform: uppercase; margin-bottom: 16px;">Measured, not claimed</div>
+    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">Benchmark results.</h2>
+    <p style="margin: 0 0 40px; max-width: 580px; font-size: 18px; color: #566375; line-height: 1.5;">Evaluated on three public datasets. Every number independently reproducible — benchmark code lives in the repo.</p>
 
-    <div style="display: inline-flex; gap: 5px; padding: 5px; border-radius: 11px; background: #0c1320; border: 1px solid rgba(255,255,255,0.09); margin-bottom: 36px;">
+    <div style="display: inline-flex; gap: 6px; padding: 6px; border-radius: 999px; background: rgba(10,37,64,0.04); border: 1px solid rgba(10,37,64,0.1); margin-bottom: 36px;">
       <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
-        <button onClick="{{ t.onClick }}" style="cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: {{ t.fg }}; background: {{ t.bg }}; border: none; padding: 9px 18px; border-radius: 8px; transition: all .25s;">{{ t.label }}</button>
+        <button onClick="{{ t.onClick }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 14.5px; font-weight: 600; color: {{ t.fg }}; background: {{ t.bg }}; border: none; padding: 10px 22px; border-radius: 999px; transition: all .25s;">{{ t.label }}</button>
       </sc-for>
     </div>
 
-    <div data-r="split" style="display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr); gap: clamp(24px, 4vw, 56px); align-items: start;">
+    <div style="display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr); gap: clamp(24px, 4vw, 60px); align-items: start;">
       <div>
-        <div style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: clamp(54px, 7.5vw, 96px); line-height: 0.9; background: linear-gradient(130deg, #19cdff, #5eead4); -webkit-background-clip: text; background-clip: text; color: transparent;">{{ bigNum }}</div>
-        <div style="font-size: 15.5px; font-weight: 600; color: #e6edf6; margin-top: 12px;">{{ bigLabel }}</div>
-        <p style="margin: 13px 0 0; font-size: 14.5px; line-height: 1.6; color: #9fb0c3; max-width: 320px;">{{ bigDesc }}</p>
+        <div style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: clamp(56px, 8vw, 104px); line-height: 0.9; background: linear-gradient(130deg, #0d8fd6, #0fb5a8); -webkit-background-clip: text; background-clip: text; color: transparent;">{{ bigNum }}</div>
+        <div style="font-size: 16px; font-weight: 600; color: #0a2540; margin-top: 12px;">{{ bigLabel }}</div>
+        <p style="margin: 14px 0 0; font-size: 15px; line-height: 1.6; color: #5b6b80; max-width: 320px;">{{ bigDesc }}</p>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 18px;">
         <sc-for list="{{ bars }}" as="bar" hint-placeholder-count="4">
           <div>
-            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px;">
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: {{ bar.labelColor }};">{{ bar.l }}</span>
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: {{ bar.labelColor }};">{{ bar.valLabel }}</span>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+              <span style="font-size: 14.5px; font-weight: 600; color: {{ bar.labelColor }};">{{ bar.l }}</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: {{ bar.labelColor }};">{{ bar.valLabel }}</span>
             </div>
-            <div style="height: 11px; border-radius: 999px; background: rgba(255,255,255,0.06); overflow: hidden;">
+            <div style="height: 12px; border-radius: 999px; background: rgba(10,37,64,0.09); overflow: hidden;">
               <div style="height: 100%; border-radius: 999px; width: {{ bar.width }}; background: {{ bar.fill }}; transition: width .7s cubic-bezier(.2,.8,.2,1);"></div>
             </div>
           </div>
@@ -290,374 +380,503 @@
     </div>
   </section>
 
-  <!-- 04b SAVINGS CALCULATOR -->
-  <section id="calculator" style="position: relative; z-index: 1; padding: clamp(60px, 7vw, 100px) clamp(18px, 4vw, 56px); max-width: 1180px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
-      <span>// YOUR NUMBERS</span>
-    </div>
-    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 52px); letter-spacing: -1.2px; line-height: 1.04;">How much would <em>you</em> save?</h2>
-    <p style="margin: 0 0 48px; max-width: 560px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Run a 30-second check inside any AI session — it measures and compresses the conversation on its own.</p>
+  <!-- YOUR NUMBERS / SAVINGS CALCULATOR -->
+  <section id="savings" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0a87cc; text-transform: uppercase; margin-bottom: 16px;">Your numbers</div>
+    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">How much would <span style="background: linear-gradient(120deg,#0d8fd6,#0fb5a8); -webkit-background-clip:text; background-clip:text; color:transparent;">you</span> save?</h2>
+    <p style="margin: 0 0 40px; max-width: 580px; font-size: 18px; color: #566375; line-height: 1.5;">Two ways to find out — a 30-second check inside your AI, or a full breakdown from your own history.</p>
 
-    <!-- QUICK AUDIT -->
-    <div style="margin-bottom: 32px; background: rgba(25,205,255,0.03); border: 1px solid rgba(25,205,255,0.12); border-radius: 20px; padding: 28px 30px;">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
-        <span style="font-size:17px;font-weight:700;color:#e6edf6;">Instant audit — runs inside any AI session</span>
-        <span style="background:rgba(25,205,255,0.12);border:1px solid rgba(25,205,255,0.3);border-radius:20px;padding:3px 11px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:#19cdff;text-transform:uppercase;white-space:nowrap;">30 sec</span>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px,1fr)); gap: 22px;">
+      <!-- Instant audit -->
+      <div style="padding: 28px; border-radius: 22px; background: rgba(10,37,64,0.03); border: 1px solid rgba(10,37,64,0.1); display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px;">
+          <span style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#0a87cc;">Instant audit</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#0fb5a8; background:rgba(15,181,168,0.1); border:1px solid rgba(15,181,168,0.25); padding:4px 10px; border-radius:999px;">30 sec</span>
+        </div>
+        <p style="margin:0 0 16px; font-size:14.5px; line-height:1.6; color:#5b6b80;">Paste this at the end of any session — <strong style="color:#37485c;">Claude, ChatGPT, Gemini, Cursor, Copilot</strong>. It needs no knowledge of YourMemory; your AI measures and compresses the conversation itself.</p>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; color:#0d8fd6; background:rgba(234,242,251,0.95); border:1px solid rgba(10,37,64,0.09); border-radius:12px; padding:14px 16px; white-space:pre-wrap; flex:1;">{{ auditPrompt }}</div>
+        <button onClick="{{ copyAudit }}" style="cursor:pointer; margin-top:14px; align-self:flex-start; font-family:'Google Sans','Figtree',sans-serif; font-size:14px; font-weight:600; color:#ffffff; background:#19cdff; border:none; padding:11px 20px; border-radius:999px; transition:transform .2s;" style-hover="transform:translateY(-1px);">{{ copyAuditLabel }}</button>
+        <div style="margin-top:14px; font-size:12.5px; color:#6b829c; line-height:1.6;">Your AI replies with: <span style="font-family:'JetBrains Mono',monospace; color:#0a87cc;">Full ~X,XXX · Memory ~XXX · Savings XX%</span></div>
       </div>
-      <p style="margin: 0 0 18px; font-size:14px; color:#5a6b80; line-height:1.6;">Copy this prompt and paste it at the end of any session — <strong style="color:#9fb0c3;">Claude, ChatGPT, Gemini, Cursor, Copilot, any AI.</strong> It needs no knowledge of YourMemory. Your AI will measure and compress the conversation on its own.</p>
-      <div style="position:relative;background:rgba(0,0,0,0.28);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px 20px;">
-        <pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.75;color:#9fb0c3;white-space:pre-wrap;word-break:break-word;padding-right:80px;">{{ auditPrompt }}</pre>
-        <button onclick="$h.copyPrompt()" style="position:absolute;top:14px;right:14px;background:{{ cpInlineBg }};border:1px solid {{ cpInlineBorder }};border-radius:8px;color:{{ cpInlineColor }};font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:6px 13px;cursor:pointer;letter-spacing:0.5px;white-space:nowrap;transition:all .2s;">{{ cpInlineLabel }}</button>
-      </div>
-      <button onclick="$h.copyPrompt()" style="width:100%;margin-top:14px;padding:14px;background:{{ cpBtnBg }};border:1px solid {{ cpBtnBorder }};border-radius:12px;color:{{ cpBtnColor }};font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;letter-spacing:0.3px;cursor:pointer;transition:all .2s;">{{ cpBtnLabel }}</button>
-      <div style="margin-top:10px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#3d4f60;">
-        Your AI replies with: <span style="color:#5a6b80;">Full conversation: ~X,XXX tokens · Compressed memory: ~XXX tokens · Savings: XX%</span>
+
+      <!-- Calculator -->
+      <div style="padding: 28px; border-radius: 22px; background: rgba(25,205,255,0.05); border: 1px solid rgba(25,205,255,0.24); display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px;">
+          <span style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#0a87cc;">Calculate from your history</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#0a87cc; background:rgba(25,205,255,0.12); border:1px solid rgba(25,205,255,0.3); padding:4px 10px; border-radius:999px;">local · private</span>
+        </div>
+        <p style="margin:0 0 14px; font-size:14.5px; line-height:1.6; color:#5b6b80;">Export any AI chat and paste it below. Tokenized in your browser — nothing is sent anywhere.</p>
+        <textarea placeholder="Paste your conversation history…" value="{{ calcHistory }}" onInput="{{ onCalcHistory }}" style="width:100%; min-height:96px; resize:vertical; font-family:'Google Sans','Figtree',sans-serif; font-size:14px; line-height:1.5; color:#0a2540; background:rgba(255,255,255,0.7); border:1px solid rgba(10,37,64,0.16); border-radius:12px; padding:12px 14px; outline:none; box-sizing:border-box;"></textarea>
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:8px; font-size:12.5px; color:#6b829c;"><span style="font-family:'JetBrains Mono',monospace; color:#0a87cc;">{{ calcTokensFmt }} tokens</span><span>~0.75 words per token</span></div>
+
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin:18px 0 6px; font-size:13px; color:#6b7d92;"><span>Sessions this spans</span><span style="font-family:'JetBrains Mono',monospace; color:#0a2540;">{{ calcSessions }}</span></div>
+        <input type="range" min="2" max="300" step="1" value="{{ calcSessions }}" onInput="{{ onCalcSessions }}" style="width:100%; accent-color:#0a87cc; cursor:pointer;">
+
+        <div style="margin-top:18px; display:flex; gap:8px; flex-wrap:wrap;">
+          <sc-for list="{{ modelOpts }}" as="mo" hint-placeholder-count="4">
+            <button onClick="{{ mo.onClick }}" style="cursor:pointer; font-family:'Google Sans','Figtree',sans-serif; font-size:12.5px; font-weight:600; color:{{ mo.fg }}; background:{{ mo.bg }}; border:1px solid {{ mo.bd }}; padding:8px 13px; border-radius:999px; transition:all .2s;">{{ mo.label }}</button>
+          </sc-for>
+        </div>
       </div>
     </div>
 
+    <!-- Results -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; margin-top:22px;">
+      <div style="padding:26px; border-radius:20px; background:rgba(251,113,133,0.05); border:1px solid rgba(251,113,133,0.2);">
+        <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#fb7185; margin-bottom:14px;">Without YourMemory</div>
+        <div style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:clamp(30px,4vw,44px); color:#e11d48; line-height:1;">{{ calcBaseTokFmt }}</div>
+        <div style="font-size:13px; color:#6b7d92; margin-top:8px;">tokens · {{ calcBaseCostFmt }} on {{ calcModelLabel }}</div>
+        <p style="margin:14px 0 0; font-size:13.5px; line-height:1.6; color:#5b6b80;">Context compounds — by session {{ calcSessions }} you re-send <span style="color:#e11d48; font-weight:600;">{{ calcCtxPerSessFmt }}</span> tokens of history every time.</p>
+      </div>
+      <div style="padding:26px; border-radius:20px; background:rgba(25,205,255,0.06); border:1px solid rgba(25,205,255,0.28);">
+        <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#0a87cc; margin-bottom:14px;">With YourMemory</div>
+        <div style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:clamp(30px,4vw,44px); color:#0d8fd6; line-height:1;">{{ calcYmTokFmt }}</div>
+        <div style="font-size:13px; color:#6b7d92; margin-top:8px;">tokens · {{ calcYmCostFmt }} on {{ calcModelLabel }}</div>
+        <p style="margin:14px 0 0; font-size:13.5px; line-height:1.6; color:#5b6b80;"><span style="color:#0d8fd6; font-weight:600;">~{{ calcYmPerSessFmt }}</span> recalled tokens injected per session — flat, never growing.</p>
+      </div>
+      <div style="padding:26px; border-radius:20px; background:linear-gradient(135deg,rgba(25,205,255,0.12),rgba(15,181,168,0.08)); border:1px solid rgba(15,181,168,0.3);">
+        <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#0fb5a8; margin-bottom:14px;">You save</div>
+        <div style="font-family:'Montserrat',sans-serif; font-weight:800; font-size:clamp(36px,5vw,56px); line-height:1; background:linear-gradient(120deg,#0d8fd6,#0fb5a8); -webkit-background-clip:text; background-clip:text; color:transparent;">{{ calcSavePct }}%</div>
+        <div style="font-size:13px; color:#6b7d92; margin-top:8px;">{{ calcSaveTokFmt }} tokens · {{ calcSaveCostFmt }} saved</div>
+      </div>
+    </div>
   </section>
 
-  <!-- 05 COMPARISON -->
-  <section id="compare" style="position: relative; z-index: 1; padding: clamp(60px, 7vw, 100px) clamp(18px, 4vw, 56px); max-width: 1180px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
-      <span>// COMPARISON</span><span style="margin-left: auto; color: #5a6b80;">[ 05 / 07 ]</span>
-    </div>
-    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 52px); letter-spacing: -1.2px; line-height: 1.04;">Not a vector database.</h2>
-    <p style="margin: 0 0 40px; max-width: 600px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Vector stores hoard chunks and never forget. YourMemory keeps memory that strengthens, fades, and connects — like yours.</p>
+  <!-- COMPARISON -->
+  <section id="compare" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0a87cc; text-transform: uppercase; margin-bottom: 16px;">Comparison</div>
+    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">Not a vector database.</h2>
+    <p style="margin: 0 0 40px; max-width: 600px; font-size: 18px; color: #566375; line-height: 1.5;">Vector stores hoard chunks and never forget. YourMemory keeps memory that strengthens, fades, and connects — like yours.</p>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 22px;">
-      <div style="padding: 28px; border-radius: 18px; background: rgba(251,113,133,0.04); border: 1px solid rgba(251,113,133,0.18);">
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: #fb7185; margin-bottom: 16px;">Legacy · vector DB</div>
-        <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.6; color: #b6c5d6;">Stores chunks. Returns chunks. Each session starts from zero — and nothing is ever prioritized or forgotten.</p>
-        <div style="display: flex; flex-direction: column; gap: 11px;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:22px;">
+      <div style="padding:28px; border-radius:20px; background:rgba(251,113,133,0.05); border:1px solid rgba(251,113,133,0.2);">
+        <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#fb7185; margin-bottom:14px;">Legacy · vector DB</div>
+        <p style="margin:0 0 18px; font-size:15px; line-height:1.6; color:#37485c;">Stores chunks. Returns chunks. Each session starts from zero — and nothing is ever prioritized or forgotten.</p>
+        <div style="display:flex; flex-direction:column; gap:11px;">
           <sc-for list="{{ legacyPoints }}" as="pt" hint-placeholder-count="4">
-            <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #8b9bb0;"><span style="color: #fb7185; font-family: 'JetBrains Mono', monospace;">✕</span>{{ pt }}</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:14px; color:#5b6b80;"><span style="flex:none; width:18px; height:18px; border-radius:50%; background:rgba(251,113,133,0.14); color:#fb7185; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">✕</span>{{ pt }}</div>
           </sc-for>
         </div>
       </div>
-      <div style="padding: 28px; border-radius: 18px; background: rgba(25,205,255,0.05); border: 1px solid rgba(25,205,255,0.3);">
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: #19cdff; margin-bottom: 16px;">YourMemory</div>
-        <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.6; color: #cdd9e8;">Facts that evolve. Knowledge that merges, decays, and connects across every session — so only what matters survives.</p>
-        <div style="display: flex; flex-direction: column; gap: 11px;">
+      <div style="padding:28px; border-radius:20px; background:rgba(25,205,255,0.06); border:1px solid rgba(25,205,255,0.28);">
+        <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#0a87cc; margin-bottom:14px;">YourMemory</div>
+        <p style="margin:0 0 18px; font-size:15px; line-height:1.6; color:#37485c;">Facts that evolve. Knowledge that merges, decays, and connects across every session — so only what matters survives.</p>
+        <div style="display:flex; flex-direction:column; gap:11px;">
           <sc-for list="{{ ymPoints }}" as="pt" hint-placeholder-count="4">
-            <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #e6edf6;"><span style="color: #5eead4; font-family: 'JetBrains Mono', monospace;">✓</span>{{ pt }}</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:14px; color:#37485c;"><span style="flex:none; width:18px; height:18px; border-radius:50%; background:rgba(15,181,168,0.16); color:#0fb5a8; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">✓</span>{{ pt }}</div>
           </sc-for>
         </div>
       </div>
     </div>
 
-    <!-- feature matrix -->
-    <div style="border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; background: #0c1320;">
-      <div data-r="matrix-head" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; color: #64748b; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02);">
-        <div style="padding: 16px 20px;">Feature</div>
-        <div style="padding: 16px 12px; text-align: center; color: #19cdff;">YourMemory</div>
-        <div style="padding: 16px 12px; text-align: center;">Mem0</div>
-        <div style="padding: 16px 12px; text-align: center;">Zep</div>
+    <div style="margin-top:22px; border-radius:20px; border:1px solid rgba(10,37,64,0.1); overflow:hidden; background:rgba(10,37,64,0.02);">
+      <div style="display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; align-items:center; padding:16px 22px; background:rgba(10,37,64,0.04); font-size:12.5px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; color:#6b7d92;">
+        <span>Feature</span>
+        <span style="text-align:center; color:#0a87cc;">YourMemory</span>
+        <span style="text-align:center;">Mem0</span>
+        <span style="text-align:center;">Zep</span>
       </div>
-      <sc-for list="{{ matrix }}" as="row" hint-placeholder-count="7">
-        <div data-r="matrix-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center;">
-          <div style="padding: 14px 20px; font-size: 14px; color: #cdd9e8;">{{ row.f }}</div>
-          <div style="padding: 14px 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 15px; color: {{ row.ymColor }};">{{ row.ym }}</div>
-          <div style="padding: 14px 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 15px; color: {{ row.mem0Color }};">{{ row.mem0 }}</div>
-          <div style="padding: 14px 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 15px; color: {{ row.zepColor }};">{{ row.zep }}</div>
+      <sc-for list="{{ compareRows }}" as="row" hint-placeholder-count="6">
+        <div style="display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; align-items:center; padding:15px 22px; border-top:1px solid rgba(10,37,64,0.08); font-size:14px;">
+          <span style="color:#37485c; font-weight:500;">{{ row.f }}</span>
+          <span style="text-align:center; font-size:16px; font-weight:700; color:{{ row.ymC }};">{{ row.ymG }}</span>
+          <span style="text-align:center; font-size:16px; font-weight:700; color:{{ row.mem0C }};">{{ row.mem0G }}</span>
+          <span style="text-align:center; font-size:16px; font-weight:700; color:{{ row.zepC }};">{{ row.zepG }}</span>
         </div>
       </sc-for>
     </div>
   </section>
 
-  <!-- 06 ENTERPRISE -->
-  <section id="enterprise" style="position: relative; z-index: 1; padding: clamp(60px, 7vw, 100px) clamp(18px, 4vw, 56px); max-width: 1180px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
-      <span>// ENTERPRISE</span><span style="margin-left: auto; color: #5a6b80;">[ 06 / 07 ]</span>
-    </div>
-    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 52px); letter-spacing: -1px; line-height: 1.05; max-width: 16ch;">Memory across your whole team.</h2>
-    <p style="margin: 0; max-width: 620px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Your team accumulates deep knowledge every day — customer quirks, solved problems, architectural decisions. Right now it evaporates when the session closes. Enterprise gives it a permanent home.</p>
+  <!-- ENTERPRISE -->
+  <section id="enterprise" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0fb5a8; text-transform: uppercase; margin-bottom: 16px;">Enterprise</div>
+    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(32px, 4.4vw, 58px); letter-spacing: -1px; line-height: 1.04; max-width: 14ch;">Memory that works across your whole team.</h2>
+    <p style="margin: 0; max-width: 620px; font-size: 18px; color: #566375; line-height: 1.5;">Your team accumulates deep knowledge every day — customer quirks, solved problems, architectural decisions. Right now it evaporates when the session closes. Enterprise gives it a permanent home.</p>
+
+    
 
     <!-- ✦ TEAM MEMORY NETWORK -->
-    <div data-r="svgwrap" style="margin-top: 44px; border-radius: 20px; background: radial-gradient(60% 80% at 50% 50%, rgba(25,205,255,0.05) 0%, rgba(25,205,255,0) 70%), #0a0f1a; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; padding: 14px;">
-      <svg width="100%" viewBox="0 0 900 360" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+    <div style="margin: 44px 0 32px; padding: 28px 32px; border-radius: 24px; background: linear-gradient(135deg, #f0f8ff 0%, #e8f5fc 55%, #f4fefd 100%); border: 1px solid rgba(13,143,214,0.12); display: flex; flex-direction: column; align-items: center; gap: 12px;">
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #0a87cc; align-self: flex-start;">Team memory sharing</div>
+      <svg width="100%" viewBox="0 0 820 300" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <radialGradient id="ymhub" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#19cdff" stop-opacity=".55"/><stop offset="60%" stop-color="#19cdff" stop-opacity=".12"/><stop offset="100%" stop-color="#19cdff" stop-opacity="0"/></radialGradient>
-          <radialGradient id="ymmem" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0d8fd6" stop-opacity=".22"/><stop offset="100%" stop-color="#0d8fd6" stop-opacity="0"/></radialGradient>
-          <radialGradient id="ymprv" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#5eead4" stop-opacity=".2"/><stop offset="100%" stop-color="#5eead4" stop-opacity="0"/></radialGradient>
-          <linearGradient id="ymwm" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#19cdff"/><stop offset="100%" stop-color="#5eead4"/></linearGradient>
+          <radialGradient id="ymhub" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#19cdff" stop-opacity=".22"/><stop offset="100%" stop-color="#19cdff" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ymnode" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0a87cc" stop-opacity=".12"/><stop offset="100%" stop-color="#0a87cc" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ympriv" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0fb5a8" stop-opacity=".12"/><stop offset="100%" stop-color="#0fb5a8" stop-opacity="0"/></radialGradient>
         </defs>
 
-        <!-- shared edges (solid cyan, glowing) -->
-        <g stroke="#19cdff" stroke-width="1.6" fill="none">
-          <line x1="450" y1="180" x2="170" y2="92" opacity=".4"><animate attributeName="opacity" values=".25;.7;.25" dur="2.6s" repeatCount="indefinite"/></line>
-          <line x1="450" y1="180" x2="150" y2="268" opacity=".4"><animate attributeName="opacity" values=".25;.7;.25" dur="3s" begin=".5s" repeatCount="indefinite"/></line>
-          <line x1="450" y1="180" x2="730" y2="92" opacity=".4"><animate attributeName="opacity" values=".25;.7;.25" dur="2.4s" begin=".9s" repeatCount="indefinite"/></line>
-          <line x1="450" y1="180" x2="750" y2="268" opacity=".4"><animate attributeName="opacity" values=".25;.7;.25" dur="2.8s" begin=".3s" repeatCount="indefinite"/></line>
-        </g>
-        <!-- private edges (dashed teal) -->
-        <g stroke="#5eead4" stroke-width="1.4" stroke-dasharray="5 5" fill="none">
-          <line x1="450" y1="180" x2="300" y2="320" opacity=".5"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.4s" repeatCount="indefinite"/></line>
-          <line x1="450" y1="180" x2="600" y2="320" opacity=".5"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.6s" repeatCount="indefinite"/></line>
-        </g>
+        <!-- Hub glow -->
+        <ellipse cx="410" cy="150" rx="80" ry="80" fill="url(#ymhub)"/>
 
-        <!-- flowing memory packets on shared edges -->
-        <circle r="4.5" fill="#19cdff"><animateMotion dur="2.2s" repeatCount="indefinite" path="M450,180 L170,92"/><animate attributeName="opacity" values="0;1;1;0" dur="2.2s" repeatCount="indefinite"/></circle>
-        <circle r="4.5" fill="#7fe3ff"><animateMotion dur="2.6s" begin=".7s" repeatCount="indefinite" path="M450,180 L730,92"/><animate attributeName="opacity" values="0;1;1;0" dur="2.6s" begin=".7s" repeatCount="indefinite"/></circle>
-        <circle r="4" fill="#19cdff"><animateMotion dur="2.9s" begin="1.1s" repeatCount="indefinite" path="M450,180 L750,268"/><animate attributeName="opacity" values="0;1;1;0" dur="2.9s" begin="1.1s" repeatCount="indefinite"/></circle>
-        <circle r="4" fill="#7fe3ff"><animateMotion dur="2.4s" begin=".3s" repeatCount="indefinite" path="M450,180 L150,268"/><animate attributeName="opacity" values="0;1;1;0" dur="2.4s" begin=".3s" repeatCount="indefinite"/></circle>
+        <!-- Shared memory edges (solid cyan) -->
+        <line x1="410" y1="150" x2="620" y2="90" stroke="#19cdff" stroke-width="1.8" opacity=".6"><animate attributeName="opacity" values=".6;1;.6" dur="2s" repeatCount="indefinite"/></line>
+        <line x1="410" y1="150" x2="640" y2="210" stroke="#19cdff" stroke-width="1.8" opacity=".5"><animate attributeName="opacity" values=".5;.9;.5" dur="2.4s" repeatCount="indefinite"/></line>
+        <line x1="410" y1="150" x2="200" y2="80" stroke="#19cdff" stroke-width="1.8" opacity=".6"><animate attributeName="opacity" values=".6;1;.6" dur="1.8s" repeatCount="indefinite"/></line>
+        <line x1="410" y1="150" x2="180" y2="220" stroke="#19cdff" stroke-width="1.8" opacity=".5"><animate attributeName="opacity" values=".5;.9;.5" dur="2.6s" repeatCount="indefinite"/></line>
 
-        <!-- central hub -->
-        <circle cx="450" cy="180" r="92" fill="url(#ymhub)"/>
-        <circle cx="450" cy="180" r="74" fill="none" stroke="#19cdff" stroke-width="1" stroke-dasharray="3 5" opacity=".35"><animateTransform attributeName="transform" type="rotate" from="0 450 180" to="360 450 180" dur="22s" repeatCount="indefinite"/></circle>
-        <circle cx="450" cy="180" r="52" fill="#0a1422" stroke="#19cdff" stroke-width="1.6"/>
-        <circle cx="450" cy="180" r="44" fill="none" stroke="#19cdff" stroke-width="1" stroke-dasharray="4 4" opacity=".4"><animateTransform attributeName="transform" type="rotate" from="360 450 180" to="0 450 180" dur="14s" repeatCount="indefinite"/></circle>
-        <text x="450" y="173" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="15" fill="url(#ymwm)">Org</text>
-        <text x="450" y="192" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="15" fill="#e6edf6">Memory</text>
-        <text x="450" y="210" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8.5" fill="#5a6b80" letter-spacing="0.5">shared brain</text>
+        <!-- Private memory edges (dashed teal) -->
+        <line x1="410" y1="150" x2="410" y2="30" stroke="#0fb5a8" stroke-width="1.5" stroke-dasharray="5 4" opacity=".5"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur="1.2s" repeatCount="indefinite"/></line>
+        <line x1="410" y1="150" x2="410" y2="270" stroke="#0fb5a8" stroke-width="1.5" stroke-dasharray="5 4" opacity=".5"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur="1.4s" repeatCount="indefinite"/></line>
 
-        <!-- team member nodes -->
-        <!-- Alice (top-left, shared) -->
-        <ellipse cx="170" cy="92" rx="46" ry="46" fill="url(#ymmem)"/>
-        <circle cx="170" cy="92" r="26" fill="#0c1320" stroke="#0d8fd6" stroke-width="1.5"/>
-        <text x="170" y="98" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="15" fill="#7fe3ff">A</text>
-        <text x="170" y="138" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="#9fb0c3">Alice</text>
-        <g transform="translate(170,52)"><rect x="-26" y="-9" width="52" height="16" rx="8" fill="rgba(25,205,255,0.1)" stroke="rgba(25,205,255,0.35)" stroke-width="1"/><text x="0" y="2" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#19cdff">shared</text></g>
+        <!-- Moving memory packet dots on shared edges -->
+        <circle r="5" fill="#19cdff" opacity=".85"><animateMotion dur="2s" repeatCount="indefinite" path="M410,150 L620,90"/></circle>
+        <circle r="5" fill="#19cdff" opacity=".85"><animateMotion dur="2.4s" repeatCount="indefinite" begin="0.8s" path="M410,150 L200,80"/></circle>
+        <circle r="4" fill="#0fb5a8" opacity=".75"><animateMotion dur="1.8s" repeatCount="indefinite" begin="0.4s" path="M410,150 L410,30"/></circle>
 
-        <!-- Dan (bottom-left, shared) -->
-        <ellipse cx="150" cy="268" rx="46" ry="46" fill="url(#ymmem)"/>
-        <circle cx="150" cy="268" r="26" fill="#0c1320" stroke="#0d8fd6" stroke-width="1.5"/>
-        <text x="150" y="274" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="15" fill="#7fe3ff">D</text>
-        <text x="150" y="314" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="#9fb0c3">Dan</text>
+        <!-- Hub -->
+        <circle cx="410" cy="150" r="46" fill="white" stroke="#19cdff" stroke-width="2"/>
+        <circle cx="410" cy="150" r="38" fill="none" stroke="#19cdff" stroke-width="1" stroke-dasharray="4 3" opacity=".4"><animateTransform attributeName="transform" type="rotate" from="0 410 150" to="360 410 150" dur="12s" repeatCount="indefinite"/></circle>
+        <text x="410" y="145" text-anchor="middle" font-size="11" fill="#0a87cc" font-family="Figtree,sans-serif" font-weight="700">Your</text>
+        <text x="410" y="161" text-anchor="middle" font-size="11" fill="#0a87cc" font-family="Figtree,sans-serif" font-weight="700">Memory</text>
 
-        <!-- Bob (top-right, shared) -->
-        <ellipse cx="730" cy="92" rx="46" ry="46" fill="url(#ymmem)"/>
-        <circle cx="730" cy="92" r="26" fill="#0c1320" stroke="#0d8fd6" stroke-width="1.5"/>
-        <text x="730" y="98" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="15" fill="#7fe3ff">B</text>
-        <text x="730" y="138" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="#9fb0c3">Bob</text>
-        <g transform="translate(730,52)"><rect x="-26" y="-9" width="52" height="16" rx="8" fill="rgba(25,205,255,0.1)" stroke="rgba(25,205,255,0.35)" stroke-width="1"/><text x="0" y="2" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#19cdff">shared</text></g>
+        <!-- Node: Alice (top-right) -->
+        <ellipse cx="620" cy="90" rx="38" ry="38" fill="url(#ymnode)"/>
+        <circle cx="620" cy="90" r="28" fill="white" stroke="#0a87cc" stroke-width="1.5"/>
+        <text x="620" y="95" text-anchor="middle" font-size="16" fill="#0a87cc">A</text>
+        <text x="620" y="133" text-anchor="middle" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Alice</text>
+        <rect x="590" y="60" width="60" height="14" rx="7" fill="rgba(25,205,255,.12)" stroke="rgba(25,205,255,.3)" stroke-width="1"/>
+        <text x="620" y="71" text-anchor="middle" font-size="8" fill="#0a87cc" font-family="JetBrains Mono,monospace">shared</text>
 
-        <!-- Carol (right, shared) -->
-        <ellipse cx="750" cy="268" rx="46" ry="46" fill="url(#ymmem)"/>
-        <circle cx="750" cy="268" r="26" fill="#0c1320" stroke="#0d8fd6" stroke-width="1.5"/>
-        <text x="750" y="274" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="15" fill="#7fe3ff">C</text>
-        <text x="750" y="314" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="#9fb0c3">Carol</text>
+        <!-- Node: Bob (bottom-right) -->
+        <ellipse cx="640" cy="210" rx="38" ry="38" fill="url(#ymnode)"/>
+        <circle cx="640" cy="210" r="28" fill="white" stroke="#0a87cc" stroke-width="1.5"/>
+        <text x="640" y="215" text-anchor="middle" font-size="16" fill="#0a87cc">B</text>
+        <text x="640" y="253" text-anchor="middle" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Bob</text>
+        <rect x="610" y="180" width="60" height="14" rx="7" fill="rgba(25,205,255,.12)" stroke="rgba(25,205,255,.3)" stroke-width="1"/>
+        <text x="640" y="191" text-anchor="middle" font-size="8" fill="#0a87cc" font-family="JetBrains Mono,monospace">shared</text>
 
-        <!-- Eve (bottom-left private) -->
-        <ellipse cx="300" cy="320" rx="38" ry="38" fill="url(#ymprv)"/>
-        <circle cx="300" cy="320" r="22" fill="#0c1320" stroke="#5eead4" stroke-width="1.5" stroke-dasharray="4 3"/>
-        <text x="300" y="325" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="13" fill="#5eead4">E</text>
-        <g transform="translate(300,284)"><rect x="-24" y="-9" width="48" height="16" rx="8" fill="rgba(94,234,212,0.1)" stroke="rgba(94,234,212,0.35)" stroke-width="1"/><text x="0" y="2" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#5eead4">private</text></g>
+        <!-- Node: Carol (top-left) -->
+        <ellipse cx="200" cy="80" rx="38" ry="38" fill="url(#ymnode)"/>
+        <circle cx="200" cy="80" r="28" fill="white" stroke="#0a87cc" stroke-width="1.5"/>
+        <text x="200" y="85" text-anchor="middle" font-size="16" fill="#0a87cc">C</text>
+        <text x="200" y="123" text-anchor="middle" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Carol</text>
+        <rect x="170" y="50" width="60" height="14" rx="7" fill="rgba(25,205,255,.12)" stroke="rgba(25,205,255,.3)" stroke-width="1"/>
+        <text x="200" y="61" text-anchor="middle" font-size="8" fill="#0a87cc" font-family="JetBrains Mono,monospace">shared</text>
 
-        <!-- Frank (bottom-right private) -->
-        <ellipse cx="600" cy="320" rx="38" ry="38" fill="url(#ymprv)"/>
-        <circle cx="600" cy="320" r="22" fill="#0c1320" stroke="#5eead4" stroke-width="1.5" stroke-dasharray="4 3"/>
-        <text x="600" y="325" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="13" fill="#5eead4">F</text>
-        <g transform="translate(600,284)"><rect x="-24" y="-9" width="48" height="16" rx="8" fill="rgba(94,234,212,0.1)" stroke="rgba(94,234,212,0.35)" stroke-width="1"/><text x="0" y="2" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#5eead4">private</text></g>
+        <!-- Node: Dan (bottom-left) -->
+        <ellipse cx="180" cy="220" rx="38" ry="38" fill="url(#ymnode)"/>
+        <circle cx="180" cy="220" r="28" fill="white" stroke="#0a87cc" stroke-width="1.5"/>
+        <text x="180" y="225" text-anchor="middle" font-size="16" fill="#0a87cc">D</text>
+        <text x="180" y="263" text-anchor="middle" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Dan</text>
+        <rect x="150" y="190" width="60" height="14" rx="7" fill="rgba(25,205,255,.12)" stroke="rgba(25,205,255,.3)" stroke-width="1"/>
+        <text x="180" y="201" text-anchor="middle" font-size="8" fill="#0a87cc" font-family="JetBrains Mono,monospace">shared</text>
 
+        <!-- Node: Eve (top-center, private) -->
+        <ellipse cx="410" cy="30" rx="32" ry="32" fill="url(#ympriv)"/>
+        <circle cx="410" cy="30" r="24" fill="white" stroke="#0fb5a8" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="410" y="35" text-anchor="middle" font-size="14" fill="#0fb5a8">E</text>
+        <rect x="376" y="2" width="68" height="14" rx="7" fill="rgba(15,181,168,.12)" stroke="rgba(15,181,168,.3)" stroke-width="1"/>
+        <text x="410" y="13" text-anchor="middle" font-size="8" fill="#0fb5a8" font-family="JetBrains Mono,monospace">private</text>
+        <text x="410" y="63" text-anchor="middle" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Eve</text>
+
+        <!-- Node: Frank (bottom-center, private) -->
+        <ellipse cx="410" cy="270" rx="32" ry="32" fill="url(#ympriv)"/>
+        <circle cx="410" cy="270" r="24" fill="white" stroke="#0fb5a8" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="410" y="275" text-anchor="middle" font-size="14" fill="#0fb5a8">F</text>
+        <rect x="376" y="286" width="68" height="14" rx="7" fill="rgba(15,181,168,.12)" stroke="rgba(15,181,168,.3)" stroke-width="1"/>
+        <text x="410" y="297" text-anchor="middle" font-size="8" fill="#0fb5a8" font-family="JetBrains Mono,monospace">private</text>
+
+        <!-- Legend -->
+        <line x1="680" y1="100" x2="710" y2="100" stroke="#19cdff" stroke-width="2"/>
+        <circle cx="720" cy="100" r="4" fill="#19cdff"/>
+        <text x="730" y="104" font-size="10" fill="#5b6b80" font-family="Figtree,sans-serif">Shared memory</text>
+        <line x1="680" y1="122" x2="710" y2="122" stroke="#0fb5a8" stroke-width="2" stroke-dasharray="4 3"/>
+        <text x="730" y="126" font-size="10" fill="#5b6b80" font-family="Figtree,sans-serif">Private memory</text>
       </svg>
-      <div style="display: flex; align-items: center; justify-content: center; gap: 28px; flex-wrap: wrap; padding: 6px 0 10px; border-top: 1px solid rgba(255,255,255,0.06); margin: 6px 14px 0;">
-        <div style="display: flex; align-items: center; gap: 9px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #8b9bb0;"><span style="display: inline-block; width: 22px; height: 2px; background: #19cdff; border-radius: 2px;"></span>shared memory · visible to all</div>
-        <div style="display: flex; align-items: center; gap: 9px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #8b9bb0;"><span style="display: inline-block; width: 22px; height: 0; border-top: 2px dashed #5eead4;"></span>private memory · owner only</div>
-      </div>
     </div>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
-      <div style="padding: 26px; border-radius: 18px; background: rgba(251,113,133,0.04); border: 1px solid rgba(251,113,133,0.18);">
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: #fb7185; margin-bottom: 16px;">Without YourMemory</div>
-        <p style="margin: 0 0 16px; font-size: 14.5px; line-height: 1.6; color: #b6c5d6;">Engineer A spends 2 hours debugging a customer's edge case. Session closes. Knowledge gone. Engineer B picks up the same customer next week — and starts from scratch.</p>
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.9; color: #fb9aa6; background: #060a12; border: 1px solid rgba(255,255,255,0.06); border-radius: 11px; padding: 13px 15px; white-space: pre;">// Session ended
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 22px; margin-top: 0;">
+      <div style="padding: 28px; border-radius: 20px; background: rgba(251,113,133,0.05); border: 1px solid rgba(251,113,133,0.2);">
+        <div style="font-size: 12.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #fb7185; margin-bottom: 18px;">Without YourMemory</div>
+        <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.6; color: #37485c;">Engineer A spends two hours debugging a customer edge case. Session closes. The knowledge is gone — and Engineer B starts from scratch next week.</p>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #e11d48; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre;">// Session ended
 context        = null
 customer_hist  = null
 team_knowledge = null</div>
       </div>
-      <div style="padding: 26px; border-radius: 18px; background: rgba(25,205,255,0.05); border: 1px solid rgba(25,205,255,0.28);">
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: #19cdff; margin-bottom: 16px;">With YourMemory Enterprise</div>
-        <p style="margin: 0 0 16px; font-size: 14.5px; line-height: 1.6; color: #cdd9e8;">Engineer A solves it once. The memory persists, shared with the org, and surfaces automatically when Engineer B opens a session — solved in minutes.</p>
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.9; color: #7fe3ff; background: #060a12; border: 1px solid rgba(255,255,255,0.06); border-radius: 11px; padding: 13px 15px; white-space: pre;">// Session opened
+      <div style="padding: 28px; border-radius: 20px; background: rgba(25,205,255,0.06); border: 1px solid rgba(25,205,255,0.28);">
+        <div style="font-size: 12.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #0a87cc; margin-bottom: 18px;">With YourMemory Enterprise</div>
+        <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.6; color: #37485c;">Engineer A solves it once. The memory persists, shared with the org, and surfaces automatically when Engineer B opens a session — solved in minutes.</p>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #0d8fd6; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre;">// Session opened
 recall("customer edge case")
 → 3 relevant memories surfaced
 → last solved: 6 days ago by alice</div>
       </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 20px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; margin-top: 22px;">
       <sc-for list="{{ entFeatures }}" as="f" hint-placeholder-count="3">
-        <div style="padding: 24px; border-radius: 18px; background: #0c1320; border: 1px solid rgba(255,255,255,0.08); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-4px); border-color: rgba(94,234,212,0.35);">
-          <h3 style="margin: 0 0 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 19px; letter-spacing: -0.2px;">{{ f.title }}</h3>
-          <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #9fb0c3;">{{ f.desc }}</p>
+        <div style="padding: 26px; border-radius: 20px; background: rgba(10,37,64,0.03); border: 1px solid rgba(10,37,64,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-5px); border-color: rgba(94,234,212,0.3);">
+          <h3 style="margin: 0 0 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 21px; letter-spacing: -0.2px;">{{ f.title }}</h3>
+          <p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #5b6b80;">{{ f.desc }}</p>
         </div>
       </sc-for>
     </div>
 
-    <div style="margin-top: 22px; padding: 34px; border-radius: 20px; text-align: center; background: linear-gradient(120deg, rgba(25,205,255,0.09), rgba(94,234,212,0.05)); border: 1px solid rgba(25,205,255,0.2);">
-      <h3 style="margin: 0 0 8px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(21px, 2.4vw, 30px); letter-spacing: -0.4px;">Ready to give your team a shared brain?</h3>
-      <p style="margin: 0 0 22px; font-size: 15.5px; color: #9fb0c3;">Enterprise is distributed as a private build. Reach out to get started.</p>
-      <a href="mailto:mishrasachit1@gmail.com?subject=YourMemory%20Enterprise%20Pilot" style="display: inline-block; font-size: 15.5px; font-weight: 600; color: #061021; background: #19cdff; padding: 13px 26px; border-radius: 11px; box-shadow: 0 8px 30px rgba(25,205,255,0.3); transition: transform .2s;" style-hover="transform: translateY(-2px);">Talk to us about a pilot</a>
+    <div style="margin-top: 26px; padding: 36px; border-radius: 22px; text-align: center; background: linear-gradient(120deg, rgba(25,205,255,0.1), rgba(94,234,212,0.06)); border: 1px solid rgba(25,205,255,0.2);">
+      <h3 style="margin: 0 0 8px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(22px, 2.6vw, 32px); letter-spacing: -0.4px;">Ready to give your team a shared brain?</h3>
+      <p style="margin: 0 0 22px; font-size: 16px; color: #566375;">Enterprise is distributed as a private build. Reach out to get started.</p>
+      <a href="mailto:mishrasachit1@gmail.com?subject=YourMemory%20Enterprise%20Pilot" style="display: inline-block; font-size: 16px; font-weight: 600; color: #ffffff; background: #19cdff; padding: 14px 28px; border-radius: 999px; box-shadow: 0 8px 30px rgba(25,205,255,0.3); transition: transform .2s;" style-hover="transform: translateY(-2px);">Talk to us about a pilot</a>
     </div>
   </section>
 
-  <!-- 07 GET STARTED -->
-  <section id="setup" style="position: relative; z-index: 1; padding: clamp(60px, 7vw, 100px) clamp(18px, 4vw, 56px); max-width: 1180px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
-      <span>// GET STARTED</span><span style="margin-left: auto; color: #5a6b80;">[ 07 / 07 ]</span>
-    </div>
-    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 52px); letter-spacing: -1.2px; line-height: 1.04;">Start in under 2 minutes.</h2>
-    <p style="margin: 0 0 40px; max-width: 560px; font-size: 17px; color: #9fb0c3; line-height: 1.5;">Free, open source, runs entirely on your machine. No API key. No data leaves your system.</p>
+  <!-- AUDIT TRAIL -->
+  <section id="audit" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0a87cc; text-transform: uppercase; margin-bottom: 16px;">Memory Browser · Audit Trail</div>
+    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">Every memory, on the record.</h2>
+    <p style="margin: 0 0 18px; max-width: 640px; font-size: 18px; color: #566375; line-height: 1.5;">A built-in Memory Browser shows every stored memory with its live strength, category, and recall history — and an <strong style="color:#37485c;">Audit</strong> tab logs every read, write, and delete to a tamper-evident hash chain. Switch tabs in the panel to explore both.</p>
 
-    <div data-r="split" style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(24px, 4vw, 48px); align-items: start;">
-      <!-- activation flow -->
-      <div style="padding: 28px; border-radius: 18px; background: #0c1320; border: 1px solid rgba(255,255,255,0.1);">
-        <sc-if value="{{ isEmailStep }}" hint-placeholder-val="{{ true }}">
-          <div>
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; color: #19cdff; text-transform: uppercase; margin-bottom: 12px;">Free activation</div>
-            <h3 style="margin: 0 0 6px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 21px;">Get your activation token.</h3>
-            <p style="margin: 0 0 18px; font-size: 14px; color: #9fb0c3;">Enter your email — we'll send a 6-digit code to verify.</p>
-            <div style="display: flex; gap: 9px; flex-wrap: wrap;">
-              <input type="email" placeholder="you@company.com" value="{{ email }}" onInput="{{ onEmail }}" style="flex: 1; min-width: 190px; font-family: 'Figtree', sans-serif; font-size: 14.5px; color: #e6edf6; background: #060a12; border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; padding: 12px 14px; outline: none;">
-              <button onClick="{{ sendCode }}" style="cursor: pointer; font-family: 'Figtree', sans-serif; font-size: 14.5px; font-weight: 600; color: #061021; background: #19cdff; border: none; padding: 12px 20px; border-radius: 10px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Send code</button>
-            </div>
-            <sc-if value="{{ !!sendError }}" hint-placeholder-val="{{ false }}">
-              <div style="margin-top: 9px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #fb7185;">{{ sendError }}</div>
-            </sc-if>
-            <div style="margin-top: 11px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #5a6b80;">No password stored · takes 30 seconds</div>
-          </div>
-        </sc-if>
-        <sc-if value="{{ isCodeStep }}" hint-placeholder-val="{{ false }}">
-          <div>
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; color: #19cdff; text-transform: uppercase; margin-bottom: 12px;">Verify</div>
-            <h3 style="margin: 0 0 6px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 21px;">Enter the code.</h3>
-            <p style="margin: 0 0 18px; font-size: 14px; color: #9fb0c3;">Sent to <span style="color: #7fe3ff;">{{ maskedEmail }}</span> — expires in 10 minutes.</p>
-            <div style="display: flex; gap: 9px; flex-wrap: wrap;">
-              <input type="text" inputmode="numeric" maxlength="6" placeholder="000000" value="{{ code }}" onInput="{{ onCode }}" style="flex: 1; min-width: 190px; font-family: 'JetBrains Mono', monospace; letter-spacing: 6px; font-size: 17px; color: #e6edf6; background: #060a12; border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; padding: 12px 14px; outline: none;">
-              <button onClick="{{ verifyCode }}" style="cursor: pointer; font-family: 'Figtree', sans-serif; font-size: 14.5px; font-weight: 600; color: #061021; background: #19cdff; border: none; padding: 12px 20px; border-radius: 10px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Verify</button>
-            </div>
-            <sc-if value="{{ !!verifyError }}" hint-placeholder-val="{{ false }}">
-              <div style="margin-top: 9px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #fb7185;">{{ verifyError }}</div>
-            </sc-if>
-            <button onClick="{{ backToEmail }}" style="cursor: pointer; margin-top: 13px; font-family: 'Figtree', sans-serif; font-size: 13px; font-weight: 500; color: #9fb0c3; background: none; border: none; padding: 0;" style-hover="color: #19cdff;">← Back</button>
-          </div>
-        </sc-if>
-        <sc-if value="{{ isDoneStep }}" hint-placeholder-val="{{ false }}">
-          <div>
-            <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 14px;">
-              <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: #5eead4; color: #061021; font-weight: 700; font-size: 14px;">✓</span>
-              <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px;">Verified — token ready</span>
-            </div>
-            <p style="margin: 0 0 12px; font-size: 14px; color: #9fb0c3;">Run this command to activate:</p>
-            <div style="position:relative; font-family: 'JetBrains Mono', monospace; font-size: 13.5px; color: #7fe3ff; background: #060a12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 13px 15px; word-break: break-all;"><span style="color: #5eead4;">yourmemory-register</span> {{ token }}
-              <button onClick="{{ copyToken }}" style="position:absolute; top:10px; right:10px; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; color:{{ copyTokenColor }}; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); padding:4px 9px; border-radius:6px; transition:all .2s;">{{ copyTokenLabel }}</button>
-            </div>
-            <p style="margin: 12px 0 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #5a6b80;">Token also sent to your email as a backup.</p>
-          </div>
-        </sc-if>
-      </div>
-
-      <!-- install steps -->
-      <div style="display: flex; flex-direction: column; gap: 14px;">
-        <sc-for list="{{ install }}" as="cmd" hint-placeholder-count="3">
-          <div style="padding: 18px 20px; border-radius: 14px; background: #0c1320; border: 1px solid rgba(255,255,255,0.08);">
-            <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 9px;">
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #19cdff;">{{ cmd.n }}</span>
-              <span style="font-size: 14px; font-weight: 600; color: #e6edf6;">{{ cmd.title }}</span>
-            </div>
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #7fe3ff; background: #060a12; border: 1px solid rgba(255,255,255,0.06); border-radius: 9px; padding: 11px 14px;"><span style="color: #5a6b80;">$</span> {{ cmd.cmd }}</div>
-            <p style="margin: 10px 0 0; font-size: 13px; color: #8b9bb0; line-height: 1.5;">{{ cmd.desc }}</p>
-          </div>
-        </sc-for>
-        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 14px 18px; border-radius: 12px; background: rgba(94,234,212,0.05); border: 1px solid rgba(94,234,212,0.18); font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9fd9cf;">
-          <span style="color: #5eead4;">✓</span> Auto-detects Claude Code, Claude Desktop, Cursor, Windsurf, Cline, Continue &amp; Zed
+    <!-- browser-framed dark dashboard promo -->
+    <div style="margin: 40px 0 0; border-radius: 18px; overflow: hidden; border: 1px solid rgba(10,37,64,0.14); box-shadow: 0 40px 90px rgba(10,37,64,0.22), 0 0 0 1px rgba(25,205,255,0.06);">
+      <!-- chrome -->
+      <div style="display: flex; align-items: center; gap: 14px; padding: 13px 18px; background: #161e2c; border-bottom: 1px solid rgba(255,255,255,0.06);">
+        <div style="display: flex; gap: 8px;">
+          <span style="width: 12px; height: 12px; border-radius: 50%; background: #fb7185;"></span>
+          <span style="width: 12px; height: 12px; border-radius: 50%; background: #fbbf24;"></span>
+          <span style="width: 12px; height: 12px; border-radius: 50%; background: #34d399;"></span>
         </div>
+        <div style="flex: 1; max-width: 420px; margin: 0 auto; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #6b7d92; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 6px 12px;">localhost:3033/ui</div>
+        <div style="width: 52px;"></div>
       </div>
+
+      <!-- dashboard body -->
+      <div style="background: #0b1018; padding: clamp(18px, 2.4vw, 30px); color: #c5d2e0;">
+        <!-- top bar -->
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 26px;">
+          <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px; color: #ffffff; letter-spacing: -0.4px;">Your<span style="color: #19cdff;">Memory</span></span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #6b7d92; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 5px 11px;">Memory Browser</span>
+            <div style="display: flex; gap: 4px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 3px;">
+              <button onClick="{{ showMem }}" style="cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: {{ memTab.fw }}; color: {{ memTab.fg }}; background: {{ memTab.bg }}; border: 1px solid {{ memTab.bd }}; padding: 5px 12px; border-radius: 7px; transition: all .2s;">Memories</button>
+              <button onClick="{{ showAudit }}" style="cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: {{ audTab.fw }}; color: {{ audTab.fg }}; background: {{ audTab.bg }}; border: 1px solid {{ audTab.bd }}; padding: 5px 12px; border-radius: 7px; transition: all .2s;">Audit</button>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: #8b9bb0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 9px; padding: 8px 16px;">mira</span>
+            <sc-if value="{{ isMemTab }}" hint-placeholder-val="{{ true }}">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8b9bb0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 9px; padding: 8px 14px;">All categories ⌄</span>
+            </sc-if>
+            <sc-if value="{{ isMemTab }}" hint-placeholder-val="{{ true }}">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8b9bb0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 9px; padding: 8px 14px;">Sort: strength ⌄</span>
+            </sc-if>
+            <span style="font-family: 'Google Sans','Figtree',sans-serif; font-size: 13px; font-weight: 700; color: #052230; background: #19cdff; border-radius: 9px; padding: 8px 18px;">Load</span>
+          </div>
+        </div>
+
+        <!-- stat cards -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 26px;">
+          <sc-for list="{{ auditStats }}" as="s" hint-placeholder-count="4">
+            <div style="background: #111927; border: 1px solid {{ s.bd }}; border-radius: 14px; padding: 18px 20px;">
+              <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(26px, 3vw, 38px); line-height: 1; color: {{ s.c }};">{{ s.n }}</div>
+              <div style="font-size: 12.5px; color: #7b8aa0; margin-top: 8px;">{{ s.l }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <!-- MEMORIES VIEW -->
+        <sc-if value="{{ isMemTab }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; color: #5e6e84; text-transform: uppercase;">🧠 Memories</span>
+              <span style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></span>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; color: #5e6e84; text-transform: uppercase; margin-bottom: 12px;">View</div>
+            <div style="display: flex; gap: 10px; margin-bottom: 22px;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: #19cdff; background: rgba(25,205,255,0.1); border: 1px solid rgba(25,205,255,0.3); border-radius: 10px; padding: 8px 16px;">🧠 All</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #8b9bb0; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 8px 16px;">👤 User</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <sc-for list="{{ memoryCards }}" as="m" hint-placeholder-count="3">
+                <div style="background: #111927; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 20px 22px;">
+                  <div style="display: flex; align-items: flex-start; gap: 14px; justify-content: space-between;">
+                    <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #d4dde8; flex: 1;">{{ m.text }}</p>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: none;">
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: #34d399;">{{ m.pct }}</span>
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: {{ m.catFg }}; background: {{ m.catBg }}; border: 1px solid {{ m.catBd }}; border-radius: 7px; padding: 3px 11px;">{{ m.cat }}</span>
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7b8aa0; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; padding: 3px 10px;">👤 user</span>
+                    </div>
+                  </div>
+                  <div style="height: 6px; border-radius: 999px; background: rgba(255,255,255,0.06); overflow: hidden; margin: 16px 0 12px;"><div style="height: 100%; width: {{ m.barW }}; border-radius: 999px; background: linear-gradient(90deg, #22c55e, #34d399);"></div></div>
+                  <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #5e6e84;">id: {{ m.id }}   importance: {{ m.importance }}   recalls: {{ m.recalls }}   last accessed: {{ m.last }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- AUDIT VIEW -->
+        <sc-if value="{{ isAuditTab }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top: 30px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; color: #5e6e84; text-transform: uppercase;">📒 Audit log</span>
+              <span style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></span>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 14px;">
+              <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600; color: #34d399; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); border-radius: 999px; padding: 7px 15px;">✓ chain verified · 55 rows</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #6b7d92;">retention: 90 days</span>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8b9bb0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 7px 14px;">All actions ⌄</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8b9bb0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 7px 14px;">Refresh</span>
+              </div>
+            </div>
+            <div style="border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.012);">
+              <div style="display: grid; grid-template-columns: 96px 74px 92px 64px 1fr 46px; gap: 10px; align-items: center; padding: 13px 18px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 1px; color: #5e6e84; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.07);">
+                <span>Timestamp</span><span>Action</span><span>Operation</span><span>User</span><span>Target</span><span style="text-align: right;">Src</span>
+              </div>
+              <sc-for list="{{ auditRows }}" as="r" hint-placeholder-count="5">
+                <div style="display: grid; grid-template-columns: 96px 74px 92px 64px 1fr 46px; gap: 10px; align-items: center; padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+                  <span style="color: #8b9bb0; font-size: 11px;">{{ r.time }}</span>
+                  <span><span style="font-size: 11px; font-weight: 600; color: {{ r.fg }}; background: {{ r.bg }}; border: 1px solid {{ r.bd }}; border-radius: 999px; padding: 3px 11px;">{{ r.badge }}</span></span>
+                  <span style="color: #d4dde8;">{{ r.op }}</span>
+                  <span style="color: #9aa8bd;">mira</span>
+                  <span style="color: {{ r.tgtColor }}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ r.tgt }}</span>
+                  <span style="color: #5e6e84; text-align: right; font-size: 11px;">http</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <!-- feature strip -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; margin-top: 22px;">
+      <sc-for list="{{ auditFeatures }}" as="f" hint-placeholder-count="3">
+        <div style="padding: 26px; border-radius: 20px; background: rgba(10,37,64,0.03); border: 1px solid rgba(10,37,64,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-5px); border-color: rgba(25,205,255,0.3);">
+          <h3 style="margin: 0 0 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 21px; letter-spacing: -0.2px;">{{ f.title }}</h3>
+          <p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #5b6b80;">{{ f.desc }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- WRITTEN ABOUT -->
+  <section id="press" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0a87cc; text-transform: uppercase; margin-bottom: 16px;">Read the thinking behind it</div>
+    <h2 style="margin: 0 0 40px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(32px, 4.4vw, 58px); letter-spacing: -1px; line-height: 1.02;">Written about YourMemory.</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px;">
+      <sc-for list="{{ press }}" as="a" hint-placeholder-count="6">
+        <a href="{{ a.url }}" style="display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: 18px; background: rgba(10,37,64,0.03); border: 1px solid rgba(10,37,64,0.1); transition: transform .25s, border-color .25s, background .25s;" style-hover="transform: translateY(-5px); border-color: rgba(25,205,255,0.35); background: rgba(25,205,255,0.04);">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.5px; text-transform: uppercase; color: #0a87cc;">{{ a.source }}</span>
+          <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 18px; line-height: 1.25; letter-spacing: -0.2px; color: #0a2540;">{{ a.title }}</span>
+          <span style="font-size: 14px; color: #5b6b80; line-height: 1.5;">{{ a.desc }}</span>
+          <span style="margin-top: 2px; font-size: 13.5px; font-weight: 600; color: #0d8fd6;">Read →</span>
+        </a>
+      </sc-for>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section id="faq" style="position: relative; z-index: 1; padding: clamp(50px, 6vw, 90px) clamp(18px, 4vw, 56px); max-width: 860px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
-      <span>// FAQ</span><span style="margin-left: auto; color: #5a6b80;">FREQUENTLY ASKED</span>
-    </div>
-    <h2 style="margin: 0 0 32px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(28px, 3.6vw, 46px); letter-spacing: -1.2px; line-height: 1.05;">The fine print, in plain English.</h2>
-    <div>
-      <sc-for list="{{ faqs }}" as="faq" hint-placeholder-count="7">
-        <div style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-          <button onClick="{{ faq.onClick }}" style="cursor: pointer; width: 100%; display: flex; align-items: center; gap: 16px; padding: 20px 4px; background: none; border: none; text-align: left;">
-            <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16.5px; color: #e6edf6; flex: 1;">{{ faq.q }}</span>
-            <span style="font-family: 'JetBrains Mono', monospace; font-size: 20px; color: #19cdff; flex: none;">{{ faq.sign }}</span>
+  <section id="faq" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 920px; margin: 0 auto;">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0a87cc; text-transform: uppercase; margin-bottom: 16px;">Frequently asked</div>
+    <h2 style="margin: 0 0 40px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 56px); letter-spacing: -1.2px; line-height: 1.02;">The fine print, in plain English.</h2>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <sc-for list="{{ faqs }}" as="item" hint-placeholder-count="5">
+        <div style="border-radius:16px; border:1px solid {{ item.bd }}; background:{{ item.bg }}; overflow:hidden; transition:border-color .2s, background .2s;">
+          <button onClick="{{ item.onClick }}" style="cursor:pointer; width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px; text-align:left; background:none; border:none; padding:20px 24px; font-family:'Montserrat',sans-serif; font-weight:600; font-size:17px; color:#0a2540;">
+            <span>{{ item.q }}</span>
+            <span style="flex:none; font-family:'Figtree',sans-serif; font-size:24px; font-weight:400; line-height:1; color:#0a87cc; transition:transform .2s; transform:{{ item.iconRot }};">+</span>
           </button>
-          <sc-if value="{{ faq.open }}" hint-placeholder-val="{{ false }}">
-            <p style="margin: 0; padding: 0 4px 22px; font-size: 14.5px; line-height: 1.65; color: #9fb0c3; max-width: 720px;">{{ faq.a }}</p>
+          <sc-if value="{{ item.open }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0; padding:0 24px 22px; font-size:15px; line-height:1.65; color:#5b6b80;">{{ item.a }}</p>
           </sc-if>
         </div>
       </sc-for>
     </div>
   </section>
 
-  <!-- PRESS CARDS -->
-  <section id="press" style="position: relative; z-index: 1; padding: clamp(50px, 6vw, 90px) clamp(18px, 4vw, 56px); max-width: 1180px; margin: 0 auto;">
-    <div style="display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 1.5px; color: #19cdff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 30px;">
-      <span>// IN THE PRESS</span><span style="margin-left: auto; color: #5a6b80;">WRITTEN ABOUT</span>
-    </div>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px;">
-      <sc-for list="{{ press }}" as="a" hint-placeholder-count="6">
-        <a href="{{ a.url }}" style="display: flex; flex-direction: column; gap: 9px; padding: 22px; border-radius: 16px; background: #0c1320; border: 1px solid rgba(255,255,255,0.08); transition: transform .25s, border-color .25s; height: 100%;" style-hover="transform: translateY(-4px); border-color: rgba(25,205,255,0.35);">
-          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; color: #19cdff;">{{ a.source }}</span>
-          <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 17px; line-height: 1.28; letter-spacing: -0.2px; color: #e6edf6;">{{ a.title }}</span>
-          <span style="font-size: 13.5px; color: #8b9bb0; line-height: 1.5;">{{ a.desc }}</span>
-          <span style="margin-top: auto; padding-top: 6px; font-size: 13px; font-weight: 600; color: #7fe3ff;">Read →</span>
-        </a>
-      </sc-for>
-    </div>
-  </section>
+  <!-- START / ACTIVATION -->
+  <section id="start" style="position: relative; padding: clamp(70px, 9vw, 130px) clamp(20px, 5vw, 72px); text-align: center;">
+    <div style="max-width: 780px; margin: 0 auto;">
+      <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0a87cc; text-transform: uppercase; margin-bottom: 16px;">Free activation</div>
+      <h2 style="margin: 0 0 18px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(34px, 5vw, 64px); letter-spacing: -1px; line-height: 1.02;">Start in under <span style="color: #0a87cc;">2 minutes.</span></h2>
+      <p style="margin: 0 auto 38px; max-width: 520px; font-size: 18px; color: #566375; line-height: 1.55;">Free, open source, runs entirely on your machine. No API key. No data leaves your system.</p>
 
-  <!-- FINAL CTA -->
-  <section style="position: relative; z-index: 1; padding: clamp(70px, 9vw, 130px) clamp(18px, 4vw, 56px); text-align: center;">
-    <div style="max-width: 720px; margin: 0 auto;">
-      <h2 style="margin: 0 0 16px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 5vw, 64px); letter-spacing: -1.6px; line-height: 1;">Your agent needs<br>its <span style="color: #19cdff;">YourMemory.</span></h2>
-      <p style="margin: 0 auto 32px; max-width: 480px; font-size: 17px; color: #9fb0c3; line-height: 1.55;">Infrastructure for the Agentic Era. Free, open source, self-hostable.</p>
-      <div style="display: flex; gap: 13px; justify-content: center; flex-wrap: wrap;">
-        <a href="https://github.com/sachitrafa/YourMemory" style="font-size: 15.5px; font-weight: 600; color: #061021; background: #19cdff; padding: 14px 28px; border-radius: 11px; box-shadow: 0 8px 30px rgba(25,205,255,0.32); transition: transform .2s;" style-hover="transform: translateY(-2px);">View on GitHub</a>
-        <a href="https://discord.gg/TWCKjEThe" style="font-size: 15.5px; font-weight: 600; color: #e6edf6; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); padding: 14px 28px; border-radius: 11px;" style-hover="background: rgba(255,255,255,0.09);">Join Discord</a>
+      <div style="max-width: 540px; margin: 0 auto 28px; text-align: left; padding: 28px; border-radius: 18px; background: linear-gradient(180deg, rgba(10,37,64,0.05), rgba(10,37,64,0.02)); border: 1px solid rgba(10,37,64,0.12);">
+        <sc-if value="{{ isEmailStep }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <h3 style="margin: 0 0 6px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.3px;">Get your activation token.</h3>
+            <p style="margin: 0 0 18px; font-size: 14.5px; color: #5b6b80;">Enter your email — we'll send a 6-digit code to verify.</p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <input type="email" placeholder="you@company.com" value="{{ email }}" onInput="{{ onEmail }}" style="flex: 1; min-width: 200px; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; color: #0a2540; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
+              <button onClick="{{ sendCode }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; background: #19cdff; border: none; padding: 13px 22px; border-radius: 12px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Send code</button>
+            </div>
+            <div style="margin-top: 12px; font-size: 12.5px; color: #6b829c;">No password stored · takes 30 seconds</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isCodeStep }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <h3 style="margin: 0 0 6px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.3px;">Enter the code.</h3>
+            <p style="margin: 0 0 18px; font-size: 14.5px; color: #5b6b80;">We sent a code to <span style="color: #0d8fd6;">{{ maskedEmail }}</span> — expires in 10 minutes.</p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <input type="text" inputmode="numeric" maxlength="6" placeholder="000000" value="{{ code }}" onInput="{{ onCode }}" style="flex: 1; min-width: 200px; font-family: 'JetBrains Mono', monospace; letter-spacing: 6px; font-size: 18px; color: #0a2540; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
+              <button onClick="{{ verifyCode }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; background: #19cdff; border: none; padding: 13px 22px; border-radius: 12px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Verify</button>
+            </div>
+            <button onClick="{{ backToEmail }}" style="cursor: pointer; margin-top: 14px; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 13.5px; font-weight: 500; color: #5b6b80; background: none; border: none; padding: 0;" style-hover="color: #0a87cc;">← Back</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isDoneStep }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 14px;">
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: #0fb5a8; color: #ffffff; font-weight: 700; font-size: 14px;">✓</span>
+              <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 21px;">Verified — token ready</span>
+            </div>
+            <p style="margin: 0 0 12px; font-size: 14.5px; color: #5b6b80;">Run this command to activate:</p>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #0d8fd6; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.1); border-radius: 12px; padding: 14px 16px; word-break: break-all;"><span style="color: #0fb5a8;">yourmemory-register</span> {{ token }}</div>
+            <p style="margin: 12px 0 0; font-size: 12.5px; color: #6b829c;">Token also sent to your email as a backup.</p>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display: inline-flex; flex-direction: column; gap: 10px; padding: 20px 22px; border-radius: 16px; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.12); font-family: 'JetBrains Mono', monospace; font-size: 14.5px; text-align: left; margin-bottom: 32px;">
+        <div style="color: #0d8fd6;"><span style="color: #6b829c;">$</span> <span style="color: #0fb5a8;">pip install</span> yourmemory</div>
+        <div style="color: #0d8fd6;"><span style="color: #0fb5a8;">yourmemory-register</span> &lt;token&gt;</div>
+        <div style="color: #0d8fd6;"><span style="color: #0fb5a8;">yourmemory-setup</span><span style="display: inline-block; width: 9px; height: 17px; background: #19cdff; margin-left: 4px; vertical-align: middle; animation: ymBlink 1.1s steps(1) infinite;"></span></div>
+      </div>
+      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+        <a href="https://github.com/sachitrafa/YourMemory" style="font-size: 16px; font-weight: 600; color: #ffffff; background: #19cdff; padding: 14px 28px; border-radius: 999px; box-shadow: 0 8px 30px rgba(25,205,255,0.35); transition: transform .2s;" style-hover="transform: translateY(-2px);">View on GitHub</a>
+        <a href="https://discord.gg/TWCKjEThe" style="font-size: 16px; font-weight: 600; color: #0a2540; background: rgba(10,37,64,0.09); border: 1px solid rgba(10,37,64,0.16); padding: 14px 28px; border-radius: 999px;" style-hover="background: rgba(10,37,64,0.12);">Join Discord</a>
       </div>
     </div>
   </section>
 
   <!-- FOOTER -->
-  <footer style="position: relative; z-index: 1; border-top: 1px solid rgba(255,255,255,0.07); padding: 36px clamp(18px, 4vw, 56px); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+  <footer style="border-top: 1px solid rgba(10,37,64,0.09); padding: 40px clamp(20px, 5vw, 72px); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
     <div style="display: flex; align-items: center; gap: 11px;">
-      <img src="assets/logo.png" alt="YourMemory" style="width: 24px; height: 24px; border-radius: 7px;">
-      <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;">Your<span style="color: #19cdff;">Memory</span></span>
-      <span style="font-size: 13.5px; color: #5a6b80; margin-left: 6px;">Infrastructure for the Agentic Era.</span>
+      <img src="assets/logo.png" alt="YourMemory" style="width: 26px; height: 26px; border-radius: 8px;">
+      <span style="font-size: 14px; color: #6b7d92;">Infrastructure for the Agentic Era.</span>
     </div>
-    <div style="display: flex; gap: 20px; font-size: 13.5px; color: #8b9bb0;">
-      <a href="https://github.com/sachitrafa/YourMemory" style-hover="color: #19cdff;">GitHub</a>
-      <a href="https://discord.gg/TWCKjEThe" style-hover="color: #19cdff;">Discord</a>
-      <a href="mailto:mishrasachit1@gmail.com" style-hover="color: #19cdff;">Contact</a>
-      <span style="color: #5a6b80;">© 2026 Sachit Misra</span>
+    <div style="display: flex; gap: 22px; font-size: 14px; color: #6b7d92;">
+      <a href="https://github.com/sachitrafa/YourMemory" style-hover="color: #0a87cc;">GitHub</a>
+      <a href="https://discord.gg/TWCKjEThe" style-hover="color: #0a87cc;">Discord</a>
+      <span>© 2026 Sachit Misra</span>
     </div>
   </footer>
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1280, &quot;height&quot;: 900}, &quot;animate&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}, &quot;heroDensity&quot;: {&quot;editor&quot;: &quot;float&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0.5, &quot;max&quot;: 2, &quot;step&quot;: 0.1, &quot;tsType&quot;: &quot;number&quot;}}">
+<script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { halfLife: 24, tab: 'long', regStep: 'email', email: '', code: '', token: '', faqOpen: 0, copied: false, copiedToken: false, menuOpen: false, sendError: '', verifyError: '', calcText: '', calcSessions: 5, calcModel: 3, calcTokensFast: null, promptCopied: false, calcTriggered: false };
+  state = { halfLife: 24, tab: 'long', regStep: 'email', email: '', code: '', token: '', calcHistory: '', calcSessions: 120, calcModel: 'sonnet', faqOpen: 0, copiedAudit: false, menuOpen: false, browserTab: 'memories' };
 
+  // ---------- hero neural canvas ----------
   componentWillUnmount() {
     this._running = false;
     if (this._raf) cancelAnimationFrame(this._raf);
     if (this._onResize) window.removeEventListener('resize', this._onResize);
     if (this._onVis) document.removeEventListener('visibilitychange', this._onVis);
-    if (this._copyTimer) clearTimeout(this._copyTimer);
   }
 
   componentDidUpdate(_p, prev) {
     if (!prev || prev.halfLife !== this.state.halfLife) this._drawDecay();
   }
 
-  // ---------- hero brain canvas ----------
   _startHero(canvas) {
     if (!canvas || this._running) return;
     this._running = true;
-    const animate = this.props.animate ?? true;
-    const dens = this.props.heroDensity ?? 1;
     const ctx = canvas.getContext('2d');
-    const CYAN = [25, 205, 255], MINT = [94, 234, 212], AMBER = [251, 191, 115];
+    const CYAN = [13, 135, 204], MINT = [15, 165, 170], AMBER = [120, 145, 175];
     let W = 0, H = 0, dpr = 1, nodes = [], edges = [];
     const build = () => {
       const r = canvas.getBoundingClientRect();
@@ -666,29 +885,37 @@ class Component extends DCLogic {
       W = r.width; H = r.height;
       canvas.width = W * dpr; canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const cx = W > 900 ? W * 0.72 : W * 0.5;
+      // Brain silhouette — nodes sampled inside the shape, on the right half of the hero
+      const cx = W > 820 ? W * 0.71 : W * 0.5;
       const cy = H * 0.46;
-      const sx = Math.min(W * 0.24, H * 0.62), sy = sx * 0.82;
+      const sxx = Math.min(W * 0.245, H * 0.6);
+      const syy = sxx * 0.84;
       const inBrain = (x, y) => {
-        const nx = (x - cx) / sx, ny = (y - cy) / sy;
+        const nx = (x - cx) / sxx, ny = (y - cy) / syy;
         const body = Math.pow(Math.abs(nx), 2.1) + Math.pow(Math.abs(ny), 1.7) < 1;
-        const cleft = ny < -0.04 && Math.abs(nx) < 0.055 + (ny + 0.04) * -0.16;
+        const cleft = ny < -0.04 && Math.abs(nx) < 0.055 + (ny + 0.04) * -0.16; // central fissure between hemispheres
         return body && !cleft;
       };
-      const N = Math.max(70, Math.round(W / 9 * dens));
-      nodes = []; let g = 0;
-      while (nodes.length < N && g < N * 60) {
-        g++;
-        const x = cx + (Math.random() * 2 - 1) * sx * 1.02, y = cy + (Math.random() * 2 - 1) * sy * 1.02;
+      const N = Math.max(95, Math.round(W / 8.5));
+      nodes = [];
+      let guard = 0;
+      while (nodes.length < N && guard < N * 60) {
+        guard++;
+        const x = cx + (Math.random() * 2 - 1) * sxx * 1.02;
+        const y = cy + (Math.random() * 2 - 1) * syy * 1.02;
         if (!inBrain(x, y)) continue;
-        const dec = Math.random() < 0.3;
-        nodes.push({ x, y, bx: x, by: y, r: 1.2 + Math.random() * 2.2, decaying: dec, phase: Math.random() * 6.28, spd: 0.3 + Math.random() * 0.6, amp: 2.5 + Math.random() * 6, str: dec ? 0.3 + Math.random() * 0.35 : 0.7 + Math.random() * 0.3, mint: !dec && Math.random() < 0.4, decRate: 0.1 + Math.random() * 0.22 });
+        const decaying = Math.random() < 0.3;
+        nodes.push({ x, y, bx: x, by: y, r: 1.3 + Math.random() * 2.3, decaying,
+          phase: Math.random() * Math.PI * 2, spd: 0.3 + Math.random() * 0.6, amp: 2.5 + Math.random() * 6,
+          str: decaying ? 0.3 + Math.random() * 0.35 : 0.7 + Math.random() * 0.3,
+          mint: !decaying && Math.random() < 0.4, decRate: 0.1 + Math.random() * 0.22 });
       }
       edges = [];
-      for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
-        const d = Math.hypot(nodes[i].bx - nodes[j].bx, nodes[i].by - nodes[j].by);
-        if (d < W * 0.06) edges.push({ a: i, b: j, base: 1 - d / (W * 0.06) });
-      }
+      for (let i = 0; i < nodes.length; i++)
+        for (let j = i + 1; j < nodes.length; j++) {
+          const d = Math.hypot(nodes[i].bx - nodes[j].bx, nodes[i].by - nodes[j].by);
+          if (d < W * 0.085) edges.push({ a: i, b: j, base: 1 - d / (W * 0.085) });
+        }
     };
     const mix = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
     let t = 0;
@@ -697,19 +924,17 @@ class Component extends DCLogic {
       if (W === 0) { build(); this._raf = requestAnimationFrame(frame); return; }
       t += 0.016;
       ctx.clearRect(0, 0, W, H);
-      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalCompositeOperation = 'source-over';
       for (const n of nodes) {
-        if (animate) {
-          n.x = n.bx + Math.cos(t * n.spd + n.phase) * n.amp;
-          n.y = n.by + Math.sin(t * n.spd * 0.8 + n.phase) * n.amp * 0.7;
-          if (n.decaying) n.str = 0.32 + 0.3 * (0.5 + 0.5 * Math.sin(t * n.decRate + n.phase));
-        }
+        n.x = n.bx + Math.cos(t * n.spd + n.phase) * n.amp;
+        n.y = n.by + Math.sin(t * n.spd * 0.8 + n.phase) * n.amp * 0.7;
+        if (n.decaying) n.str = 0.32 + 0.3 * (0.5 + 0.5 * Math.sin(t * n.decRate + n.phase));
       }
       ctx.lineWidth = 1;
       for (const e of edges) {
         const a = nodes[e.a], b = nodes[e.b];
         const col = (a.decaying || b.decaying) ? AMBER : CYAN;
-        const alpha = e.base * 0.13 * Math.min(a.str, b.str);
+        const alpha = e.base * 0.30 * Math.min(a.str, b.str);
         if (alpha < 0.01) continue;
         ctx.strokeStyle = mix(col, alpha);
         ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
@@ -718,21 +943,23 @@ class Component extends DCLogic {
         const col = n.decaying ? AMBER : (n.mint ? MINT : CYAN);
         const glow = n.r * (n.decaying ? 5 : 6.5);
         const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, glow);
-        g.addColorStop(0, mix(col, 0.5 * n.str)); g.addColorStop(0.4, mix(col, 0.14 * n.str)); g.addColorStop(1, mix(col, 0));
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(n.x, n.y, glow, 0, 6.2832); ctx.fill();
+        g.addColorStop(0, mix(col, 0.5 * n.str));
+        g.addColorStop(0.4, mix(col, 0.14 * n.str));
+        g.addColorStop(1, mix(col, 0));
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(n.x, n.y, glow, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = mix(col, Math.min(1, 0.85 * n.str + 0.15));
-        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, 6.2832); ctx.fill();
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
       }
       ctx.globalCompositeOperation = 'source-over';
-      if (animate) this._raf = requestAnimationFrame(frame);
+      this._raf = requestAnimationFrame(frame);
     };
     build();
-    this._onResize = () => { build(); frame(); this._drawDecay(); };
+    this._onResize = () => { build(); this._drawDecay(); };
     window.addEventListener('resize', this._onResize);
-    this._onVis = () => { if (document.visibilityState === 'visible' && this._running && animate) frame(); };
+    this._onVis = () => { if (document.visibilityState === 'visible' && this._running) frame(); };
     document.addEventListener('visibilitychange', this._onVis);
     frame();
-    if (animate) this._raf = requestAnimationFrame(frame);
+    this._raf = requestAnimationFrame(frame);
   }
 
   // ---------- decay curve ----------
@@ -746,6 +973,7 @@ class Component extends DCLogic {
     };
     tick();
   }
+
   _drawDecay() {
     const canvas = this._decay;
     if (!canvas) return;
@@ -763,278 +991,235 @@ class Component extends DCLogic {
     const lambda = Math.LN2 / this.state.halfLife;
     const sx = d => x0 + (d / DAYS) * (x1 - x0);
     const sy = s => y1 - s * (y1 - y0);
-    ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1;
-    ctx.font = "11px 'JetBrains Mono', monospace"; ctx.fillStyle = '#64748b';
-    for (let s = 0; s <= 1.0001; s += 0.25) { const y = sy(s); ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); ctx.fillText(s.toFixed(2), 6, y + 3); }
-    for (let d = 0; d <= DAYS; d += 15) ctx.fillText(d + 'd', sx(d) - 6, y1 + 20);
+    // grid
+    ctx.strokeStyle = 'rgba(10,37,64,0.09)'; ctx.lineWidth = 1;
+    ctx.font = "11px 'JetBrains Mono', monospace";
+    ctx.fillStyle = '#6b829c';
+    for (let s = 0; s <= 1.0001; s += 0.25) {
+      const y = sy(s);
+      ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+      ctx.fillText(s.toFixed(2), 6, y + 3);
+    }
+    for (let d = 0; d <= DAYS; d += 15) {
+      ctx.fillText(d + 'd', sx(d) - 6, y1 + 20);
+    }
+    // prune threshold line
     ctx.strokeStyle = 'rgba(251,191,115,0.55)'; ctx.setLineDash([5, 5]); ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(x0, sy(0.05)); ctx.lineTo(x1, sy(0.05)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(x0, sy(0.05)); ctx.lineTo(x1, sy(0.05)); ctx.stroke();
+    ctx.setLineDash([]);
     ctx.fillStyle = '#fbbf73'; ctx.fillText('prune  S<0.05', x1 - 96, sy(0.05) - 7);
+    // area + curve
     const grad = ctx.createLinearGradient(0, y0, 0, y1);
-    grad.addColorStop(0, 'rgba(25,205,255,0.34)'); grad.addColorStop(1, 'rgba(25,205,255,0)');
+    grad.addColorStop(0, 'rgba(25,205,255,0.32)');
+    grad.addColorStop(1, 'rgba(25,205,255,0)');
     ctx.beginPath(); ctx.moveTo(sx(0), sy(1));
     for (let d = 0; d <= DAYS; d += 0.5) ctx.lineTo(sx(d), sy(Math.exp(-lambda * d)));
-    ctx.lineTo(sx(DAYS), y1); ctx.lineTo(sx(0), y1); ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+    ctx.lineTo(sx(DAYS), y1); ctx.lineTo(sx(0), y1); ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
     ctx.beginPath();
     for (let d = 0; d <= DAYS; d += 0.5) { const X = sx(d), Y = sy(Math.exp(-lambda * d)); d === 0 ? ctx.moveTo(X, Y) : ctx.lineTo(X, Y); }
     ctx.strokeStyle = '#19cdff'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
     ctx.shadowColor = 'rgba(25,205,255,0.6)'; ctx.shadowBlur = 12; ctx.stroke(); ctx.shadowBlur = 0;
+    // marker at 14 days
     const md = 14, ms = Math.exp(-lambda * md);
-    ctx.fillStyle = '#fbbf73'; ctx.beginPath(); ctx.arc(sx(md), sy(ms), 5, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = '#fbbf73';
+    ctx.beginPath(); ctx.arc(sx(md), sy(ms), 5, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = 'rgba(251,191,115,0.4)'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
     ctx.beginPath(); ctx.moveTo(sx(md), sy(ms)); ctx.lineTo(sx(md), y1); ctx.stroke(); ctx.setLineDash([]);
   }
 
-  _initData() {
-    if (this._data) return;
-    const ck = (v) => v === true ? '✓' : (v === 'partial' ? '~' : '✕');
-    const cc = (v) => v === true ? '#5eead4' : (v === 'partial' ? '#fbbf73' : '#5a6b80');
-    this._data = {
-      bench: {
-        loco: { num: '59%', label: 'Recall@5 · LoCoMo-10', desc: 'Multi-session conversational memory. 1,000 questions across 50 conversations, 10 sessions each.', max: 70, rows: [{ l: 'Flat vector (baseline)', v: 34 }, { l: '+ BM25 hybrid', v: 47 }, { l: '+ Graph expansion', v: 54 }, { l: 'YourMemory', v: 59, us: true }] },
-        long: { num: '89.4%', label: 'Recall@5 · LongMemEval', desc: '500 long-horizon Q&A tasks from the official LongMemEval benchmark, tested end-to-end.', max: 100, rows: [{ l: 'ReadAgent', v: 71.2 }, { l: 'MemoryOS', v: 80.3 }, { l: 'Zep', v: 83.1 }, { l: 'YourMemory', v: 89.4, us: true }] },
-        hot: { num: '71.5', label: 'F1 · HotpotQA', desc: 'Multi-hop reasoning. Answers require connecting facts across multiple stored memories.', max: 80, rows: [{ l: 'Flat vector', v: 58.2 }, { l: '+ BM25 hybrid', v: 63.4 }, { l: '+ Entity graph', v: 68.1 }, { l: 'YourMemory', v: 71.5, us: true }] }
-      },
-      matrix: [
-        { f: 'Ebbinghaus decay & pruning', ym: true, mem0: false, zep: 'partial' },
-        { f: 'Hybrid graph + vector retrieval', ym: true, mem0: false, zep: true },
-        { f: 'Per-agent shared / private memory', ym: true, mem0: false, zep: false },
-        { f: 'Runs 100% locally (no API calls)', ym: true, mem0: false, zep: false },
-        { f: 'MCP-native (7 clients)', ym: true, mem0: 'partial', zep: false },
-        { f: 'Self-hostable', ym: true, mem0: true, zep: true },
-        { f: 'Open source', ym: true, mem0: true, zep: true }
-      ].map(r => ({ f: r.f, ym: ck(r.ym), mem0: ck(r.mem0), zep: ck(r.zep), ymColor: cc(r.ym), mem0Color: cc(r.mem0), zepColor: cc(r.zep) })),
-      faqRaw: [
-        { q: 'How is this different from Mem0 or built-in Claude memory?', a: 'Most memory systems store flat vectors and never forget. YourMemory adds three things: Ebbinghaus decay by category (different memory types age at different rates), graph-based retrieval that surfaces related memories the query didn’t directly match, and automatic pruning so stale facts never pollute context. Built-in Claude memory is cloud-only and limited; YourMemory runs fully locally with no data leaving your machine.' },
-        { q: 'Does my data leave my machine?', a: 'No. YourMemory runs entirely on your local machine. Embeddings are generated with a local spaCy model (no API calls), and all storage is in a local DuckDB file by default. Nothing is sent to external servers. For teams using PostgreSQL, the database is wherever you host it — still under your control.' },
-        { q: 'What does “Ebbinghaus decay” actually mean in practice?', a: 'It models how human memory fades — fast at first, then slower. Each stored memory carries a strength score S(t) = e^(−λt), where λ depends on the memory’s category. Strategies decay slowly (~38 day half-life), facts moderately (~24 days), failures quickly (~11 days). When strength drops below 0.05, the memory is pruned. Recalling a memory refreshes its strength, so frequently used context stays alive automatically.' },
-        { q: 'Does it work with Cursor, Cline, and Windsurf?', a: 'Yes. yourmemory-setup automatically detects and configures every MCP-compatible client on your machine: Claude Code, Claude Desktop, Cursor, Windsurf, Cline, Continue, and Zed. After a client restart, YourMemory is available as a tool in all of them simultaneously.' },
-        { q: 'Can multiple AI agents share the same memory?', a: 'Yes. Register each agent to get a ym_ API key. Memories marked shared are visible to all agents; memories marked private are only visible to the storing agent. Useful when a coding agent and a review agent should share project context but keep credentials separate.' },
-        { q: 'Is there a hosted / cloud version?', a: 'Not currently — YourMemory is fully local / self-hostable by design. For team deployments, use the PostgreSQL + pgvector backend with your own Postgres instance (Fly.io, Railway, Supabase, etc.). A managed cloud option may come later.' },
-        { q: 'What’s the license?', a: 'Non-commercial license (CC BY-NC 4.0). Free for personal use, research, and open source projects. For commercial use or team deployments, reach out.' }
-      ],
-      steps: [
-        { n: '01', title: 'Install & connect', desc: 'Three commands configure everything — install, activate with your token, and wire up every AI client on your machine.', code: '$ pip install yourmemory\n$ yourmemory-register <token>\n$ yourmemory-setup' },
-        { n: '02', title: 'AI learns as you work', desc: 'Your AI agent automatically stores preferences, project decisions, and recurring context — no manual tagging needed.', code: '✓ "Sachit uses Python, not JS"\n✓ "Postgres in prod, DuckDB local"\n✓ "Prefers BM25 hybrid retrieval"' },
-        { n: '03', title: 'Memory ages intelligently', desc: 'The Ebbinghaus forgetting curve prunes stale context automatically. Important memories persist; irrelevant ones fade. Graph connections keep clusters alive.', code: '~ "Uses React" → 0.04 (decaying)\n✗ pruned at S < 0.05\n↻ graph cluster kept alive' }
-      ],
-      layers: [
-        { tag: 'Ebbinghaus Decay', title: 'Forgets on a curve', desc: 'Different memory types age at different rates. Important facts persist longer; transient context fades naturally. Related memories stay alive together through graph propagation.', points: ['strategy — ~38 day half-life', 'fact — ~24 day half-life', 'failure — ~11 day half-life'] },
-        { tag: 'Hybrid Graph + Vector', title: 'Finds what you forgot to ask', desc: 'Two-round retrieval: semantic search surfaces exact matches, then graph traversal finds related memories that don’t share vocabulary with the query. Nothing slips through.', points: ['BM25 + dense vector hybrid', 'Entity graph expansion', 'Temporal reasoning boost'] },
-        { tag: 'Multi-Agent Memory', title: 'Share context or keep secrets', desc: 'Multiple AI agents share context or stay private. Each agent gets a ym_ API key with its own visibility — shared memories visible to all, private to the owner.', points: ['Per-agent API keys (ym_ prefix)', 'shared / private visibility', 'Revoke any agent anytime'] }
-      ],
-      auditPrompt: `Analyze our entire conversation and produce a memory compression report.
-
-Count the approximate tokens in this full conversation (estimate ~0.75 tokens per word).
-
-Then compress everything worth remembering — decisions, preferences, configs, goals, names, technical details — into the tightest possible bullet list. Cut anything obvious or one-off.
-
-Reply in exactly this format:
-
-Full conversation: ~X,XXX tokens
-Compressed memory: ~XXX tokens
-Savings: XX% (~X,XXX fewer tokens per future session)
-
---- MEMORY BLOCK ---
-• [each key fact as one bullet]`,
-      legacyPoints: ['Flat embeddings, no decay', 'Append-only — no pruning', 'Stale facts pollute context', 'No graph relationships'],
-      ymPoints: ['Ebbinghaus decay by category', 'Auto-prunes below S < 0.05', 'Hybrid graph + vector recall', 'Per-agent shared / private'],
-      install: [
-        { n: '01', title: 'Install the package', cmd: 'pip install yourmemory', desc: 'Downloads YourMemory and registers the CLI commands on your machine.' },
-        { n: '02', title: 'Activate with your token', cmd: 'yourmemory-register <your-token>', desc: 'Verifies your token and unlocks the memory tools.' },
-        { n: '03', title: 'Connect your AI clients', cmd: 'yourmemory-setup', desc: 'Downloads the language model, initialises the database, and writes the MCP config into every AI client it finds.' }
-      ],
-      entFeatures: [
-        { title: 'Org memory sharing', desc: 'Shared memories surface automatically across every team member’s session. What one engineer learns, the whole team benefits from — instantly.' },
-        { title: 'Private memories', desc: 'Mark any memory private and it stays yours alone. Sensitive context, personal notes, draft decisions — never visible to colleagues or admins.' },
-        { title: 'Admin portal', desc: 'One dashboard to see every member’s memories. Search, filter, and delete anything. Full visibility and control over your knowledge base.' }
-      ],
-      marquee: ['Medium', 'dev.to', 'Hacker News', 'ChatGate AI', 'LinkedIn', 'Let’s Data Science', 'Daily Neural Digest', 'Medium', 'dev.to', 'Hacker News', 'ChatGate AI', 'LinkedIn', 'Let’s Data Science', 'Daily Neural Digest'],
-      press: [
-        { source: 'Medium', title: 'Beyond Flat RAG: Associative Decay & Graph Context', desc: 'A deep dive into the architecture — why flat vector search isn’t enough and how decay changes retrieval.', url: 'https://medium.com/@mishrasachit1/beyond-flat-rag-implementing-associative-decay-and-graph-based-context-for-local-agents-f3c9aeda7daf' },
-        { source: 'dev.to', title: 'I Built Memory Decay Using the Ebbinghaus Curve', desc: 'The original writeup — the forgetting-curve formula and category-based decay rates.', url: 'https://dev.to/sachit_mishra_686a94d1bb5/i-built-memory-decay-for-ai-agents-using-the-ebbinghaus-forgetting-curve-1b0e' },
-        { source: 'Hacker News · ▲ 90', title: 'Show HN: AI memory with biological decay', desc: 'Community discussion on the architecture, tradeoffs, and why decay beats hoarding.', url: 'https://news.ycombinator.com/item?id=47914367' },
-        { source: 'ChatGate AI', title: 'Agentic Memory Is a Pruning Problem, Not Hoarding', desc: 'Third-party analysis of the pruning-first approach with a benchmark breakdown.', url: 'https://chatgate.ai/post/yourmemory' },
-        { source: 'LinkedIn', title: 'Launched on Product Hunt — #20 Product of the Day', desc: 'The story behind building a memory layer that works like human memory.', url: 'https://www.linkedin.com/posts/sachit-mishra-19b393165_launched-yourmemory-on-product-hunt-yesterday-share-7453003179438346240-fVkp' },
-        { source: 'Let’s Data Science', title: 'YourMemory Adds Ebbinghaus Decay to Agent Memory', desc: 'How the forgetting curve makes context decay so only relevant knowledge survives.', url: 'https://letsdatascience.com/news/yourmemory-adds-ebbinghaus-decay-to-agent-memory-4848cdb5' }
-      ]
+  // ---------- data ----------
+  _bench() {
+    return {
+      loco: { num: '59%', label: 'Recall@5 · LoCoMo-10', desc: 'Multi-session conversational memory. 1,000 questions across 50 conversations, 10 sessions each.',
+        max: 70, rows: [{ l: 'Flat vector (baseline)', v: 34 }, { l: 'Mem0', v: 53 }, { l: 'YourMemory', v: 59, us: true }] },
+      long: { num: '89.4%', label: 'Recall@5 · LongMemEval', desc: '500 long-horizon Q&A tasks from the official LongMemEval benchmark, tested end-to-end.',
+        max: 100, rows: [{ l: 'ReadAgent', v: 71.2 }, { l: 'MemoryOS', v: 80.3 }, { l: 'Zep', v: 83.1 }, { l: 'YourMemory', v: 89.4, us: true }] },
+      hot: { num: '71.5', label: 'F1 · HotpotQA', desc: 'Multi-hop reasoning. Answers require connecting facts across multiple stored memories.',
+        max: 80, rows: [{ l: 'Flat vector', v: 58.2 }, { l: '+ BM25 hybrid', v: 63.4 }, { l: '+ Entity graph', v: 68.1 }, { l: 'YourMemory', v: 71.5, us: true }] }
     };
   }
 
   renderVals() {
-    this._initData();
-    const d = this._data;
     const hl = this.state.halfLife;
     const s14 = Math.exp(-Math.LN2 / hl * 14);
     const pruneDay = hl * Math.log(1 / 0.05) / Math.LN2;
     const tab = this.state.tab;
-    const cur = d.bench[tab];
+    const bench = this._bench();
+    const cur = bench[tab];
+    const rs = this.state.regStep;
+    const em = this.state.email;
+    const maskedEmail = em.includes('@') ? em.replace(/^(.)(.*)(@.*)$/, (m, a, b, c) => a + '\u2022'.repeat(Math.max(b.length, 1)) + c) : em;
+    const validEmail = /.+@.+\..+/.test(em);
     const bars = cur.rows.map(row => ({
       l: row.l,
       valLabel: (cur.num.includes('%') ? row.v + '%' : row.v.toFixed(1)),
       width: (row.v / cur.max * 100).toFixed(1) + '%',
-      fill: row.us ? 'linear-gradient(90deg, #19cdff, #5eead4)' : 'rgba(255,255,255,0.2)',
-      labelColor: row.us ? '#19cdff' : '#8b9bb0'
+      fill: row.us ? 'linear-gradient(90deg, #19cdff, #0fb5a8)' : 'rgba(10,37,64,0.16)',
+      labelColor: row.us ? '#19cdff' : '#5b6b80'
     }));
-    const mkTab = (id, label) => ({ label, onClick: () => this.setState({ tab: id }), fg: tab === id ? '#061021' : '#9fb0c3', bg: tab === id ? '#19cdff' : 'transparent' });
+    const mkTab = (id, label) => ({
+      label, onClick: () => this.setState({ tab: id }),
+      fg: tab === id ? '#ffffff' : '#44566e',
+      bg: tab === id ? '#19cdff' : 'transparent'
+    });
     const mkPreset = (label, days) => {
       const active = hl === days;
-      return { label, onClick: () => this.setState({ halfLife: days }), fg: active ? '#061021' : '#cdd9e8', bg: active ? '#fbbf73' : 'rgba(255,255,255,0.04)', bd: active ? '#fbbf73' : 'rgba(255,255,255,0.14)' };
+      return { label, onClick: () => this.setState({ halfLife: days }),
+        fg: active ? '#ffffff' : '#37485c',
+        bg: active ? '#fbbf73' : 'rgba(10,37,64,0.05)',
+        bd: active ? '#fbbf73' : 'rgba(10,37,64,0.16)' };
     };
 
-    const calcText = this.state.calcText || '';
-    const _fast = this.state.calcTokensFast;
-    const calcTokens = (_fast !== null && _fast >= 0) ? _fast : Math.ceil(calcText.length / 4);
-    const calcSessions = this.state.calcSessions || 5;
-    const calcModel = this.state.calcModel || 3;
-    const _S = 300;
-    const _ctx = calcTokens > 0 ? Math.ceil(calcTokens / calcSessions) : 0;
-    const _ym = Math.max(80, Math.ceil(_ctx * 0.12));
-    const _baseTotal = calcSessions * _S + _ctx * calcSessions * (calcSessions + 1) / 2;
-    const _ymTotal = calcSessions * (_S + _ctx + _ym);
-    const calcSavePct = _baseTotal > 0 ? Math.round((1 - _ymTotal / _baseTotal) * 100) : 0;
-    const _fmtTok = n => n >= 1e6 ? (n/1e6).toFixed(2)+'M' : n >= 1e3 ? (Math.round(n/100)/10).toFixed(1)+'k' : String(n);
-    const _fmtUSD = n => n <= 0 ? '$0.00' : n < 0.01 ? '<$0.01' : n < 100 ? '$'+n.toFixed(2) : '$'+Math.round(n).toLocaleString();
-    const _modelLabel = ({3:'Sonnet',15:'Opus',1:'Haiku',2.5:'GPT-4o'})[calcModel] || 'Sonnet';
-    const calcIsExact = _fast !== null && calcText.length > 0;
+    // ---------- savings calculator ----------
+    const MODELS = { sonnet: { label: 'Claude Sonnet', price: 3 }, opus: { label: 'Claude Opus', price: 15 }, haiku: { label: 'Claude Haiku', price: 1 }, gpt4o: { label: 'GPT-4o', price: 2.5 } };
+    const calcModel = this.state.calcModel;
+    const mdl = MODELS[calcModel];
+    const Ns = this.state.calcSessions;
+    const words = this.state.calcHistory.trim() ? this.state.calcHistory.trim().split(/\s+/).length : 0;
+    const convTokens = Math.round(words / 0.75);
+    const baseTotal = Math.round(convTokens * Ns * (Ns + 1) / 2);
+    const recalled = Math.round(convTokens * 0.12);
+    const ymTotal = Math.round((convTokens + recalled) * Ns);
+    const saveTok = Math.max(0, baseTotal - ymTotal);
+    const savePct = baseTotal ? Math.round(saveTok / baseTotal * 100) : 0;
+    const fmt = (n) => Math.round(n).toLocaleString('en-US');
+    const cost = (t) => '$' + (t / 1e6 * mdl.price).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+    const mkModel = (id) => ({ label: MODELS[id].label.replace('Claude ', ''), onClick: () => this.setState({ calcModel: id }), fg: calcModel === id ? '#ffffff' : '#37485c', bg: calcModel === id ? '#0a87cc' : 'rgba(10,37,64,0.05)', bd: calcModel === id ? '#0a87cc' : 'rgba(10,37,64,0.16)' });
+    const auditPrompt = 'Estimate three things from our conversation so far and report only the numbers:\n1. Total tokens in our full conversation.\n2. Tokens if you compressed it to a memory note you\u2019d actually reuse.\n3. The percentage saved.\nReply in one line: "Full ~X \u00b7 Memory ~Y \u00b7 Savings Z%". No explanation.';
 
-    const em = this.state.email;
-    const maskedEmail = em.includes('@') ? em.replace(/^(.)(.*)(@.*)$/, (m, a, b, c) => a + '•'.repeat(Math.max(b.length, 1)) + c) : em;
-    const validEmail = /.+@.+\..+/.test(em);
-    const rs = this.state.regStep;
-    const faqs = d.faqRaw.map((f, i) => ({ q: f.q, a: f.a, open: this.state.faqOpen === i, sign: this.state.faqOpen === i ? '−' : '+', onClick: () => this.setState({ faqOpen: this.state.faqOpen === i ? -1 : i }) }));
+    // ---------- comparison ----------
+    const YES = { g: '\u2713', c: '#0fb5a8' }, NO = { g: '\u2715', c: '#c2cfdd' }, PART = { g: '~', c: '#fbbf73' };
+    const mkRow = (f, a, b, c) => ({ f, ymG: a.g, ymC: a.c, mem0G: b.g, mem0C: b.c, zepG: c.g, zepC: c.c });
+
+    // ---------- faq ----------
+    const faqData = [
+      { q: 'Does any of my data leave my machine?', a: 'No. YourMemory runs entirely locally — storage, embeddings, retrieval, and decay all happen on your machine. There\u2019s no API key and no server call. Nothing about your conversations ever leaves your system.' },
+      { q: 'Which AI clients does it work with?', a: 'Setup auto-detects and wires up Claude Code, Claude Desktop, Cursor, Windsurf, Cline, Continue, and Zed — 7 MCP-compatible clients. Anything that speaks MCP can connect.' },
+      { q: 'Is it really free?', a: 'Yes. The core is open source and free to self-host forever. The paid Enterprise build adds org-wide memory sharing, private memories, and an admin portal.' },
+      { q: 'How does decay decide what to forget?', a: 'Every memory carries a strength score that follows the Ebbinghaus forgetting curve, S(t) = e^(\u2212\u03bbt). Each category ages at its own half-life, and recall resets the clock. When strength drops below the prune threshold the memory fades from retrieval — but graph-linked clusters keep important context alive.' },
+      { q: 'How is this different from a vector database?', a: 'A vector DB stores and returns raw chunks and never forgets. YourMemory stores facts that merge, strengthen, decay, and connect through an entity graph — so retrieval surfaces synthesized memory, not a pile of chunks.' },
+      { q: 'Can I use it for my whole team?', a: 'Yes — Enterprise is a private build with shared org memory, per-member private memories, and an admin portal for full visibility. Reach out for a pilot.' }
+    ];
+    const faqs = faqData.map((it, i) => ({ q: it.q, a: it.a, open: this.state.faqOpen === i, onClick: () => this.setState((s) => ({ faqOpen: s.faqOpen === i ? -1 : i })), iconRot: this.state.faqOpen === i ? 'rotate(45deg)' : 'rotate(0deg)', bd: this.state.faqOpen === i ? 'rgba(25,205,255,0.35)' : 'rgba(10,37,64,0.1)', bg: this.state.faqOpen === i ? 'rgba(25,205,255,0.04)' : 'rgba(10,37,64,0.02)' }));
 
     return {
+      menuOpen: this.state.menuOpen,
+      menuClosed: !this.state.menuOpen,
+      toggleMenu: () => this.setState((s) => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      mobileLinks: [
+        { href: '#how', label: 'How it works' },
+        { href: '#engine', label: 'Engine' },
+        { href: '#benchmarks', label: 'Benchmarks' },
+        { href: '#savings', label: 'Savings' },
+        { href: '#compare', label: 'Compare' },
+        { href: '#enterprise', label: 'Enterprise' },
+        { href: '#audit', label: 'Audit' },
+        { href: '#faq', label: 'FAQ' }
+      ],
+      isMemTab: true,
+      isAuditTab: true,
+      showMem: () => {},
+      showAudit: () => {},
+      memTab: { fg: '#19cdff', bg: 'rgba(25,205,255,0.12)', bd: 'rgba(25,205,255,0.25)', fw: '600' },
+      audTab: { fg: '#19cdff', bg: 'rgba(25,205,255,0.12)', bd: 'rgba(25,205,255,0.25)', fw: '600' },
+      memoryCards: [
+        { text: 'Mira prefers TypeScript with strict mode and uses pnpm — never run npm install in this repo.', pct: '94%', cat: 'preference', catFg: '#0fb5a8', catBg: 'rgba(15,181,168,0.14)', catBd: 'rgba(15,181,168,0.4)', barW: '94%', id: '2041', importance: '0.78', recalls: '16', last: '2026-06-26 18:02:11' },
+        { text: 'Deciding between Vercel and self-hosted Fly.io for the staging deploy — pending a cost review next sprint.', pct: '72%', cat: 'assumption', catFg: '#fbbf24', catBg: 'rgba(251,191,36,0.14)', catBd: 'rgba(251,191,36,0.4)', barW: '72%', id: '1987', importance: '0.61', recalls: '9', last: '2026-06-26 16:48:03' },
+        { text: 'The CI pipeline posts a Slack alert to #eng-alerts on every failed run; releases ship on Fridays.', pct: '100%', cat: 'fact', catFg: '#818cf8', catBg: 'rgba(99,102,241,0.16)', catBd: 'rgba(99,102,241,0.4)', barW: '100%', id: '2106', importance: '0.85', recalls: '4', last: '2026-06-26 15:25:25' }
+      ],
+      auditStats: [
+        { n: '321', l: 'Total memories', c: '#19cdff', bd: 'rgba(25,205,255,0.18)' },
+        { n: '248', l: 'Strong (≥ 0.5)', c: '#34d399', bd: 'rgba(52,211,153,0.18)' },
+        { n: '73', l: 'Fading (0.05–0.5)', c: '#fbbf24', bd: 'rgba(251,191,36,0.18)' },
+        { n: '0', l: 'Near prune (< 0.1)', c: '#fb7185', bd: 'rgba(251,113,133,0.18)' }
+      ],
+      auditRows: [
+        { time: '12:31:46', badge: 'read', fg: '#818cf8', bg: 'rgba(99,102,241,0.16)', bd: 'rgba(99,102,241,0.4)', op: 'list', tgt: '#2026 #1905 #2023 #2022 #2021 #2020 #2019', tgtColor: '#818cf8' },
+        { time: '12:25:52', badge: 'write', fg: '#34d399', bg: 'rgba(52,211,153,0.16)', bd: 'rgba(52,211,153,0.4)', op: 'store', tgt: '#2026', tgtColor: '#19cdff' },
+        { time: '12:16:35', badge: 'read', fg: '#818cf8', bg: 'rgba(99,102,241,0.16)', bd: 'rgba(99,102,241,0.4)', op: 'retrieve', tgt: '#1762 #1999 #1763 #365 #2020 #75 #1865', tgtColor: '#19cdff' },
+        { time: '12:14:57', badge: 'write', fg: '#34d399', bg: 'rgba(52,211,153,0.16)', bd: 'rgba(52,211,153,0.4)', op: 'store', tgt: '#2023', tgtColor: '#19cdff' },
+        { time: '12:12:09', badge: 'delete', fg: '#fb7185', bg: 'rgba(251,113,133,0.16)', bd: 'rgba(251,113,133,0.4)', op: 'delete', tgt: '#2012', tgtColor: '#fb7185' }
+      ],
+      auditFeatures: [
+        { title: 'Tamper-evident chain', desc: 'Each entry is hash-linked to the one before it. Change a single row and the chain breaks — so the “chain verified” badge is a real guarantee, not a label.' },
+        { title: 'Full attribution', desc: 'Every read, write, and delete is stamped with the user, agent, target memory IDs, and source — a complete provenance trail for each memory.' },
+        { title: 'Filter & retain', desc: 'Scope the log to any action or user, and set how long history is kept. Audit stays local — the trail never leaves your machine.' }
+      ],
+      auditPrompt,
+      copyAuditLabel: this.state.copiedAudit ? 'Copied \u2713' : 'Copy prompt',
+      copyAudit: () => { try { navigator.clipboard.writeText(auditPrompt); } catch (e) {} this.setState({ copiedAudit: true }); clearTimeout(this._cpT); this._cpT = setTimeout(() => this.setState({ copiedAudit: false }), 1600); },
+      calcHistory: this.state.calcHistory,
+      onCalcHistory: (e) => this.setState({ calcHistory: e.target.value }),
+      calcSessions: Ns,
+      onCalcSessions: (e) => this.setState({ calcSessions: parseInt(e.target.value, 10) }),
+      calcTokensFmt: fmt(convTokens),
+      modelOpts: [mkModel('sonnet'), mkModel('opus'), mkModel('haiku'), mkModel('gpt4o')],
+      calcModelLabel: mdl.label,
+      calcBaseTokFmt: fmt(baseTotal),
+      calcBaseCostFmt: cost(baseTotal),
+      calcCtxPerSessFmt: fmt(convTokens * Ns),
+      calcYmTokFmt: fmt(ymTotal),
+      calcYmCostFmt: cost(ymTotal),
+      calcYmPerSessFmt: fmt(convTokens + recalled),
+      calcSavePct: savePct,
+      calcSaveTokFmt: fmt(saveTok),
+      calcSaveCostFmt: cost(saveTok),
+      legacyPoints: ['Starts from zero every session', 'No sense of importance or recency', 'Hoards everything, forgets nothing', 'Returns raw chunks, not facts'],
+      ymPoints: ['Persists across every session', 'Ebbinghaus decay prunes the stale', 'Merges & links related facts', 'Returns synthesized memory, not chunks'],
+      compareRows: [
+        mkRow('Biological memory decay', YES, NO, NO),
+        mkRow('Entity graph + vector hybrid', YES, PART, YES),
+        mkRow('Runs fully on your machine', YES, NO, NO),
+        mkRow('MCP-native integration', YES, NO, NO),
+        mkRow('Per-agent visibility control', YES, NO, PART),
+        mkRow('Open-source core', YES, YES, PART)
+      ],
+      faqs,
       heroCanvasRef: (el) => { if (el) { this._hero = el; this._startHero(el); } },
       decayCanvasRef: (el) => { if (el) { this._decay = el; this._ensureDecay(); } },
-      menuOpen: this.state.menuOpen,
-      toggleMenu: () => this.setState({ menuOpen: !this.state.menuOpen }),
-      closeMenu: () => this.setState({ menuOpen: false }),
-      copyInstall: () => {
-        try { navigator.clipboard && navigator.clipboard.writeText('pip install yourmemory'); } catch (e) {}
-        this.setState({ copied: true });
-        if (this._copyTimer) clearTimeout(this._copyTimer);
-        this._copyTimer = setTimeout(() => this.setState({ copied: false }), 1600);
-      },
-      copyLabel: this.state.copied ? 'Copied' : 'Copy',
-      copyColor: this.state.copied ? '#5eead4' : '#9fb0c3',
-      copyToken: () => {
-        try { navigator.clipboard && navigator.clipboard.writeText(`yourmemory-register ${this.state.token}`); } catch (e) {}
-        this.setState({ copiedToken: true });
-        setTimeout(() => this.setState({ copiedToken: false }), 1600);
-      },
-      copyTokenLabel: this.state.copiedToken ? 'Copied' : 'Copy',
-      copyTokenColor: this.state.copiedToken ? '#5eead4' : '#9fb0c3',
-      halfLife: hl, halfLifeLabel: hl + ' days',
+      halfLife: hl,
+      halfLifeLabel: hl + ' days',
       onHalfLife: (e) => this.setState({ halfLife: parseInt(e.target.value, 10) }),
-      strengthLabel: s14.toFixed(2), pruneDayLabel: '~' + Math.round(pruneDay) + 'd',
-      presets: [mkPreset('strategy · 38d', 38), mkPreset('fact · 24d', 24), mkPreset('failure · 11d', 11)],
+      strengthLabel: s14.toFixed(2),
+      pruneDayLabel: '~' + Math.round(pruneDay) + 'd',
+      presets: [mkPreset('Strategy · 38d', 38), mkPreset('Fact · 24d', 24), mkPreset('Failure · 11d', 11)],
       tabs: [mkTab('loco', 'LoCoMo-10'), mkTab('long', 'LongMemEval'), mkTab('hot', 'HotpotQA')],
       bigNum: cur.num, bigLabel: cur.label, bigDesc: cur.desc, bars,
-      matrix: d.matrix,
-      steps: d.steps,
-      layers: d.layers,
-      legacyPoints: d.legacyPoints,
-      ymPoints: d.ymPoints,
-      faqs,
       isEmailStep: rs === 'email', isCodeStep: rs === 'code', isDoneStep: rs === 'done',
       email: em, maskedEmail, code: this.state.code, token: this.state.token,
       onEmail: (e) => this.setState({ email: e.target.value }),
       onCode: (e) => this.setState({ code: e.target.value.replace(/[^0-9]/g, '').slice(0, 6) }),
-      sendError: this.state.sendError || '',
-      sendCode: async () => {
-        if (!validEmail) return;
-        try {
-          const res = await fetch('https://yourmemory-backend.yourmemoryai.workers.dev/send-otp', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: em })
-          });
-          if (res.ok) {
-            this.setState({ regStep: 'code', sendError: '' });
-          } else {
-            const d = await res.json().catch(() => ({}));
-            this.setState({ sendError: d.reason || 'Failed to send code. Try again.' });
-          }
-        } catch (e) {
-          this.setState({ sendError: 'Network error. Check your connection.' });
-        }
-      },
-      verifyError: this.state.verifyError || '',
-      verifyCode: async () => {
-        const c = this.state.code;
-        if (!c || c.length !== 6) return;
-        try {
-          const res = await fetch('https://yourmemory-backend.yourmemoryai.workers.dev/verify-otp', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: em, code: c })
-          });
-          const data = await res.json().catch(() => ({}));
-          if (res.ok && data.token) {
-            this.setState({ regStep: 'done', token: data.token, verifyError: '' });
-          } else {
-            this.setState({ verifyError: data.reason || 'Invalid code. Try again.' });
-          }
-        } catch (e) {
-          this.setState({ verifyError: 'Network error. Check your connection.' });
-        }
-      },
-      backToEmail: () => this.setState({ regStep: 'email', code: '', verifyError: '' }),
-      install: d.install,
-      entFeatures: d.entFeatures,
-      marquee: d.marquee,
-      press: d.press,
-      calcTokens,
-      calcSessions,
-      calcIsExact,
-      calcTokensFmt: _fmtTok(calcTokens),
-      calcTokensLabel: calcIsExact ? 'tokens · exact (GPT-4/Claude tokenizer)' : 'tokens (∼4 chars/token)',
-      calcBaseTokFmt: _fmtTok(_baseTotal),
-      calcBaseCostFmt: _fmtUSD(_baseTotal * calcModel / 1e6),
-      calcYmTokFmt: _fmtTok(_ymTotal),
-      calcYmCostFmt: _fmtUSD(_ymTotal * calcModel / 1e6),
-      calcSavePct,
-      calcSaveTokFmt: _fmtTok(_baseTotal - _ymTotal),
-      calcSaveCostFmt: _fmtUSD((_baseTotal - _ymTotal) * calcModel / 1e6),
-      calcCtxPerSessFmt: _fmtTok(_ctx),
-      calcYmPerSessFmt: _fmtTok(_ym),
-      calcModelLabel: _modelLabel,
-      auditPrompt: d.auditPrompt,
-      promptCopied: this.state.promptCopied,
-      cpBtnBg: this.state.promptCopied ? 'rgba(94,234,212,0.12)' : 'rgba(25,205,255,0.08)',
-      cpBtnBorder: this.state.promptCopied ? 'rgba(94,234,212,0.35)' : 'rgba(25,205,255,0.25)',
-      cpBtnColor: this.state.promptCopied ? '#5eead4' : '#19cdff',
-      cpBtnLabel: this.state.promptCopied ? '✓ Prompt copied — paste it in your AI' : 'Copy audit prompt →',
-      cpInlineBg: this.state.promptCopied ? 'rgba(94,234,212,0.15)' : 'rgba(25,205,255,0.08)',
-      cpInlineBorder: this.state.promptCopied ? 'rgba(94,234,212,0.4)' : 'rgba(25,205,255,0.25)',
-      cpInlineColor: this.state.promptCopied ? '#5eead4' : '#19cdff',
-      cpInlineLabel: this.state.promptCopied ? '✓ Copied' : 'Copy',
-      copyPrompt: () => {
-        try { navigator.clipboard.writeText(d.auditPrompt); } catch (e) {}
-        this.setState({ promptCopied: true });
-        setTimeout(() => this.setState({ promptCopied: false }), 1800);
-      },
-      calcHasText: calcText.length > 0,
-      calcBtnBg: calcText.length > 0 ? 'linear-gradient(135deg,#19cdff,#5eead4)' : 'rgba(255,255,255,0.06)',
-      calcBtnBorder: calcText.length > 0 ? 'transparent' : 'rgba(255,255,255,0.1)',
-      calcBtnColor: calcText.length > 0 ? '#061021' : '#3d4f60',
-      calcBtnCursor: calcText.length > 0 ? 'pointer' : 'default',
-      calcBtnLabel: calcText.length > 0 ? 'Calculate savings →' : 'Paste a conversation first',
-      calculate: () => this.setState({ calcTriggered: true }),
-      calcTriggered: this.state.calcTriggered,
-      onCalcText: (e) => {
-        const text = e.target.value;
-        const fast = typeof window.__gptEncode === 'function' ? window.__gptEncode(text).length : null;
-        this.setState({ calcText: text, calcTokensFast: fast, calcTriggered: false });
-      },
-      onCalcSessions: (e) => this.setState({ calcSessions: +e.target.value }),
-      onCalcModel: (e) => this.setState({ calcModel: +e.target.value })
+      sendCode: () => { if (validEmail) this.setState({ regStep: 'code' }); },
+      verifyCode: () => this.setState({ regStep: 'done', token: 'ym_' + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6) }),
+      backToEmail: () => this.setState({ regStep: 'email', code: '' }),
+      entFeatures: [
+        { title: 'Org memory sharing', desc: 'Shared memories surface automatically across every team member\u2019s session. What one engineer learns, the whole team benefits from — instantly.' },
+        { title: 'Private memories', desc: 'Mark any memory private and it stays yours alone. Sensitive context, personal notes, draft decisions — never visible to colleagues or admins.' },
+        { title: 'Admin portal', desc: 'One dashboard to see every member\u2019s memories. Search, filter, and delete anything. Full visibility and control over your knowledge base.' }
+      ],
+      press: [
+        { source: 'Medium', title: 'Beyond Flat RAG: Associative Decay & Graph Context', desc: 'A deep dive into the architecture — why flat vector search isn\u2019t enough and how decay changes retrieval.', url: 'https://medium.com/@mishrasachit1/beyond-flat-rag-implementing-associative-decay-and-graph-based-context-for-local-agents-f3c9aeda7daf' },
+        { source: 'dev.to', title: 'I Built Memory Decay Using the Ebbinghaus Curve', desc: 'The original writeup — the forgetting-curve formula and category-based decay rates.', url: 'https://dev.to/sachit_mishra_686a94d1bb5/i-built-memory-decay-for-ai-agents-using-the-ebbinghaus-forgetting-curve-1b0e' },
+        { source: 'Hacker News \u00b7 \u25b2 90', title: 'Show HN: AI memory with biological decay', desc: 'Community discussion on the architecture, tradeoffs, and why decay beats hoarding.', url: 'https://news.ycombinator.com/item?id=47914367' },
+        { source: 'ChatGate AI', title: 'Agentic Memory Is a Pruning Problem, Not Hoarding', desc: 'Third-party analysis of the pruning-first approach with a benchmark breakdown.', url: 'https://chatgate.ai/post/yourmemory' },
+        { source: 'LinkedIn', title: 'Launched on Product Hunt — #20 Product of the Day', desc: 'The story behind building a memory layer that works like human memory.', url: 'https://www.linkedin.com/posts/sachit-mishra-19b393165_launched-yourmemory-on-product-hunt-yesterday-share-7453003179438346240-fVkp' },
+        { source: 'Let\u2019s Data Science', title: 'YourMemory Adds Ebbinghaus Decay to Agent Memory', desc: 'How the forgetting curve makes context decay so only relevant knowledge survives.', url: 'https://letsdatascience.com/news/yourmemory-adds-ebbinghaus-decay-to-agent-memory-4848cdb5' }
+      ],
+      steps: [
+        { n: '1', title: 'Install & connect', desc: 'Three commands configure everything — install, activate with your token, and wire up every AI client on your machine.', code: '$ pip install yourmemory\n$ yourmemory-register <token>\n$ yourmemory-setup' },
+        { n: '2', title: 'AI learns as you work', desc: 'Your agent automatically stores preferences, decisions, and recurring context — no manual tagging needed.', code: '✓ "Sachit uses Python, not JS"\n✓ "Postgres in prod, DuckDB local"\n✓ "Prefers BM25 hybrid retrieval"' },
+        { n: '3', title: 'Memory ages intelligently', desc: 'The Ebbinghaus curve prunes stale context. Important memories persist; irrelevant ones fade.', code: '~ "Uses React" → 0.04 (decaying)\n✗ pruned at S < 0.05\n↻ graph cluster kept alive' }
+      ],
+      layers: [
+        { tag: 'Ebbinghaus Decay', title: 'Forgets on a curve', desc: 'Different memory types age at different rates. Important facts persist longer; transient context fades naturally.', points: ['strategy — ~38 day half-life', 'fact — ~24 day half-life', 'failure — ~11 day half-life'] },
+        { tag: 'Hybrid Graph + Vector', title: 'Finds what you forgot to ask', desc: 'Two-round retrieval: semantic search surfaces exact matches, then graph traversal finds related memories that don\u2019t share vocabulary.', points: ['BM25 + dense vector hybrid', 'Entity graph expansion', 'Temporal reasoning boost'] },
+        { tag: 'Multi-Agent Memory', title: 'Share context or keep secrets', desc: 'Multiple agents share context or stay private. Each agent gets a ym_ API key with its own visibility.', points: ['Per-agent API keys (ym_ prefix)', 'shared / private visibility', 'Revoke any agent anytime'] }
+      ]
     };
   }
 }
-</script>
-<script type="module">
-  import { encode } from 'https://esm.sh/gpt-tokenizer/cl100k_base';
-  window.__gptEncode = encode;
 </script>
 </body>
 </html>
