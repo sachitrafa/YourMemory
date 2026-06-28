@@ -8,7 +8,12 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from src.routes import memories, retrieve, agents, ui, graph_viz, proxy, audit
+import time
+from collections import defaultdict, deque
+from threading import Lock
+from fastapi import Request
+from fastapi.responses import JSONResponse
+from src.routes import memories, retrieve, agents, ui, graph_viz, proxy, audit, dsar
 from src.jobs.decay_job import run as run_decay
 from src.services.audit import prune_expired as prune_audit
 from src.db.migrate import migrate
@@ -43,6 +48,42 @@ app.include_router(ui.router)
 app.include_router(graph_viz.router)
 app.include_router(proxy.router)
 app.include_router(audit.router)
+app.include_router(dsar.router)
+
+
+# ── Rate limiting (abuse prevention) ────────────────────────────────────────────
+# Per-client sliding-window limiter. Loopback (127.0.0.1) is exempt by default — the
+# local trust boundary is the OS user, and the recall/store hooks burst legitimately;
+# the limit targets network-exposed (hosted) clients. Configure with:
+#   YOURMEMORY_RATE_LIMIT   max requests per window per client  (default 300; 0 disables)
+#   YOURMEMORY_RATE_WINDOW  window length in seconds            (default 60)
+#   YOURMEMORY_RATE_LIMIT_LOOPBACK=1  also limit loopback clients
+_RATE_LIMIT  = int(os.getenv("YOURMEMORY_RATE_LIMIT", "300"))
+_RATE_WINDOW = int(os.getenv("YOURMEMORY_RATE_WINDOW", "60"))
+_RATE_LOOPBACK = os.getenv("YOURMEMORY_RATE_LIMIT_LOOPBACK", "0") == "1"
+_rate_hits: dict = defaultdict(deque)
+_rate_lock = Lock()
+_LOOPBACK = {"127.0.0.1", "::1", "localhost"}
+
+
+@app.middleware("http")
+async def _rate_limit(request: Request, call_next):
+    if _RATE_LIMIT > 0 and request.url.path != "/health":
+        client = request.client.host if request.client else "unknown"
+        if _RATE_LOOPBACK or client not in _LOOPBACK:
+            now = time.time()
+            with _rate_lock:
+                dq = _rate_hits[client]
+                cutoff = now - _RATE_WINDOW
+                while dq and dq[0] < cutoff:
+                    dq.popleft()
+                if len(dq) >= _RATE_LIMIT:
+                    retry = max(1, int(dq[0] + _RATE_WINDOW - now))
+                    return JSONResponse(
+                        {"error": "rate limit exceeded", "retry_after": retry},
+                        status_code=429, headers={"Retry-After": str(retry)})
+                dq.append(now)
+    return await call_next(request)
 
 
 @app.get("/health")
