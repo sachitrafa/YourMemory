@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Montserrat:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="design_doc_mode" content="canvas">
+  <style>
+    body { margin: 0; background: #0f1115; }
+    /* render-only: hide the editor caption labels so each screen sits at a known origin */
+    [data-drags-parent] { display: none !important; }
+  </style>
+</helmet>
+
+<!-- ===================== LANDSCAPE 1200x627 ===================== -->
+<div style="position:absolute; left:0px; top:0px; width:1200px;">
+  <div data-drags-parent="1" style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:#5a6b80; margin-bottom:12px;">LinkedIn landscape · 1200 × 627</div>
+  <div data-screen-label="Landscape hero" style="position:relative; width:1200px; height:627px; overflow:hidden; border-radius:6px; background:radial-gradient(120% 140% at 88% 12%, #0a2540 0%, #070b13 62%); box-shadow:0 24px 60px rgba(0,0,0,0.45);">
+    <canvas ref="{{ canvasLandscape }}" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+    <div style="position:absolute; inset:0; background:linear-gradient(90deg, rgba(7,11,19,0.96) 0%, rgba(7,11,19,0.86) 38%, rgba(7,11,19,0.3) 60%, rgba(7,11,19,0) 80%);"></div>
+
+    <div style="position:absolute; left:64px; top:58px; right:520px; display:flex; flex-direction:column;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:38px;">
+        <div style="width:9px; height:9px; border-radius:50%; background:#19cdff; box-shadow:0 0 12px #19cdff;"></div>
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.18em; color:#e6edf6;">YOURMEMORY</div>
+        <div style="width:1px; height:14px; background:#26344a;"></div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.05em; color:#5a6b80;">persistent memory for AI agents</div>
+      </div>
+
+      <h1 style="margin:0; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:44px; line-height:1.12; letter-spacing:-0.022em; color:#e6edf6;">{{ headLine1 }}<br><span style="background:linear-gradient(92deg,#19cdff 0%,#5eead4 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">{{ headLine2 }}</span></h1>
+
+      <p style="margin:22px 0 0; max-width:520px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:16.5px; line-height:1.5; color:#8294a8;">{{ subline }}</p>
+
+      <div style="display:flex; align-items:center; gap:14px; margin-top:40px;">
+        <div style="display:inline-flex; align-items:center; gap:9px; padding:8px 14px; border:1px solid #1b3a4d; border-radius:999px; background:rgba(25,205,255,0.06); font-family:'JetBrains Mono',monospace; font-size:13px; color:#cfe9f7;">
+          <span style="color:#5a6b80;">444 memories</span>
+          <span style="color:#19cdff;">&#8594;</span>
+          <span style="color:#5eead4; font-weight:600;">16 summaries</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:absolute; left:64px; bottom:46px; display:flex; align-items:center; gap:18px; font-family:'JetBrains Mono',monospace; font-size:12.5px; letter-spacing:0.14em; color:#5a6b80;">
+      <sc-for list="{{ labels }}" as="lab" hint-placeholder-count="4">
+        <span style="display:flex; align-items:center; gap:18px;"><span style="color:#7fd9ec;">{{ lab }}</span><span style="color:#26344a;">·</span></span>
+      </sc-for>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SQUARE 1080x1080 ===================== -->
+<div style="position:absolute; left:1340px; top:0px; width:1080px;">
+  <div data-drags-parent="1" style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:#5a6b80; margin-bottom:12px;">Feed square · 1080 × 1080</div>
+  <div data-screen-label="Square hero" style="position:relative; width:1080px; height:1080px; overflow:hidden; border-radius:6px; background:radial-gradient(120% 120% at 84% 8%, #0a2540 0%, #070b13 60%); box-shadow:0 24px 60px rgba(0,0,0,0.45);">
+    <canvas ref="{{ canvasSquare }}" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+    <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,11,19,0) 30%, rgba(7,11,19,0.55) 58%, rgba(7,11,19,0.95) 78%);"></div>
+
+    <div style="position:absolute; left:72px; top:72px; right:72px; display:flex; align-items:center; gap:12px;">
+      <div style="width:11px; height:11px; border-radius:50%; background:#19cdff; box-shadow:0 0 14px #19cdff;"></div>
+      <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:18px; letter-spacing:0.18em; color:#e6edf6;">YOURMEMORY</div>
+      <div style="width:1px; height:16px; background:#26344a;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.04em; color:#5a6b80;">persistent memory for AI agents</div>
+    </div>
+
+    <div style="position:absolute; left:72px; right:72px; bottom:150px; display:flex; flex-direction:column;">
+      <h1 style="margin:0; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:62px; line-height:1.1; letter-spacing:-0.024em; color:#e6edf6;">{{ headLine1 }}<br><span style="background:linear-gradient(92deg,#19cdff 0%,#5eead4 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">{{ headLine2 }}</span></h1>
+      <p style="margin:30px 0 0; max-width:760px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:23px; line-height:1.48; color:#8294a8;">{{ subline }}</p>
+    </div>
+
+    <div style="position:absolute; left:72px; right:72px; bottom:64px; display:flex; align-items:center; justify-content:space-between; gap:18px;">
+      <div style="display:flex; align-items:center; gap:16px; font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:0.14em; color:#5a6b80;">
+        <sc-for list="{{ labels }}" as="lab" hint-placeholder-count="4">
+          <span style="display:flex; align-items:center; gap:16px;"><span style="color:#7fd9ec;">{{ lab }}</span><span style="color:#26344a;">·</span></span>
+        </sc-for>
+      </div>
+      <div style="display:inline-flex; align-items:center; gap:10px; padding:10px 16px; border:1px solid #1b3a4d; border-radius:999px; background:rgba(25,205,255,0.06); font-family:'JetBrains Mono',monospace; font-size:15px; color:#cfe9f7; white-space:nowrap;">
+        <span style="color:#5a6b80;">444</span>
+        <span style="color:#19cdff;">&#8594;</span>
+        <span style="color:#5eead4; font-weight:600;">16</span>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:2440,&quot;height&quot;:1180},&quot;headlineVariant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;default&quot;,&quot;rereads&quot;],&quot;default&quot;:&quot;rereads&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Content&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this._raf = null;
+    this._scenes = [];
+    this._started = false;
+    this.canvasLandscape = (el)=>{ if(el) this._attach(el, 1200, 627, "landscape"); };
+    this.canvasSquare = (el)=>{ if(el) this._attach(el, 1080, 1080, "square"); };
+  }
+
+  _attach(canvas, w, h, kind){
+    if(this._scenes.some(s=>s.kind===kind)) return;
+    try { this._setup(canvas, w, h, kind); } catch(e){ return; }
+    try { this._draw(this._scenes[this._scenes.length-1], performance.now()); } catch(e){}
+    this._startLoop();
+  }
+
+  _startLoop(){
+    if(this._started) return;
+    this._started = true;
+    const loop = (t) => {
+      try { for (const s of this._scenes) this._draw(s, t); }
+      catch(e){ console.error("[YM] _draw threw", e); }
+      this._raf = requestAnimationFrame(loop);
+    };
+    this._raf = requestAnimationFrame(loop);
+  }
+
+  renderVals(){
+    const variant = this.props.headlineVariant ?? "rereads";
+    let headLine1, headLine2, subline;
+    if (variant === "rereads") {
+      headLine1 = "My agent re-read the same files";
+      headLine2 = "158 times in one session.";
+      subline = "So I built memory that survives context resets — it consolidates, proves itself, and is shared across every MCP client.";
+    } else {
+      headLine1 = "Most AI memory isn’t memory.";
+      headLine2 = "It’s storage with search bolted on.";
+      subline = "So I rebuilt it — memory that consolidates, survives context resets, proves itself, and is shared.";
+    }
+    return {
+      canvasLandscape: this.canvasLandscape,
+      canvasSquare: this.canvasSquare,
+      headLine1, headLine2, subline,
+      labels: ["SHARPER","DURABLE","PROVABLE","SHARED"],
+    };
+  }
+
+  componentWillUnmount(){ if(this._raf) cancelAnimationFrame(this._raf); }
+
+  _rng(seed){ let s = seed % 2147483647; if(s<=0) s+=2147483646; return ()=>{ s = s*16807 % 2147483647; return (s-1)/2147483646; }; }
+
+  _setup(canvas, w, h, kind){
+    if(!canvas) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = w*dpr; canvas.height = h*dpr;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+    const rnd = this._rng(kind === "square" ? 9173 : 4471);
+
+    let region;
+    if(kind === "landscape"){ region = { x: 540, y: 0, w: 660, h: 627 }; }
+    else { region = { x: 210, y: 40, w: 870, h: 740 }; }
+
+    const summaries = [];
+    const nS = 3;
+    const sx = region.x + region.w * (kind==="square" ? 0.62 : 0.66);
+    for(let i=0;i<nS;i++){
+      const t = (i+0.5)/nS;
+      summaries.push({
+        x: sx + (rnd()-0.5)*70,
+        y: region.y + region.h*(0.22 + t*0.56) + (rnd()-0.5)*30,
+        r: 6.5 + rnd()*2.5,
+        phase: rnd()*Math.PI*2,
+        type:"sum"
+      });
+    }
+
+    const raws = [];
+    const nR = kind==="square" ? 96 : 80;
+    for(let i=0;i<nR;i++){
+      const u = Math.pow(rnd(), 1.4);
+      const x = region.x + u*region.w*0.82;
+      const y = region.y + rnd()*region.h;
+      let best = summaries[0], bd = Infinity;
+      for(const s of summaries){ const d=(s.x-x)*(s.x-x)+(s.y-y)*(s.y-y); if(d<bd){bd=d;best=s;} }
+      const target = rnd()<0.25 ? summaries[Math.floor(rnd()*summaries.length)] : best;
+      const dist = Math.sqrt((target.x-x)*(target.x-x)+(target.y-y)*(target.y-y));
+      const near = Math.max(0, 1 - dist/(region.w*0.7));
+      raws.push({
+        x, y,
+        r: 1.2 + rnd()*1.6 + near*1.2,
+        target,
+        drift: rnd()*Math.PI*2,
+        ds: 0.4 + rnd()*0.8,
+        flow: rnd(),
+        flowSpeed: 0.035 + rnd()*0.05,
+        bright: 0.25 + near*0.55 + rnd()*0.2
+      });
+    }
+
+    this._scenes.push({ ctx, w, h, region, summaries, raws, kind });
+  }
+
+  _draw(scene, time){
+    const { ctx, w, h, summaries, raws } = scene;
+    const t = time*0.001;
+    ctx.clearRect(0,0,w,h);
+    ctx.globalCompositeOperation = "lighter";
+
+    for(const n of raws){
+      const nx = n.x + Math.cos(t*n.ds*0.4 + n.drift)*6;
+      const ny = n.y + Math.sin(t*n.ds*0.4 + n.drift)*6;
+      const tg = n.target;
+      const grad = ctx.createLinearGradient(nx, ny, tg.x, tg.y);
+      const a = 0.05 + n.bright*0.06;
+      grad.addColorStop(0, `rgba(40,90,120,${a})`);
+      grad.addColorStop(1, `rgba(25,205,255,${a*2.2})`);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 0.7;
+      ctx.beginPath();
+      ctx.moveTo(nx, ny);
+      ctx.lineTo(tg.x, tg.y);
+      ctx.stroke();
+
+      n.flow += n.flowSpeed;
+      if(n.flow > 1) n.flow -= 1;
+      const fx = nx + (tg.x-nx)*n.flow;
+      const fy = ny + (tg.y-ny)*n.flow;
+      const fa = (1 - n.flow) * 0.5;
+      ctx.fillStyle = `rgba(94,234,212,${fa})`;
+      ctx.beginPath();
+      ctx.arc(fx, fy, 1.1, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.fillStyle = `rgba(150,190,215,${0.18 + n.bright*0.2})`;
+      ctx.beginPath();
+      ctx.arc(nx, ny, n.r, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    ctx.strokeStyle = "rgba(94,234,212,0.18)";
+    ctx.lineWidth = 1.1;
+    for(let i=0;i<summaries.length-1;i++){
+      ctx.beginPath();
+      ctx.moveTo(summaries[i].x, summaries[i].y);
+      ctx.lineTo(summaries[i+1].x, summaries[i+1].y);
+      ctx.stroke();
+    }
+
+    for(const s of summaries){
+      const pulse = 0.5 + 0.5*Math.sin(t*1.6 + s.phase);
+      const glowR = s.r*4 + pulse*8;
+      const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowR);
+      g.addColorStop(0, `rgba(25,205,255,${0.5+pulse*0.25})`);
+      g.addColorStop(0.4, `rgba(25,205,255,${0.12})`);
+      g.addColorStop(1, "rgba(25,205,255,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, glowR, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.fillStyle = "#d6f7ff";
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r*0.55, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.strokeStyle = `rgba(94,234,212,${0.6+pulse*0.4})`;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r + 2 + pulse*2, 0, Math.PI*2);
+      ctx.stroke();
+    }
+
+    ctx.globalCompositeOperation = "source-over";
+  }
+}
+</script>
+</body>
+</html>
