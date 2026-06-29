@@ -41,6 +41,8 @@ _HTML = """<!DOCTYPE html>
           class="text-xs mono px-3 py-1.5 rounded-md bg-cyan-500/20 text-cyan-300">🧠 Memories</button>
         <button id="viewAudit" onclick="setView('audit')"
           class="text-xs mono px-3 py-1.5 rounded-md text-gray-400 hover:text-gray-200">📜 Audit</button>
+        <button id="viewPools" onclick="setView('pools')"
+          class="text-xs mono px-3 py-1.5 rounded-md text-gray-400 hover:text-gray-200">👥 Pools</button>
       </div>
     </div>
     <div class="flex items-center gap-3">
@@ -141,6 +143,62 @@ _HTML = """<!DOCTYPE html>
     <div id="auditEmpty" class="hidden text-center text-gray-600 py-20">
       <p class="text-4xl mb-3">📜</p>
       <p class="font-medium">No audit events yet.</p>
+    </div>
+  </div>
+
+  <!-- Pools view -->
+  <div id="poolsView" class="hidden">
+    <div class="grid grid-cols-3 gap-6">
+      <!-- LEFT: pool list + create -->
+      <div class="col-span-1">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-xs text-gray-500 uppercase tracking-widest mono">Pools</p>
+          <button onclick="document.getElementById('newPoolForm').classList.toggle('hidden')"
+            class="text-xs mono text-cyan-300 hover:text-cyan-200">+ New</button>
+        </div>
+        <div id="newPoolForm" class="hidden bg-gray-900 border border-gray-800 rounded-xl p-3 mb-3 space-y-2">
+          <input id="npId"    placeholder="pool_id (e.g. sales)" class="w-full mono text-xs bg-gray-950 border border-gray-700 rounded px-2 py-1.5 text-gray-200">
+          <input id="npName"  placeholder="name (e.g. Sales Team)" class="w-full mono text-xs bg-gray-950 border border-gray-700 rounded px-2 py-1.5 text-gray-200">
+          <input id="npOwner" placeholder="owner user_id" class="w-full mono text-xs bg-gray-950 border border-gray-700 rounded px-2 py-1.5 text-gray-200">
+          <button onclick="createPool()" class="w-full text-xs mono bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded px-2 py-1.5">Create pool</button>
+        </div>
+        <div id="poolList" class="space-y-2"></div>
+      </div>
+
+      <!-- RIGHT: selected pool detail -->
+      <div class="col-span-2">
+        <div id="poolDetail" class="hidden">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 id="pdName" class="text-lg font-bold text-gray-100"></h3>
+              <p id="pdMeta" class="text-xs mono text-gray-500"></p>
+            </div>
+            <button onclick="deletePool()" class="text-xs mono text-red-400 hover:text-red-300 border border-red-900 rounded-lg px-3 py-1.5">Delete pool</button>
+          </div>
+
+          <p class="text-xs text-gray-500 uppercase tracking-widest mono mb-3">Members (attached users)</p>
+          <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 mb-4 flex items-end gap-2 flex-wrap">
+            <input id="amId" placeholder="user_id to attach" class="flex-1 min-w-[140px] mono text-xs bg-gray-950 border border-gray-700 rounded px-2 py-1.5 text-gray-200">
+            <select id="amRole" class="mono text-xs bg-gray-950 border border-gray-700 rounded px-2 py-1.5 text-gray-200">
+              <option value="reader">reader (read)</option>
+              <option value="contributor">contributor (read+write)</option>
+              <option value="admin">admin (manage)</option>
+            </select>
+            <button onclick="addMember()" class="text-xs mono bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded px-3 py-1.5">Attach</button>
+          </div>
+          <table class="w-full text-left">
+            <thead><tr class="text-[11px] uppercase tracking-wider text-gray-500 mono border-b border-gray-800">
+              <th class="px-3 py-2">User</th><th class="px-3 py-2">Role</th><th class="px-3 py-2">Read</th><th class="px-3 py-2">Write</th><th class="px-3 py-2"></th>
+            </tr></thead>
+            <tbody id="memberBody" class="mono text-xs text-gray-300"></tbody>
+          </table>
+        </div>
+        <div id="poolEmpty" class="text-center text-gray-600 py-24">
+          <p class="text-4xl mb-3">👥</p>
+          <p class="font-medium">Select a pool, or create one.</p>
+          <p class="text-xs text-gray-600 mt-2">Attach users with a role. Members' recall can auto-include their pools.</p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -377,23 +435,27 @@ _HTML = """<!DOCTYPE html>
 
   function setView(v) {
     currentView = v;
-    const isAudit = v === 'audit';
-    document.getElementById('viewMem').className =
-      'text-xs mono px-2.5 py-1 rounded-md ' + (isAudit ? 'text-gray-400 hover:text-gray-200' : 'bg-cyan-500/20 text-cyan-300');
-    document.getElementById('viewAudit').className =
-      'text-xs mono px-2.5 py-1 rounded-md ' + (isAudit ? 'bg-cyan-500/20 text-cyan-300' : 'text-gray-400 hover:text-gray-200');
-    // toggle memory-only chrome
-    ['catFilter','sortBy'].forEach(id => document.getElementById(id).classList.toggle('hidden', isAudit));
-    ['stats','tabsRow','grid','empty'].forEach(id => document.getElementById(id).classList.toggle('hidden', isAudit));
+    const isMem = v === 'memories', isAudit = v === 'audit', isPools = v === 'pools';
+    const on = 'text-xs mono px-3 py-1.5 rounded-md bg-cyan-500/20 text-cyan-300';
+    const off = 'text-xs mono px-3 py-1.5 rounded-md text-gray-400 hover:text-gray-200';
+    document.getElementById('viewMem').className   = isMem   ? on : off;
+    document.getElementById('viewAudit').className = isAudit ? on : off;
+    document.getElementById('viewPools').className = isPools ? on : off;
+    // memory-only chrome hidden outside the Memories view
+    ['catFilter','sortBy','stats','tabsRow','grid','empty','memPager'].forEach(id =>
+      document.getElementById(id).classList.toggle('hidden', !isMem));
     document.getElementById('auditView').classList.toggle('hidden', !isAudit);
+    document.getElementById('poolsView').classList.toggle('hidden', !isPools);
     // Reflect the view in the URL so it's shareable/bookmarkable (preserve ?user).
     const params = new URLSearchParams(location.search);
-    if (isAudit) params.set('view', 'audit'); else params.delete('view');
+    if (!isMem) params.set('view', v); else params.delete('view');
     const uid = document.getElementById('userInput').value.trim();
     if (uid) params.set('user', uid); else params.delete('user');
     const qs = params.toString();
     history.replaceState(null, '', qs ? '?' + qs : location.pathname);
-    if (isAudit) loadAudit(); else render();
+    if (isAudit) loadAudit();
+    else if (isPools) loadPools();
+    else render();
   }
 
   async function loadAudit() {
@@ -515,14 +577,98 @@ _HTML = """<!DOCTYPE html>
   }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMemory(); });
 
+  // ── Pools (team / institutional memory management) ───────────────────────────
+  let selectedPool = null;
+
+  async function loadPools() {
+    const el = document.getElementById('poolList');
+    el.innerHTML = '<p class="text-xs text-gray-600 mono">Loading…</p>';
+    try {
+      const d = await (await fetch('/pools')).json();
+      if (!d.pools.length) { el.innerHTML = '<p class="text-xs text-gray-600 mono">No pools yet.</p>'; return; }
+      el.innerHTML = d.pools.map(p => `
+        <button onclick="selectPool('${escHtml(p.pool_id)}')"
+          class="w-full text-left bg-gray-900 border ${selectedPool===p.pool_id?'border-cyan-600':'border-gray-800'} rounded-lg px-3 py-2 hover:border-gray-600">
+          <div class="text-sm text-gray-100">${escHtml(p.name || p.pool_id)}</div>
+          <div class="text-[11px] mono text-gray-500">${escHtml(p.pool_id)} · owner ${escHtml(p.owner||'—')}</div>
+        </button>`).join('');
+    } catch (e) { el.innerHTML = `<p class="text-xs text-red-400">Error: ${escHtml(e.message)}</p>`; }
+  }
+
+  async function createPool() {
+    const pool_id = document.getElementById('npId').value.trim();
+    const name = document.getElementById('npName').value.trim();
+    const owner = document.getElementById('npOwner').value.trim();
+    if (!pool_id || !owner) { alert('pool_id and owner are required'); return; }
+    const r = await fetch('/pools', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({pool_id, name, owner})});
+    if (r.ok) {
+      document.getElementById('npId').value = document.getElementById('npName').value = document.getElementById('npOwner').value = '';
+      document.getElementById('newPoolForm').classList.add('hidden');
+      await loadPools(); selectPool(pool_id);
+    } else { alert('Create failed'); }
+  }
+
+  async function deletePool() {
+    if (!selectedPool || !confirm(`Delete pool "${selectedPool}" and all its memories?`)) return;
+    await fetch('/pools/' + encodeURIComponent(selectedPool), {method:'DELETE'});
+    selectedPool = null;
+    document.getElementById('poolDetail').classList.add('hidden');
+    document.getElementById('poolEmpty').classList.remove('hidden');
+    loadPools();
+  }
+
+  async function selectPool(id) {
+    selectedPool = id;
+    document.getElementById('poolEmpty').classList.add('hidden');
+    document.getElementById('poolDetail').classList.remove('hidden');
+    loadPools();
+    try {
+      const d = await (await fetch('/pools/' + encodeURIComponent(id) + '/members')).json();
+      document.getElementById('pdName').textContent = id;
+      document.getElementById('pdMeta').textContent = d.count + ' member(s) · namespace pool:' + id;
+      renderMembers(d.members || []);
+    } catch (e) { document.getElementById('memberBody').innerHTML = `<tr><td colspan="5" class="px-3 py-3 text-red-400">Error: ${escHtml(e.message)}</td></tr>`; }
+  }
+
+  function renderMembers(members) {
+    const tb = document.getElementById('memberBody');
+    if (!members.length) { tb.innerHTML = '<tr><td colspan="5" class="px-3 py-4 text-gray-600 text-center">No members yet — attach a user above.</td></tr>'; return; }
+    const yn = b => b ? '<span class="text-green-400">✓</span>' : '<span class="text-gray-600">—</span>';
+    tb.innerHTML = members.map(m => `
+      <tr class="border-b border-gray-800/60">
+        <td class="px-3 py-2 text-gray-200">${escHtml(m.member_id)}</td>
+        <td class="px-3 py-2">${escHtml(m.role)}</td>
+        <td class="px-3 py-2">${yn(m.can_read)}</td>
+        <td class="px-3 py-2">${yn(m.can_write)}</td>
+        <td class="px-3 py-2 text-right"><button onclick="removeMember('${escHtml(m.member_id)}')" class="text-red-400 hover:text-red-300">detach</button></td>
+      </tr>`).join('');
+  }
+
+  async function addMember() {
+    const member_id = document.getElementById('amId').value.trim();
+    const role = document.getElementById('amRole').value;
+    if (!member_id || !selectedPool) return;
+    await fetch('/pools/' + encodeURIComponent(selectedPool) + '/members', {method:'POST',
+      headers:{'Content-Type':'application/json'}, body: JSON.stringify({member_id, role})});
+    document.getElementById('amId').value = '';
+    selectPool(selectedPool);
+  }
+
+  async function removeMember(member_id) {
+    if (!selectedPool) return;
+    await fetch('/pools/' + encodeURIComponent(selectedPool) + '/members/' + encodeURIComponent(member_id), {method:'DELETE'});
+    selectPool(selectedPool);
+  }
+
   const p = new URLSearchParams(location.search);
   if (p.get('user')) {
     document.getElementById('userInput').value = p.get('user');
     load();
   }
-  // Deep-link the Audit view: /ui?view=audit  (optionally with &user=…)
-  if (p.get('view') === 'audit') {
-    setView('audit');
+  // Deep-link a view: /ui?view=audit or ?view=pools  (optionally with &user=…)
+  if (['audit','pools'].includes(p.get('view'))) {
+    setView(p.get('view'));
   }
 </script>
 </body>

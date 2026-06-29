@@ -48,6 +48,24 @@ def _ph(backend: str) -> str:
     return "%s" if backend == "postgres" else "?"
 
 
+def readable_pools(member_id: str) -> list[str]:
+    """All pool_ids this member is allowed to read — the user's *attached* pools.
+    Used by /retrieve autoPools so a member's recall transparently includes their pools."""
+    if not member_id:
+        return []
+    member_id = member_id.strip().lower()
+    backend = get_backend(); conn = get_conn(); p = _ph(backend)
+    sql = f"SELECT pool_id FROM pool_members WHERE member_id = {p} AND can_read = {'TRUE' if backend=='postgres' else '1'}"
+    try:
+        if backend == "duckdb":
+            rows = conn.execute(f"SELECT pool_id FROM pool_members WHERE member_id = ? AND can_read = TRUE", [member_id]).fetchall()
+            return [r[0] for r in rows]
+        cur = conn.cursor(); cur.execute(sql, (member_id,))
+        rows = [r[0] for r in cur.fetchall()]; cur.close(); return rows
+    finally:
+        conn.close()
+
+
 def _member(conn, backend: str, pool_id: str, member_id: str) -> Optional[dict]:
     p = _ph(backend)
     sql = f"SELECT role, can_read, can_write FROM pool_members WHERE pool_id = {p} AND member_id = {p}"
@@ -173,6 +191,44 @@ def add_member(pool_id: str, req: AddMemberRequest):
         conn.close()
     return {"pool_id": pool_id, "member_id": member_id, "role": role,
             "can_read": can_read, "can_write": can_write}
+
+
+@router.delete("/pools/{pool_id}/members/{member_id}")
+def remove_member(pool_id: str, member_id: str):
+    """Detach a member from a pool."""
+    pool_id = pool_id.strip().lower(); member_id = member_id.strip().lower()
+    backend = get_backend(); conn = get_conn(); p = _ph(backend)
+    sql = f"DELETE FROM pool_members WHERE pool_id = {p} AND member_id = {p}"
+    try:
+        if backend == "duckdb":
+            conn.execute(sql, [pool_id, member_id])
+        else:
+            cur = conn.cursor(); cur.execute(sql, (pool_id, member_id)); conn.commit(); cur.close()
+    finally:
+        conn.close()
+    return {"detached": True, "pool_id": pool_id, "member_id": member_id}
+
+
+@router.delete("/pools/{pool_id}")
+def delete_pool(pool_id: str):
+    """Delete a pool, its memberships, and its memories."""
+    pool_id = pool_id.strip().lower()
+    backend = get_backend(); conn = get_conn(); p = _ph(backend)
+    try:
+        if backend == "duckdb":
+            conn.execute("DELETE FROM memories WHERE user_id = ?", [_ns(pool_id)])
+            conn.execute("DELETE FROM pool_members WHERE pool_id = ?", [pool_id])
+            conn.execute("DELETE FROM pools WHERE pool_id = ?", [pool_id])
+        else:
+            cur = conn.cursor()
+            cur.execute(f"DELETE FROM memories WHERE user_id = {p}", (_ns(pool_id),))
+            cur.execute(f"DELETE FROM pool_members WHERE pool_id = {p}", (pool_id,))
+            cur.execute(f"DELETE FROM pools WHERE pool_id = {p}", (pool_id,))
+            conn.commit(); cur.close()
+    finally:
+        conn.close()
+    log_event("delete", "pool_delete", pool_id, detail={"pool_id": pool_id})
+    return {"deleted": True, "pool_id": pool_id}
 
 
 @router.get("/pools/{pool_id}/members")

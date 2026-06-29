@@ -22,14 +22,16 @@ class RetrieveRequest(BaseModel):
     currentPath:    Optional[str]        = None        # spatial boost: current file/dir path
     noGraph:        bool                 = False       # ablation: skip graph expansion
     pools:          Optional[List[str]]  = None        # also search these shared pools (if a member)
+    autoPools:      bool                 = False       # auto-include every pool this user is attached to
 
 
 @router.post("/retrieve")
 def retrieve_memories(req: RetrieveRequest):
     user_id = req.userId.strip().lower()
+    want_pools = bool(req.pools) or req.autoPools
 
-    # ── Recall throttling (bypassed when pools are requested — results differ) ──
-    if not req.pools:
+    # ── Recall throttling (bypassed when pools are involved — results differ) ──
+    if not want_pools:
         cached = recall_cached(user_id, req.query)
         if cached is not None:
             return cached
@@ -38,16 +40,20 @@ def retrieve_memories(req: RetrieveRequest):
                       score_threshold=req.scoreThreshold, scope=req.scope, expand_k=req.expandK)
 
     # ── Union with shared pools the caller may read (institutional memory) ──
-    if req.pools:
+    if want_pools:
         try:
-            from src.routes.pools import _ns, _member
+            from src.routes.pools import _ns, _member, readable_pools
             from src.db.connection import get_backend as _gb, get_conn as _gc
-            backend = _gb(); conn = _gc()
-            try:
-                readable = [p.strip().lower() for p in req.pools
-                            if (lambda m: m and m["can_read"])(_member(conn, backend, p.strip().lower(), user_id))]
-            finally:
-                conn.close()
+            if req.autoPools:
+                # Every pool this user is attached to (read access), no explicit list needed.
+                readable = readable_pools(user_id)
+            else:
+                backend = _gb(); conn = _gc()
+                try:
+                    readable = [p.strip().lower() for p in req.pools
+                                if (lambda m: m and m["can_read"])(_member(conn, backend, p.strip().lower(), user_id))]
+                finally:
+                    conn.close()
             merged = list(result.get("memories", []))
             for pid in readable:
                 pr = retrieve(_ns(pid), req.query, req.topK)
