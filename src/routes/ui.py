@@ -25,7 +25,7 @@ _HTML = """<!DOCTYPE html>
 <div class="max-w-5xl mx-auto">
 
   <!-- Header -->
-  <div class="flex items-center justify-between mb-8">
+  <div class="flex items-center justify-between gap-4 flex-wrap mb-10">
     <div class="flex items-center gap-3">
       <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
         <rect x="10" y="80" width="80" height="10" rx="2" fill="#e6edf3"/>
@@ -36,13 +36,13 @@ _HTML = """<!DOCTYPE html>
       </svg>
       <span class="text-xl font-bold tracking-tight">YourMemory</span>
       <span class="text-xs mono text-gray-500 border border-gray-700 px-2 py-0.5 rounded-full">Memory Browser</span>
-      <div class="flex items-center gap-1.5 ml-2 bg-gray-900 border border-gray-800 rounded-lg p-1">
+      <div class="flex items-center gap-2 ml-3 bg-gray-900 border border-gray-800 rounded-xl p-1.5">
         <button id="viewMem"   onclick="setView('memories')"
-          class="text-xs mono px-3 py-1.5 rounded-md bg-cyan-500/20 text-cyan-300">🧠 Memories</button>
+          class="text-xs mono px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-300 flex items-center gap-2">🧠 Memories</button>
         <button id="viewAudit" onclick="setView('audit')"
-          class="text-xs mono px-3 py-1.5 rounded-md text-gray-400 hover:text-gray-200">📜 Audit</button>
+          class="text-xs mono px-4 py-2 rounded-lg text-gray-400 hover:text-gray-200 flex items-center gap-2">📜 Audit</button>
         <button id="viewPools" onclick="setView('pools')"
-          class="text-xs mono px-3 py-1.5 rounded-md text-gray-400 hover:text-gray-200">👥 Pools</button>
+          class="text-xs mono px-4 py-2 rounded-lg text-gray-400 hover:text-gray-200 flex items-center gap-2">👥 Pools</button>
       </div>
     </div>
     <div class="flex items-center gap-3">
@@ -436,8 +436,8 @@ _HTML = """<!DOCTYPE html>
   function setView(v) {
     currentView = v;
     const isMem = v === 'memories', isAudit = v === 'audit', isPools = v === 'pools';
-    const on = 'text-xs mono px-3 py-1.5 rounded-md bg-cyan-500/20 text-cyan-300';
-    const off = 'text-xs mono px-3 py-1.5 rounded-md text-gray-400 hover:text-gray-200';
+    const on = 'text-xs mono px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-300 flex items-center gap-2';
+    const off = 'text-xs mono px-4 py-2 rounded-lg text-gray-400 hover:text-gray-200 flex items-center gap-2';
     document.getElementById('viewMem').className   = isMem   ? on : off;
     document.getElementById('viewAudit').className = isAudit ? on : off;
     document.getElementById('viewPools').className = isPools ? on : off;
