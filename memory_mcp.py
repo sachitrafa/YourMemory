@@ -1270,6 +1270,7 @@ def _install_claude_hooks(home: str) -> None:
     # .sh variants are still copied for users on existing bash-based setups.
     for fname, is_exec in (("yourmemory_recall.py", False),
                            ("yourmemory_server.py", False),
+                           ("yourmemory_session_start.py", False),
                            ("yourmemory_store.py", False),
                            ("yourmemory_observe.py", False),
                            ("yourmemory_recall.sh", True),
@@ -1300,6 +1301,7 @@ def _install_claude_hooks(home: str) -> None:
     server_py   = os.path.join(hooks_dir, "yourmemory_server.py")
     start_cmd   = "python3 " + server_py + " start"
     stop_cmd    = "python3 " + server_py + " stop"
+    context_cmd = "python3 " + os.path.join(hooks_dir, "yourmemory_session_start.py")
 
     # ── Upgrade existing installs ──────────────────────────────────────────
     # Strip any previously-registered YourMemory hooks (e.g. the legacy bash
@@ -1334,9 +1336,14 @@ def _install_claude_hooks(home: str) -> None:
             group["matcher"] = matcher
         arr.append(group)
 
-    # Session-scoped HTTP server: start when a session opens, stop when the last closes.
-    # Reference-counted and ownership-guarded, so it never kills an MCP-started server.
-    _ensure("SessionStart", start_cmd, {"timeout": 30})
+    # SessionStart runs two YourMemory hooks in order:
+    #   1. start the session-scoped HTTP server (reference-counted, ownership-guarded)
+    #   2. inject a "where we left off" context digest — the post-compaction re-orientation
+    #      so the agent doesn't re-read files to rebuild state after a compact/resume.
+    hooks.setdefault("SessionStart", []).append({"hooks": [
+        {"type": "command", "command": start_cmd, "timeout": 30},
+        {"type": "command", "command": context_cmd, "timeout": 10},
+    ]})
     _ensure("SessionEnd", stop_cmd, {"timeout": 15})
     _ensure("UserPromptSubmit", recall_cmd, {"timeout": 8, "statusMessage": "Recalling memories…"})
     _ensure("Stop", store_cmd, {"timeout": 30})
