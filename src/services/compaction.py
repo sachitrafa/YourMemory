@@ -151,6 +151,62 @@ def compact_user(user_id: str, min_cluster: int = None, sim_threshold: float = N
             "summaries": summaries, "scanned": len(mems)}
 
 
+def _fetch_rows_by_ids(user_id: str, ids: list) -> list[dict]:
+    if not ids:
+        return []
+    backend = get_backend()
+    conn = get_conn()
+    cols = "id, content, category, importance, agent_id, visibility, created_at"
+    ph = ",".join(["%s" if backend == "postgres" else "?"] * len(ids))
+    sql = f"SELECT {cols} FROM memories WHERE user_id = {'%s' if backend=='postgres' else '?'} AND id IN ({ph})"
+    params = [user_id, *ids]
+    try:
+        if backend == "duckdb":
+            return duckdb_rows(conn.execute(sql, params))
+        cur = conn.cursor()
+        cur.execute(sql, tuple(params) if backend == "postgres" else params)
+        cn = [d[0] for d in cur.description]
+        rows = [dict(zip(cn, r)) for r in cur.fetchall()]; cur.close(); return rows
+    finally:
+        conn.close()
+
+
+def maybe_compact_around(user_id: str, seed_content: str,
+                         min_cluster: int = None, sim_threshold: float = None) -> int | None:
+    """Event-driven compaction: after a memory is stored, check whether its neighborhood
+    now has >= N closely-related memories; if so, compress just that cluster immediately.
+    Targeted (one similarity lookup, not an O(n^2) full scan). Returns the summary id."""
+    user_id = (user_id or "").strip().lower()
+    min_cluster = min_cluster or MIN_CLUSTER
+    sim = sim_threshold if sim_threshold is not None else SIM_THRESHOLD
+    if not seed_content or len(seed_content) < 4:
+        return None
+    try:
+        from src.services.retrieve import retrieve
+        res = retrieve(user_id, seed_content, top_k=max(min_cluster * 4, 20), no_graph=True)
+    except Exception:
+        return None
+    members = [m for m in res.get("memories", []) if m.get("similarity", 0) >= sim]
+    if len(members) < min_cluster:
+        return None   # not enough of the same thing yet — leave it
+    rows = _fetch_rows_by_ids(user_id, [m["id"] for m in members])
+    if len(rows) < min_cluster:
+        return None
+    summary = _summarize([r["content"] for r in rows])
+    if not summary or len(summary) < 12:
+        return None
+    importance = max(float(r["importance"] or 0.5) for r in rows)
+    category   = categorize(summary)
+    agent_id   = rows[0].get("agent_id")
+    visibility = rows[0].get("visibility") or "shared"
+    summary_id = _apply_compaction(get_backend(), user_id, summary, importance, category,
+                                   agent_id, visibility, rows)
+    if summary_id is not None:
+        log_event("write", "compact", user_id,
+                  detail={"clusters": 1, "archived": len(rows), "trigger": "count"})
+    return summary_id
+
+
 def _apply_compaction(backend, user_id, summary, importance, category, agent_id,
                       visibility, members) -> int | None:
     """Insert the summary memory, archive the originals, delete them. Returns summary id."""
