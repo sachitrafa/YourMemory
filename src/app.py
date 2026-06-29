@@ -13,7 +13,7 @@ from collections import defaultdict, deque
 from threading import Lock
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from src.routes import memories, retrieve, agents, ui, graph_viz, proxy, audit, dsar, compact
+from src.routes import memories, retrieve, agents, ui, graph_viz, proxy, audit, dsar, compact, pools
 from src.jobs.decay_job import run as run_decay
 from src.services.audit import prune_expired as prune_audit
 from src.db.migrate import migrate
@@ -52,6 +52,7 @@ app.include_router(proxy.router)
 app.include_router(audit.router)
 app.include_router(dsar.router)
 app.include_router(compact.router)
+app.include_router(pools.router)
 
 
 # ── Rate limiting (abuse prevention) ────────────────────────────────────────────

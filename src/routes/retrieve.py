@@ -21,19 +21,44 @@ class RetrieveRequest(BaseModel):
     scope:          Optional[List[str]]  = None        # hard filter by context_paths scope
     currentPath:    Optional[str]        = None        # spatial boost: current file/dir path
     noGraph:        bool                 = False       # ablation: skip graph expansion
+    pools:          Optional[List[str]]  = None        # also search these shared pools (if a member)
 
 
 @router.post("/retrieve")
 def retrieve_memories(req: RetrieveRequest):
     user_id = req.userId.strip().lower()
 
-    # ── Recall throttling ──────────────────────────────────────────────────
-    cached = recall_cached(user_id, req.query)
-    if cached is not None:
-        return cached
+    # ── Recall throttling (bypassed when pools are requested — results differ) ──
+    if not req.pools:
+        cached = recall_cached(user_id, req.query)
+        if cached is not None:
+            return cached
 
     result = retrieve(user_id, req.query, req.topK, current_path=req.currentPath, no_graph=req.noGraph,
                       score_threshold=req.scoreThreshold, scope=req.scope, expand_k=req.expandK)
+
+    # ── Union with shared pools the caller may read (institutional memory) ──
+    if req.pools:
+        try:
+            from src.routes.pools import _ns, _member
+            from src.db.connection import get_backend as _gb, get_conn as _gc
+            backend = _gb(); conn = _gc()
+            try:
+                readable = [p.strip().lower() for p in req.pools
+                            if (lambda m: m and m["can_read"])(_member(conn, backend, p.strip().lower(), user_id))]
+            finally:
+                conn.close()
+            merged = list(result.get("memories", []))
+            for pid in readable:
+                pr = retrieve(_ns(pid), req.query, req.topK)
+                for mm in pr.get("memories", []):
+                    mm["pool"] = pid
+                    merged.append(mm)
+            merged.sort(key=lambda m: m.get("score", 0), reverse=True)
+            result["memories"] = merged[:req.topK]
+            result["memoriesFound"] = len(result["memories"])
+        except Exception:
+            pass
 
     # ── Session wrap-up tracking ───────────────────────────────────────────
     session_track(user_id, [m["id"] for m in result.get("memories", [])])

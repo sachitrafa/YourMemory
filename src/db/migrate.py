@@ -220,6 +220,76 @@ def _create_archive_table(conn, backend: str) -> None:
         """)
 
 
+def _create_pool_tables(conn, backend: str) -> None:
+    """Shared memory pools (team / institutional memory). A pool's memories live in the
+    `memories` table under a namespaced user_id ('pool:<id>'), so they reuse all existing
+    machinery (embedding, dedup, recall, decay, compaction, audit). These two tables hold
+    the pool registry and role-based membership. Idempotent across backends."""
+    if backend == "postgres":
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS pools (
+                pool_id    TEXT PRIMARY KEY,
+                name       TEXT,
+                owner      TEXT,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            );
+            CREATE TABLE IF NOT EXISTS pool_members (
+                pool_id   TEXT NOT NULL,
+                member_id TEXT NOT NULL,
+                role      TEXT NOT NULL DEFAULT 'reader',
+                can_read  BOOLEAN NOT NULL DEFAULT TRUE,
+                can_write BOOLEAN NOT NULL DEFAULT FALSE,
+                added_at  TIMESTAMPTZ DEFAULT NOW(),
+                PRIMARY KEY (pool_id, member_id)
+            );
+            CREATE INDEX IF NOT EXISTS idx_pool_member ON pool_members(member_id);
+        """)
+        conn.commit()
+        cur.close()
+    elif backend == "duckdb":
+        try:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS pools (
+                    pool_id    VARCHAR PRIMARY KEY,
+                    name       VARCHAR,
+                    owner      VARCHAR,
+                    created_at TIMESTAMP DEFAULT now()
+                )""")
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS pool_members (
+                    pool_id   VARCHAR NOT NULL,
+                    member_id VARCHAR NOT NULL,
+                    role      VARCHAR NOT NULL DEFAULT 'reader',
+                    can_read  BOOLEAN NOT NULL DEFAULT TRUE,
+                    can_write BOOLEAN NOT NULL DEFAULT FALSE,
+                    added_at  TIMESTAMP DEFAULT now(),
+                    PRIMARY KEY (pool_id, member_id)
+                )""")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_pool_member ON pool_members(member_id)")
+        except Exception as exc:
+            print(f"pool tables (duckdb) skipped: {exc}", file=sys.stderr)
+    else:  # sqlite
+        conn.executescript("""
+            CREATE TABLE IF NOT EXISTS pools (
+                pool_id    TEXT PRIMARY KEY,
+                name       TEXT,
+                owner      TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS pool_members (
+                pool_id   TEXT NOT NULL,
+                member_id TEXT NOT NULL,
+                role      TEXT NOT NULL DEFAULT 'reader',
+                can_read  INTEGER NOT NULL DEFAULT 1,
+                can_write INTEGER NOT NULL DEFAULT 0,
+                added_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (pool_id, member_id)
+            );
+            CREATE INDEX IF NOT EXISTS idx_pool_member ON pool_members(member_id);
+        """)
+
+
 def migrate():
     backend = get_backend()
 
@@ -261,6 +331,9 @@ def migrate():
 
     # ── Archive of originals compressed into summaries (memory compaction) ──
     _create_archive_table(conn, backend)
+
+    # ── Shared memory pools (team / institutional memory) ──
+    _create_pool_tables(conn, backend)
 
     # ── Post-schema FTS setup ─────────────────────────────────────────────
     if backend == "sqlite":
