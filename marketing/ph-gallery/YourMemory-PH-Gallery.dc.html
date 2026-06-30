@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="design_doc_mode" content="canvas">
+  <style>
+    body { margin: 0; background: #0f1115; }
+    [data-drags-parent] { display: none !important; }
+  </style>
+</helmet>
+
+<!-- ============================ SLIDE 1 — HOOK ============================ -->
+<div style="position:absolute; left:0px; top:0px; width:1270px;">
+  <div data-drags-parent="1" style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:#5a6b80; margin-bottom:12px;">Slide 1 — Hook</div>
+  <div data-screen-label="Slide 01" style="position:relative; width:1270px; height:760px; overflow:hidden; border-radius:8px; background:radial-gradient(120% 140% at 82% 14%, #0a2540 0%, #070b13 62%); box-shadow:0 24px 60px rgba(0,0,0,0.45);">
+    <canvas ref="{{ ref1 }}" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+    <div style="position:absolute; inset:0; background:linear-gradient(90deg, rgba(7,11,19,0.97) 0%, rgba(7,11,19,0.82) 33%, rgba(7,11,19,0.28) 56%, rgba(7,11,19,0) 78%);"></div>
+    <div style="position:absolute; left:72px; top:52px; display:flex; align-items:center; gap:10px;">
+      <div style="width:9px; height:9px; border-radius:50%; background:#19cdff; box-shadow:0 0 12px #19cdff;"></div>
+      <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; letter-spacing:0.18em; color:#e6edf6;">YOURMEMORY</div>
+    </div>
+    <div style="position:absolute; right:72px; top:56px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; color:#5a6b80;">01 / 06</div>
+    <div style="position:absolute; left:72px; top:318px; right:540px; display:flex; flex-direction:column;">
+      <h1 style="margin:0; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:58px; line-height:1.1; letter-spacing:-0.022em; color:#e6edf6;">Your AI forgets you.<br><span style="background:linear-gradient(92deg,#19cdff 0%,#5eead4 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">YourMemory doesn&rsquo;t.</span></h1>
+      <p style="margin:26px 0 0; max-width:540px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:20px; line-height:1.5; color:#8294a8;">Persistent, intelligent memory for AI agents.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= SLIDE 2 — CONSOLIDATION ======================= -->
+<div style="position:absolute; left:1350px; top:0px; width:1270px;">
+  <div data-drags-parent="1" style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:#5a6b80; margin-bottom:12px;">Slide 2 — Consolidation</div>
+  <div data-screen-label="Slide 02" style="position:relative; width:1270px; height:760px; overflow:hidden; border-radius:8px; background:radial-gradient(120% 140% at 82% 14%, #0a2540 0%, #070b13 62%); box-shadow:0 24px 60px rgba(0,0,0,0.45);">
+    <canvas ref="{{ ref2 }}" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+    <div style="position:absolute; inset:0; background:linear-gradient(90deg, rgba(7,11,19,0.97) 0%, rgba(7,11,19,0.82) 33%, rgba(7,11,19,0.28) 56%, rgba(7,11,19,0) 78%);"></div>
+    <div style="position:absolute; left:72px; top:52px; display:flex; align-items:center; gap:10px;">
+      <div style="width:9px; height:9px; border-radius:50%; background:#19cdff; box-shadow:0 0 12px #19cdff;"></div>
+      <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; letter-spacing:0.18em; color:#e6edf6;">YOURMEMORY</div>
+    </div>
+    <div style="position:absolute; right:72px; top:56px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; color:#5a6b80;">02 / 06</div>
+    <div style="position:absolute; left:72px; top:296px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:#7fd9ec;">Sharper over time</div>
+    <div style="position:absolute; left:72px; top:334px; right:560px; display:flex; flex-direction:column;">
+      <h1 style="margin:0; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:50px; line-height:1.12; letter-spacing:-0.02em; color:#e6edf6;">Memory that gets<br><span style="background:linear-gradient(92deg,#19cdff 0%,#5eead4 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">sharper as it grows.</span></h1>
+      <p style="margin:22px 0 0; max-width:540px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:18px; line-height:1.5; color:#8294a8;">It consolidates related facts into clean summaries and archives the rest &mdash; no bloat.</p>
+      <div style="display:flex; margin-top:34px;">
+        <div style="display:inline-flex; align-items:center; gap:11px; padding:11px 18px; border:1px solid #1b3a4d; border-radius:999px; background:rgba(25,205,255,0.06); font-family:'JetBrains Mono',monospace; font-size:15px; color:#cfe9f7;">
+          <span style="color:#5a6b80;">444 memories</span>
+          <span style="color:#19cdff; font-size:17px;">&#8594;</span>
+          <span style="color:#5eead4; font-weight:600;">16 summaries</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== SLIDE 3 — CONTEXT RECOVERY ====================== -->
+<div style="position:absolute; left:2700px; top:0px; width:1270px;">
+  <div data-drags-parent="1" style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:#5a6b80; margin-bottom:12px;">Slide 3 — Context recovery</div>
+  <div data-screen-label="Slide 03" style="position:relative; width:1270px; height:760px; overflow:hidden; border-radius:8px; background:radial-gradient(120% 140% at 82% 14%, #0a2540 0%, #070b13 62%); box-shadow:0 24px 60px rgba(0,0,0,0.45);">
+    <canvas ref="{{ ref3 }}" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+    <div style="position:absolute; inset:0; background:linear-gradient(90deg, rgba(7,11,19,0.97) 0%, rgba(7,11,19,0.84) 36%, rgba(7,11,19,0.4) 60%, rgba(7,11,19,0.12) 82%);"></div>
+    <div style="position:absolute; left:72px; top:52px; display:flex; align-items:center; gap:10px;">
+      <div style="width:9px; height:9px; border-radius:50%; background:#19cdff; box-shadow:0 0 12px #19cdff;"></div>
+      <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; letter-spacing:0.18em; color:#e6edf6;">YOURMEMORY</div>
+    </div>
+    <div style="position:absolute; right:72px; top:56px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; color:#5a6b80;">03 / 06</div>
+    <div style="position:absolute; left:72px; top:296px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:#7fd9ec;">Survives context resets</div>
+    <div style="position:absolute; left:72px; top:334px; right:560px; display:flex; flex-direction:column;">
+      <h1 style="margin:0; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:50px; line-height:1.12; letter-spacing:-0.02em; color:#e6edf6;">Your agent<br><span style="background:linear-gradient(92deg,#19cdff 0%,#5eead4 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">never loses its place.</span></h1>
+      <p style="margin:22px 0 0; max-width:540px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:18px; line-height:1.5; color:#8294a8;">When the context window compacts, YourMemory hands the working context back &mdash; no re-reading files.</p>
+    </div>
+    <div style="position:absolute; right:80px; top:300px; width:452px; display:flex; flex-direction:column; gap:13px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#7fd9ec;">Context window</div>
+      <div style="height:46px; border:1px solid #1b2c3f; border-radius:9px; background:rgba(255,255,255,0.02); padding:8px; display:flex; gap:4px; align-items:stretch;">
+        <sc-for list="{{ dimSegs }}" as="seg" hint-placeholder-count="16">
+          <div style="flex:1; border-radius:2px; background:{{ seg }};"></div>
+        </sc-for>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5a6b80;">session fills up &middot; compacts on reset</div>
+      <div style="display:flex; align-items:center; gap:10px; margin:2px 0;">
+        <div style="font-family:'Space Grotesk',sans-serif; font-size:20px; color:#19cdff; line-height:1;">&#8595;</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:#5a6b80;">recover</div>
+      </div>
+      <div style="height:46px; border:1px solid #1b3a4d; border-radius:9px; background:rgba(25,205,255,0.06); box-shadow:0 0 26px rgba(25,205,255,0.14); padding:8px; display:flex; gap:5px; align-items:center;">
+        <div style="flex:1; height:100%; border-radius:2px; background:linear-gradient(180deg,#19cdff,#5eead4);"></div>
+        <div style="flex:1; height:100%; border-radius:2px; background:linear-gradient(180deg,#19cdff,#5eead4);"></div>
+        <div style="flex:1; height:100%; border-radius:2px; background:linear-gradient(180deg,#19cdff,#5eead4);"></div>
+        <div style="flex:3; display:flex; align-items:center; justify-content:flex-end; padding-right:4px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#cfe9f7;">working context</div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5eead4;">handed back instantly &mdash; no re-reads</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================= SLIDE 4 — AUDIT TRAIL ========================= -->
+<div style="position:absolute; left:4050px; top:0px; width:1270px;">
+  <div data-drags-parent="1" style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:#5a6b80; margin-bottom:12px;">Slide 4 — Audit trail</div>
+  <div data-screen-label="Slide 04" style="position:relative; width:1270px; height:760px; overflow:hidden; border-radius:8px; background:radial-gradient(120% 140% at 82% 14%, #0a2540 0%, #070b13 62%); box-shadow:0 24px 60px rgba(0,0,0,0.45);">
+    <canvas ref="{{ ref4 }}" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+    <div style="position:absolute; inset:0; background:linear-gradient(90deg, rgba(7,11,19,0.97) 0%, rgba(7,11,19,0.84) 36%, rgba(7,11,19,0.42) 60%, rgba(7,11,19,0.14) 82%);"></div>
+    <div style="position:absolute; left:72px; top:52px; display:flex; align-items:center; gap:10px;">
+      <div style="width:9px; height:9px; border-radius:50%; background:#19cdff; box-shadow:0 0 12px #19cdff;"></div>
+      <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; letter-spacing:0.18em; color:#e6edf6;">YOURMEMORY</div>
+    </div>
+    <div style="position:absolute; right:72px; top:56px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; color:#5a6b80;">04 / 06</div>
+    <div style="position:absolute; left:72px; top:296px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:#7fd9ec;">Provable</div>
+    <div style="position:absolute; left:72px; top:334px; right:560px; display:flex; flex-direction:column;">
+      <h1 style="margin:0; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:50px; line-height:1.12; letter-spacing:-0.02em; color:#e6edf6;">Every memory,<br><span style="background:linear-gradient(92deg,#19cdff 0%,#5eead4 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">fully accountable.</span></h1>
+      <p style="margin:22px 0 0; max-width:540px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:18px; line-height:1.5; color:#8294a8;">A hash-chained, tamper-evident audit trail of every read, write, and delete. Plus export + right-to-forget.</p>
+    </div>
+    <div style="position:absolute; right:24px; top:128px; width:580px; height:524px; background:radial-gradient(60% 56% at 56% 48%, rgba(7,11,19,0.93) 0%, rgba(7,11,19,0.64) 56%, rgba(7,11,19,0) 100%);"></div>
+
+    <div style="position:absolute; right:60px; top:180px; width:498px; border-radius:16px; border:1px solid #1a2636; background:rgba(11,17,27,0.82); box-shadow:0 22px 54px rgba(0,0,0,0.42); padding:24px 26px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:18px; letter-spacing:0.02em; color:#19cdff;">Memory #2265</span>
+        <span style="font-family:'Space Grotesk',sans-serif; font-size:18px; color:#5a6b80;">&times;</span>
+      </div>
+      <div style="margin-top:15px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:18.5px; line-height:1.3; color:#e6edf6;">Sachit wants feedback on his relaunched memory tool.</div>
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:5px 13px; border-radius:999px; border:1px solid #27384c; color:#8294a8; background:rgba(255,255,255,0.02);">strategy</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:5px 13px; border-radius:999px; border:1px solid #27384c; color:#8294a8; background:rgba(255,255,255,0.02);">importance <span style="color:#7fd9ec;">0.45</span></span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:5px 13px; border-radius:999px; border:1px solid #1f4a44; color:#5eead4; background:rgba(94,234,212,0.08);">user</span>
+      </div>
+      <div style="height:1px; background:#16202e; margin:20px 0;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#5a6b80; margin-bottom:13px;">Linked memories</div>
+      <div style="display:flex; flex-direction:column; gap:11px;">
+        <div style="display:flex; gap:10px;"><span style="color:#19cdff; line-height:1.45;">&bull;</span><span style="font-family:'Space Grotesk',sans-serif; font-size:14px; line-height:1.45; color:#8294a8;">Relaunch ships compaction, tamper-evident audit, shared pools &amp; right-to-forget.</span></div>
+        <div style="display:flex; gap:10px;"><span style="color:#19cdff; line-height:1.45;">&bull;</span><span style="font-family:'Space Grotesk',sans-serif; font-size:14px; line-height:1.45; color:#8294a8;">Shipped 19 releases in one week to improve the tool.</span></div>
+        <div style="display:flex; gap:10px;"><span style="color:#19cdff; line-height:1.45;">&bull;</span><span style="font-family:'Space Grotesk',sans-serif; font-size:14px; line-height:1.45; color:#8294a8;">Open issues: usage metrics, hard expiry, bulk import/export.</span></div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; margin-top:18px; padding-top:15px; border-top:1px solid #16202e; font-family:'JetBrains Mono',monospace; font-size:12px; color:#5eead4;">
+        <span style="color:#19cdff;">&#10003;</span>
+        <span>hash <span style="color:#5eead4;">9f3a&hellip;7c2</span></span>
+        <span style="color:#26344a;">&middot;</span>
+        <span style="color:#7fd9ec;">tamper-evident</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================= SLIDE 5 — SHARED POOLS ========================= -->
+<div style="position:absolute; left:5400px; top:0px; width:1270px;">
+  <div data-drags-parent="1" style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:#5a6b80; margin-bottom:12px;">Slide 5 — Shared pools</div>
+  <div data-screen-label="Slide 05" style="position:relative; width:1270px; height:760px; overflow:hidden; border-radius:8px; background:radial-gradient(120% 140% at 82% 14%, #0a2540 0%, #070b13 62%); box-shadow:0 24px 60px rgba(0,0,0,0.45);">
+    <canvas ref="{{ ref5 }}" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+    <div style="position:absolute; inset:0; background:linear-gradient(90deg, rgba(7,11,19,0.97) 0%, rgba(7,11,19,0.8) 32%, rgba(7,11,19,0.26) 54%, rgba(7,11,19,0) 76%);"></div>
+    <div style="position:absolute; left:72px; top:52px; display:flex; align-items:center; gap:10px;">
+      <div style="width:9px; height:9px; border-radius:50%; background:#19cdff; box-shadow:0 0 12px #19cdff;"></div>
+      <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; letter-spacing:0.18em; color:#e6edf6;">YOURMEMORY</div>
+    </div>
+    <div style="position:absolute; right:72px; top:56px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; color:#5a6b80;">05 / 06</div>
+    <div style="position:absolute; left:72px; top:296px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:#7fd9ec;">Team memory</div>
+    <div style="position:absolute; left:72px; top:334px; right:612px; display:flex; flex-direction:column;">
+      <h1 style="margin:0; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:50px; line-height:1.12; letter-spacing:-0.02em; color:#e6edf6;">Institutional memory<br><span style="background:linear-gradient(92deg,#19cdff 0%,#5eead4 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">for your whole team.</span></h1>
+      <p style="margin:22px 0 0; max-width:500px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:18px; line-height:1.5; color:#8294a8;">Role-based shared pools &mdash; a new hire&rsquo;s agent already knows your stack, decisions, and gotchas.</p>
+    </div>
+
+    <div style="position:absolute; right:24px; top:116px; width:564px; height:548px; background:radial-gradient(62% 56% at 56% 46%, rgba(7,11,19,0.93) 0%, rgba(7,11,19,0.66) 56%, rgba(7,11,19,0) 100%);"></div>
+
+    <div style="position:absolute; right:62px; top:154px; width:488px; display:flex; flex-direction:column; gap:15px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#5a6b80;">Pools</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#19cdff;">+ New</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="border:1px solid #19cdff; border-radius:11px; background:rgba(25,205,255,0.05); box-shadow:0 0 26px rgba(25,205,255,0.12); padding:13px 16px;">
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; color:#e6edf6;">Coding Team</div>
+          <div style="margin-top:3px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#5a6b80;">coding &middot; owner sachit</div>
+        </div>
+        <div style="border:1px solid #1f2e40; border-radius:11px; background:rgba(255,255,255,0.015); padding:13px 16px;">
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; color:#cdd7e3;">Research Team</div>
+          <div style="margin-top:3px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#5a6b80;">research &middot; owner sachit</div>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid #16202e; padding-top:15px; display:flex; flex-direction:column; gap:9px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#5a6b80;">Members</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5a6b80;">namespace pool:coding</span>
+        </div>
+        <sc-for list="{{ poolMembers }}" as="m" hint-placeholder-count="3">
+          <div style="display:flex; align-items:center; gap:13px; padding:5px 9px; border-left:2px solid {{ m.rowAccent }}; background:{{ m.rowBg }}; border-radius:8px;">
+            <div style="width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:{{ m.avBg }}; border:1px solid {{ m.avBorder }}; font-family:'JetBrains Mono',monospace; font-size:12px; color:{{ m.avColor }};">{{ m.initial }}</div>
+            <div style="flex:1; display:flex; align-items:center; gap:8px;">
+              <span style="font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:14.5px; color:#d4dde8;">{{ m.name }}</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; color:#19cdff;">{{ m.suffix }}</span>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:2px 8px; border-radius:5px; border:1px solid {{ m.roleBorder }}; color:{{ m.roleColor }}; background:{{ m.roleBg }};">{{ m.role }}</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; width:40px; text-align:right;"><span style="color:#19cdff;">R</span> <span style="color:{{ m.wColor }};">W</span></span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== SLIDE 6 — GET STARTED ====================== -->
+<div style="position:absolute; left:6750px; top:0px; width:1270px;">
+  <div data-drags-parent="1" style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:#5a6b80; margin-bottom:12px;">Slide 6 — Get started</div>
+  <div data-screen-label="Slide 06" style="position:relative; width:1270px; height:760px; overflow:hidden; border-radius:8px; background:radial-gradient(120% 140% at 82% 14%, #0a2540 0%, #070b13 62%); box-shadow:0 24px 60px rgba(0,0,0,0.45);">
+    <canvas ref="{{ ref6 }}" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+    <div style="position:absolute; inset:0; background:linear-gradient(90deg, rgba(7,11,19,0.96) 0%, rgba(7,11,19,0.82) 38%, rgba(7,11,19,0.4) 62%, rgba(7,11,19,0.12) 84%);"></div>
+    <div style="position:absolute; left:72px; top:52px; display:flex; align-items:center; gap:10px;">
+      <div style="width:9px; height:9px; border-radius:50%; background:#19cdff; box-shadow:0 0 12px #19cdff;"></div>
+      <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; letter-spacing:0.18em; color:#e6edf6;">YOURMEMORY</div>
+    </div>
+    <div style="position:absolute; right:72px; top:56px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; color:#5a6b80;">06 / 06</div>
+    <div style="position:absolute; left:72px; top:318px; right:520px; display:flex; flex-direction:column;">
+      <h1 style="margin:0; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:50px; line-height:1.12; letter-spacing:-0.02em; color:#e6edf6;">Works with Claude, Cursor<br><span style="background:linear-gradient(92deg,#19cdff 0%,#5eead4 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">&amp; any MCP client.</span></h1>
+      <p style="margin:22px 0 0; max-width:540px; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:18px; line-height:1.5; color:#8294a8;">Open source. Self-hostable. Your data never leaves your machine.</p>
+      <div style="display:flex; margin-top:34px;">
+        <div style="display:inline-flex; align-items:center; gap:12px; padding:14px 20px; border:1px solid #1b3a4d; border-radius:10px; background:rgba(25,205,255,0.05); box-shadow:0 0 30px rgba(25,205,255,0.1);">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:15px; color:#5a6b80;">$</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:15px; color:#8294a8;">pip install</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:600; background:linear-gradient(92deg,#19cdff 0%,#5eead4 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">yourmemory</span>
+        </div>
+      </div>
+    </div>
+    <div style="position:absolute; left:72px; bottom:54px; display:flex; align-items:center; gap:16px; font-family:'JetBrains Mono',monospace; font-size:12.5px; letter-spacing:0.14em; color:#5a6b80;">
+      <sc-for list="{{ tags }}" as="tag" hint-placeholder-count="3">
+        <span style="display:flex; align-items:center; gap:16px;"><span style="color:#7fd9ec;">{{ tag }}</span><span style="color:#26344a;">&middot;</span></span>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;motifIntensity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0.3,&quot;max&quot;:1.5,&quot;step&quot;:0.05,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Network&quot;},&quot;showNetwork&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Network&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this._raf = null;
+    this._scenes = [];
+    this._started = false;
+    const mk = (cfg) => (el) => { if(el) this._attach(el, cfg); };
+    this.ref1 = mk({ key:"s1", w:1270, h:760, mode:"hero",     intensity:1.0,  seed:4471 });
+    this.ref2 = mk({ key:"s2", w:1270, h:760, mode:"collapse", intensity:1.0,  seed:8123 });
+    this.ref3 = mk({ key:"s3", w:1270, h:760, mode:"ambient",  intensity:0.5,  seed:2299 });
+    this.ref4 = mk({ key:"s4", w:1270, h:760, mode:"ambient",  intensity:0.42, seed:6701 });
+    this.ref5 = mk({ key:"s5", w:1270, h:760, mode:"ambient",  intensity:0.42, seed:3360 });
+    this.ref6 = mk({ key:"s6", w:1270, h:760, mode:"ambient",  intensity:0.55, seed:9044 });
+  }
+
+  renderVals(){
+    const dim = "rgba(130,148,168,0.18)";
+    const dimFade = "rgba(130,148,168,0.07)";
+    return {
+      ref1:this.ref1, ref2:this.ref2, ref3:this.ref3, ref4:this.ref4, ref5:this.ref5, ref6:this.ref6,
+      dimSegs: [dim,dim,dim,dim,dim,dim,dim,dim,dim,dim,dimFade,dimFade,dimFade,dimFade],
+      ledger: [
+        { op:"WRITE",  target:"mem#444", hash:"9f3a…7c2", chipColor:"#7fd9ec", chipBorder:"#1b3a4d", chipBg:"rgba(25,205,255,0.08)" },
+        { op:"READ",   target:"mem#231", hash:"6b1e…07a4", chipColor:"#8294a8", chipBorder:"#27384c", chipBg:"rgba(130,148,168,0.06)" },
+        { op:"DELETE", target:"mem#118", hash:"c0d4…e92", chipColor:"#5eead4", chipBorder:"#1f4a44", chipBg:"rgba(94,234,212,0.08)" },
+        { op:"WRITE",  target:"mem#445", hash:"a771…3f8", chipColor:"#7fd9ec", chipBorder:"#1b3a4d", chipBg:"rgba(25,205,255,0.08)" },
+      ],
+      tags: ["MCP-NATIVE","OPEN SOURCE","SELF-HOSTABLE"],
+      poolMembers: [
+        { initial:"s", name:"sachit", suffix:"", avBg:"rgba(25,205,255,0.10)", avBorder:"#1b3a4d", avColor:"#7fd9ec",
+          role:"owner",  roleColor:"#7fd9ec", roleBorder:"#1b3a4d", roleBg:"rgba(25,205,255,0.08)", wColor:"#5eead4",
+          rowBg:"transparent", rowAccent:"transparent" },
+        { initial:"m", name:"maya.r", suffix:"", avBg:"rgba(94,234,212,0.10)", avBorder:"#1f4a44", avColor:"#5eead4",
+          role:"writer", roleColor:"#5eead4", roleBorder:"#1f4a44", roleBg:"rgba(94,234,212,0.08)", wColor:"#5eead4",
+          rowBg:"transparent", rowAccent:"transparent" },
+        { initial:"j", name:"j.park", suffix:"new", avBg:"rgba(130,148,168,0.08)", avBorder:"#27384c", avColor:"#8294a8",
+          role:"reader", roleColor:"#8294a8", roleBorder:"#27384c", roleBg:"rgba(130,148,168,0.06)", wColor:"#2f4256",
+          rowBg:"rgba(25,205,255,0.045)", rowAccent:"#19cdff" },
+      ],
+    };
+  }
+
+  componentWillUnmount(){ if(this._raf) cancelAnimationFrame(this._raf); }
+  componentDidUpdate(){ for(const s of this._scenes){ try{ this._draw(s, performance.now()); }catch(e){} } }
+
+  _rng(seed){ let s = seed % 2147483647; if(s<=0) s+=2147483646; return ()=>{ s = s*16807 % 2147483647; return (s-1)/2147483646; }; }
+
+  _attach(canvas, cfg){
+    if(this._scenes.some(s=>s.key===cfg.key)) return;
+    try { this._setup(canvas, cfg); } catch(e){ return; }
+    try { this._draw(this._scenes[this._scenes.length-1], performance.now()); } catch(e){}
+    this._startLoop();
+  }
+
+  _startLoop(){
+    if(this._started) return;
+    this._started = true;
+    const loop = (t) => {
+      try { for(const s of this._scenes) this._draw(s, t); } catch(e){}
+      this._raf = requestAnimationFrame(loop);
+    };
+    this._raf = requestAnimationFrame(loop);
+  }
+
+  _setup(canvas, cfg){
+    const { w, h, mode, intensity, seed } = cfg;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = w*dpr; canvas.height = h*dpr;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+    const rnd = this._rng(seed);
+    const summaries = [], raws = [], links = [];
+    const addSum = (x,y,r,bf) => { const o = { x,y,r,bf, phase:rnd()*6.283 }; summaries.push(o); return o; };
+    const addRaw = (x,y,target) => {
+      const dist = Math.hypot(target.x-x, target.y-y);
+      const near = Math.max(0, 1 - dist/(w*0.55));
+      raws.push({ x, y, r:1.1+rnd()*1.5+near*1.1, target, drift:rnd()*6.283, ds:0.4+rnd()*0.8, flow:rnd(), flowSpeed:0.03+rnd()*0.05, bright:0.2+near*0.55+rnd()*0.2 });
+    };
+    const nearest = (x,y) => { let best=summaries[0], bd=Infinity; for(const s of summaries){ const d=(s.x-x)*(s.x-x)+(s.y-y)*(s.y-y); if(d<bd){bd=d;best=s;} } return best; };
+
+    if(mode === "hero" || mode === "collapse"){
+      const sx = mode === "collapse" ? w*0.72 : w*0.745;
+      for(let i=0;i<3;i++){ const t=i/2; addSum(sx+(rnd()-0.5)*70, h*(0.27+t*0.46)+(rnd()-0.5)*22, (mode==="collapse"?8:7)+rnd()*2, mode==="collapse"?1.18:1.0); }
+      for(let i=0;i<summaries.length-1;i++) links.push({ a:summaries[i], b:summaries[i+1], baseA:0.16, wd:1.0 });
+      const nR = mode==="collapse" ? 120 : 80;
+      const x0 = mode==="collapse" ? w*0.33 : w*0.40, x1 = mode==="collapse" ? w*0.80 : w*0.93;
+      for(let i=0;i<nR;i++){
+        const u = Math.pow(rnd(), 1.4);
+        const x = x0 + u*(x1-x0);
+        const y = h*(0.09 + rnd()*0.82);
+        const target = rnd()<0.22 ? summaries[(rnd()*summaries.length)|0] : nearest(x,y);
+        addRaw(x,y,target);
+      }
+    } else if(mode === "shared"){
+      const hubs = [];
+      for(let i=0;i<3;i++){ hubs.push(addSum(w*0.57+(rnd()-0.5)*36, h*(0.28+i*0.22), 5.5+rnd()*1.2, 0.6)); }
+      const shared = addSum(w*0.85, h*0.5, 11, 1.4);
+      for(const hb of hubs){
+        links.push({ a:hb, b:shared, baseA:0.32, wd:1.6, flow:rnd(), flowSpeed:0.011 });
+        for(let i=0;i<15;i++){
+          const ang = rnd()*6.283, rad = 16+rnd()*66;
+          addRaw(hb.x + Math.cos(ang)*rad - 42 - rnd()*55, hb.y + Math.sin(ang)*rad*0.8, hb);
+        }
+      }
+    } else { // ambient
+      const s1 = addSum(w*0.78, h*0.33, 5, 0.85);
+      const s2 = addSum(w*0.81, h*0.70, 5, 0.85);
+      for(let i=0;i<46;i++){
+        const x = w*(0.12 + rnd()*0.82);
+        const y = h*(0.08 + rnd()*0.86);
+        addRaw(x, y, rnd()<0.5 ? s1 : s2);
+      }
+    }
+
+    this._scenes.push({ ctx, w, h, mode, intensity, summaries, raws, links, key:cfg.key });
+  }
+
+  _draw(scene, time){
+    const { ctx, w, h, summaries, raws, links } = scene;
+    const t = time*0.001;
+    const gI = (this.props.showNetwork === false) ? 0 : (this.props.motifIntensity ?? 1);
+    const I = scene.intensity * gI;
+    ctx.clearRect(0,0,w,h);
+    if(I <= 0) return;
+    ctx.globalCompositeOperation = "lighter";
+
+    for(const n of raws){
+      const nx = n.x + Math.cos(t*n.ds*0.4 + n.drift)*5;
+      const ny = n.y + Math.sin(t*n.ds*0.4 + n.drift)*5;
+      const tg = n.target;
+      const a = (0.04 + n.bright*0.06)*I;
+      const grad = ctx.createLinearGradient(nx, ny, tg.x, tg.y);
+      grad.addColorStop(0, `rgba(50,110,140,${a})`);
+      grad.addColorStop(1, `rgba(25,205,255,${Math.min(0.6, a*2.4)})`);
+      ctx.strokeStyle = grad; ctx.lineWidth = 0.7;
+      ctx.beginPath(); ctx.moveTo(nx,ny); ctx.lineTo(tg.x,tg.y); ctx.stroke();
+
+      n.flow += n.flowSpeed; if(n.flow>1) n.flow -= 1;
+      const fx = nx + (tg.x-nx)*n.flow, fy = ny + (tg.y-ny)*n.flow;
+      ctx.fillStyle = `rgba(94,234,212,${(1-n.flow)*0.45*I})`;
+      ctx.beginPath(); ctx.arc(fx,fy,1.0,0,6.283); ctx.fill();
+
+      ctx.fillStyle = `rgba(150,190,215,${(0.14 + n.bright*0.22)*I})`;
+      ctx.beginPath(); ctx.arc(nx,ny,n.r,0,6.283); ctx.fill();
+    }
+
+    for(const l of links){
+      ctx.strokeStyle = `rgba(94,234,212,${l.baseA*I})`;
+      ctx.lineWidth = l.wd || 1;
+      ctx.beginPath(); ctx.moveTo(l.a.x,l.a.y); ctx.lineTo(l.b.x,l.b.y); ctx.stroke();
+      if(l.flow !== undefined){
+        l.flow += l.flowSpeed; if(l.flow>1) l.flow -= 1;
+        const fx = l.a.x + (l.b.x-l.a.x)*l.flow, fy = l.a.y + (l.b.y-l.a.y)*l.flow;
+        ctx.fillStyle = `rgba(25,205,255,${0.6*I})`;
+        ctx.beginPath(); ctx.arc(fx,fy,2,0,6.283); ctx.fill();
+      }
+    }
+
+    for(const s of summaries){
+      const pulse = 0.5 + 0.5*Math.sin(t*1.5 + s.phase);
+      const glowR = s.r*4 + pulse*8;
+      const g = ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,glowR);
+      g.addColorStop(0, `rgba(25,205,255,${Math.min(0.95,(0.45+pulse*0.25)*s.bf*I)})`);
+      g.addColorStop(0.4, `rgba(25,205,255,${0.12*s.bf*I})`);
+      g.addColorStop(1, "rgba(25,205,255,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(s.x,s.y,glowR,0,6.283); ctx.fill();
+
+      ctx.fillStyle = `rgba(214,247,255,${Math.min(1, 0.5 + 0.5*I*Math.min(1,s.bf))})`;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r*0.55,0,6.283); ctx.fill();
+
+      ctx.strokeStyle = `rgba(94,234,212,${Math.min(0.95,(0.55+pulse*0.4)*I)})`;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r+2+pulse*2,0,6.283); ctx.stroke();
+    }
+
+    ctx.globalCompositeOperation = "source-over";
+  }
+}
+</script>
+</body>
+</html>
