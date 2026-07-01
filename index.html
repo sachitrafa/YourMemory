@@ -1100,6 +1100,7 @@ class Component extends DCLogic {
     // ---------- faq ----------
     const faqData = [
       { q: 'Does any of my data leave my machine?', a: 'No. YourMemory runs entirely locally — storage, embeddings, retrieval, and decay all happen on your machine. There\u2019s no API key and no server call. Nothing about your conversations ever leaves your system.' },
+      { q: 'Do I need Ollama or any other service?', a: 'No — YourMemory works out of the box. Extraction uses built-in heuristics, so nothing is blocked and you’re ready right after setup. Ollama is an optional add-on for smarter, fully-local fact extraction; if it isn’t running, setup simply skips it and you’re good to go.' },
       { q: 'Which AI clients does it work with?', a: 'Setup auto-detects and wires up Claude Code, Claude Desktop, Cursor, Windsurf, Cline, Continue, and Zed — 7 MCP-compatible clients. Anything that speaks MCP can connect.' },
       { q: 'Is it really free?', a: 'Yes. The core is open source and free to self-host forever. The paid Enterprise build adds org-wide memory sharing, private memories, and an admin portal.' },
       { q: 'How does decay decide what to forget?', a: 'Every memory carries a strength score that follows the Ebbinghaus forgetting curve, S(t) = e^(\u2212\u03bbt). Each category ages at its own half-life, and recall resets the clock. When strength drops below the prune threshold the memory fades from retrieval — but graph-linked clusters keep important context alive.' },

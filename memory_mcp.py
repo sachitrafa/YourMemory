@@ -1206,27 +1206,32 @@ def _ping_install() -> None:
 
 
 def _check_ollama_model(model: str) -> None:
-    """Ensure the local Ollama has the extraction model — pulling it automatically
-    if missing. Extraction (and the optional relevance judge) run on this model;
-    without it, auto-store extraction degrades.
+    """Optionally enable the local Ollama extraction model — pulling it automatically
+    if Ollama is already running. This is a QUALITY enhancement, not a requirement:
+    without Ollama, YourMemory still works out of the box. Storage runs (the smart
+    STORE/SKIP relevance filter simply fails open, so nothing is blocked) and fact
+    extraction falls back to built-in heuristics. Ollama adds smarter, fully-local
+    extraction and the optional relevance judge.
     """
     import urllib.request as _u
     url = os.getenv("YOURMEMORY_OLLAMA_URL", "http://localhost:11434")
-    print(f"\n[+] Checking local extraction model ({model})…")
+    print(f"\n[+] Optional: smarter local extraction ({model}) via Ollama…")
 
-    # 1. Is Ollama reachable? (We can't auto-install Ollama itself.)
+    # 1. Is Ollama reachable? (We can't — and don't need to — auto-install Ollama.)
     try:
         with _u.urlopen(f"{url}/api/tags", timeout=4) as resp:
             names = {m.get("name", "") for m in json.loads(resp.read()).get("models", [])}
     except Exception:
-        print(f"  ⚠  Ollama not reachable at {url}.")
-        print( "     Install Ollama from https://ollama.com and start it, then re-run")
-        print( "     yourmemory-setup — it will pull the model automatically.")
+        print( "  ℹ  Ollama not detected — that's fine, you're all set. YourMemory works")
+        print( "     right now with built-in extraction; nothing is blocked. For smarter,")
+        print( "     fully-local extraction you can optionally install Ollama")
+        print( "     (https://ollama.com) and re-run yourmemory-setup — it will pull the")
+        print( "     model automatically. (Prefer the cloud? Set YOURMEMORY_EXTRACT_BACKEND=anthropic.)")
         return
 
     base = model.split(":")[0]
     if model in names or any(n.split(":")[0] == base for n in names):
-        print(f"  ✓  {model} is available.")
+        print(f"  ✓  {model} is available — enhanced local extraction enabled.")
         return
 
     # 2. Missing → pull it now.
