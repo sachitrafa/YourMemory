@@ -123,13 +123,12 @@
     <div class="step-no" id="stepNo">01 / 06</div>
     <div class="txt">
       <h2 id="nTitle">Your AI is brilliant for one conversation. Then it forgets everything.</h2>
-      <p id="nBody">Click <b>Run</b> to watch what YourMemory does about that — in 6 steps.</p>
+      <p id="nBody">Hit <b>Auto-play</b> to watch what YourMemory does about that — in 6 steps.</p>
     </div>
     <div class="controls">
       <div class="progress" id="progress"></div>
       <button class="btn" id="restartBtn" onclick="restart()" style="display:none;">↻ Restart</button>
-      <button class="btn" id="autoBtn" onclick="autoplay()">Auto-play ▶</button>
-      <button class="btn primary" id="nextBtn" onclick="next()">Run ▶</button>
+      <button class="btn primary" id="autoBtn" onclick="autoplay()">▶ Auto-play</button>
     </div>
   </div>
 
@@ -177,7 +176,6 @@ const storeEmpty = document.getElementById('storeEmpty');
 const sessionPill = document.getElementById('sessionPill');
 const rightLbl = document.getElementById('rightLbl');
 const storeStat = document.getElementById('storeStat');
-const nextBtn = document.getElementById('nextBtn');
 const restartBtn = document.getElementById('restartBtn');
 const autoBtn = document.getElementById('autoBtn');
 const finalEl = document.getElementById('final');
@@ -288,26 +286,16 @@ const steps = [
     setNarr('06 / 06','That’s YourMemory.','Memory that gets sharper over time, survives context resets, proves itself, and is shared across your team.');
     dots(6);
     finalEl.classList.add('show');
-    nextBtn.style.display='none';
   },
 ];
 
 let idx = 0, running=false;
 function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
-async function next(){
-  if(running || idx>=steps.length) return;
-  running=true; nextBtn.disabled=true; restartBtn.style.display='inline-block';
-  await steps[idx]();
-  idx++;
-  nextBtn.textContent = idx>=steps.length-0 ? 'Next ▶' : 'Next ▶';
-  if(idx>=steps.length){ nextBtn.style.display='none'; }
-  running=false; nextBtn.disabled=false;
-}
 // Auto-play: run the whole story hands-free (no mouse needed while recording).
 async function autoplay(){
   if(running) return;
   running=true;
-  autoBtn.style.display='none'; nextBtn.style.display='none';
+  autoBtn.style.display='none';
   restartBtn.style.display='inline-block';
   for(let i=0;i<steps.length;i++){
     idx=i;
@@ -325,10 +313,9 @@ function restart(){
   rightLbl.textContent='🧠 YourMemory · store'; storeStat.textContent='';
   sessionPill.textContent='session 1'; sessionPill.className='pill';
   finalEl.classList.remove('show');
-  nextBtn.style.display='inline-block'; nextBtn.textContent='Run ▶'; nextBtn.disabled=false;
   autoBtn.style.display='inline-block';
   restartBtn.style.display='none';
-  setNarr('01 / 06','Your AI is brilliant for one conversation. Then it forgets everything.','Click <b>Run</b> to watch what YourMemory does about that — in 6 steps.');
+  setNarr('01 / 06','Your AI is brilliant for one conversation. Then it forgets everything.','Hit <b>Auto-play</b> to watch what YourMemory does about that — in 6 steps.');
   dots(0);
 }
 dots(0);
