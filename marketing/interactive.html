@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourMemory — Interactive Demo</title>
+<meta name="description" content="Watch what YourMemory does to your AI agent's memory — store, recall after a context reset, consolidate, and audit. Interactive demo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070b13; --bg2:#0a1422; --panel:#0c1424; --line:#1a2740;
+    --line2:#22304a; --ink:#e6edf6; --muted:#8294a8; --dim:#5a6b80;
+    --cyan:#19cdff; --teal:#5eead4;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Space Grotesk',system-ui,sans-serif; color:var(--ink);
+    background:radial-gradient(130% 120% at 85% 0%, #0a2540 0%, #070b13 60%);
+    min-height:100vh; padding:28px clamp(16px,4vw,40px); -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .wrap{max-width:1080px; margin:0 auto;}
+
+  /* header */
+  .top{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:22px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:11px;}
+  .dot{width:10px; height:10px; border-radius:50%; background:var(--cyan); box-shadow:0 0 14px var(--cyan);}
+  .brand b{font-weight:700; letter-spacing:.16em; font-size:15px;}
+  .brand .sub{color:var(--dim); font-size:12px;}
+  .cta-top{display:flex; gap:10px;}
+  .btn{font-family:'JetBrains Mono',monospace; font-size:13px; text-decoration:none; border-radius:9px; padding:9px 15px; cursor:pointer; border:1px solid var(--line); color:var(--ink); background:transparent; transition:all .18s;}
+  .btn:hover{border-color:#2c4560;}
+  .btn.primary{background:linear-gradient(92deg,var(--cyan),var(--teal)); color:#04121d; font-weight:700; border:none;}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+
+  /* narration bar */
+  .narrate{
+    border:1px solid var(--line); border-radius:16px; background:rgba(12,20,36,.7);
+    padding:18px 22px; margin-bottom:18px; display:flex; align-items:center; gap:18px; min-height:84px;
+  }
+  .narrate .step-no{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--cyan); letter-spacing:.14em; white-space:nowrap;}
+  .narrate .txt{flex:1;}
+  .narrate .txt h2{font-size:19px; font-weight:600; letter-spacing:-.01em; margin-bottom:3px;}
+  .narrate .txt p{color:var(--muted); font-size:14px; line-height:1.45;}
+  .narrate .controls{display:flex; gap:10px; align-items:center;}
+  .progress{display:flex; gap:6px; margin:0 4px;}
+  .pdot{width:7px; height:7px; border-radius:50%; background:var(--line); transition:all .25s;}
+  .pdot.on{background:var(--cyan); box-shadow:0 0 8px var(--cyan);}
+
+  /* stage: two columns */
+  .stage{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media(max-width:780px){ .stage{grid-template-columns:1fr;} }
+  .col{border:1px solid var(--line); border-radius:16px; background:rgba(12,20,36,.55); overflow:hidden; min-height:430px; display:flex; flex-direction:column;}
+  .col-head{display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid var(--line);}
+  .col-head .lbl{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim);}
+  .pill{font-family:'JetBrains Mono',monospace; font-size:10.5px; padding:3px 9px; border-radius:999px; border:1px solid var(--line); color:var(--muted);}
+  .pill.live{color:var(--teal); border-color:#1f4a44; background:rgba(94,234,212,.07);}
+  .pill.reset{color:#f0b46b; border-color:#5a4326; background:rgba(240,180,107,.08);}
+
+  /* chat */
+  .chat{padding:16px; display:flex; flex-direction:column; gap:11px; flex:1; overflow:hidden;}
+  .msg{max-width:88%; padding:11px 14px; border-radius:13px; font-size:14px; line-height:1.45; animation:rise .45s ease both;}
+  .msg.user{align-self:flex-end; background:linear-gradient(160deg,rgba(25,205,255,.16),rgba(25,205,255,.07)); border:1px solid #1b3a4d;}
+  .msg.ai{align-self:flex-start; background:rgba(255,255,255,.03); border:1px solid var(--line); color:#cdd9e8;}
+  .msg .who{font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim); margin-bottom:4px;}
+  .recall-chip{align-self:flex-start; max-width:92%; border:1px dashed #1f4a44; background:rgba(94,234,212,.05); border-radius:11px; padding:9px 12px; font-size:12.5px; color:var(--teal); animation:rise .45s ease both;}
+  .recall-chip .h{font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:#5fae9f; margin-bottom:5px;}
+  .recall-chip ul{margin:0; padding-left:15px; color:#bfeee3; line-height:1.5;}
+
+  /* memory store */
+  .store{padding:14px; display:flex; flex-direction:column; gap:9px; flex:1; overflow:hidden;}
+  .mcard{border:1px solid var(--line); border-radius:11px; background:rgba(255,255,255,.02); padding:11px 13px; font-size:13.5px; line-height:1.4; color:#d4dde8; position:relative; animation:rise .4s ease both; transition:all .5s ease;}
+  .mcard .cat{font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); display:block; margin-bottom:4px;}
+  .mcard.fade{opacity:0; transform:translateX(24px) scale(.96);}
+  .mcard.summary{border-color:var(--cyan); background:rgba(25,205,255,.06); box-shadow:0 0 30px rgba(25,205,255,.14);}
+  .mcard.summary .cat{color:var(--teal);}
+  .mcard.summary .badge{position:absolute; top:10px; right:12px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.08em; text-transform:uppercase; color:#04121d; background:linear-gradient(92deg,var(--cyan),var(--teal)); padding:2px 7px; border-radius:5px;}
+  .store-empty{color:var(--dim); font-size:13px; text-align:center; margin:auto; padding:30px;}
+
+  /* audit */
+  .audit{padding:14px; display:flex; flex-direction:column; gap:7px; flex:1; overflow:hidden;}
+  .arow{display:flex; align-items:center; gap:12px; font-family:'JetBrains Mono',monospace; font-size:11.5px; padding:8px 11px; border-bottom:1px solid rgba(26,39,64,.6); animation:rise .35s ease both;}
+  .arow .act{padding:2px 8px; border-radius:5px; font-size:10px; letter-spacing:.06em;}
+  .act.write{color:var(--teal); border:1px solid #1f4a44; background:rgba(94,234,212,.08);}
+  .act.read{color:#8fb4ff; border:1px solid #233a63; background:rgba(80,120,200,.08);}
+  .act.compact{color:var(--cyan); border:1px solid #1b3a4d; background:rgba(25,205,255,.08);}
+  .arow .op{color:#cdd9e8; flex:1;}
+  .arow .hash{color:var(--dim);}
+  .verify{margin-top:auto; display:flex; align-items:center; gap:9px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--teal); padding:11px 12px; border:1px solid #1f4a44; border-radius:10px; background:rgba(94,234,212,.05); margin:10px 14px 14px;}
+
+  .stat{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim);}
+  .stat b{color:var(--cyan);}
+
+  @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;}}
+  .final{position:absolute; inset:0; z-index:5; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:18px; background:radial-gradient(120% 120% at 50% 22%, #0d2036 0%, #060a12 72%); border:1px solid var(--line); border-radius:16px; padding:30px; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);}
+  .final.show{display:flex; animation:rise .5s ease both;}
+  .final h2{font-size:32px; font-weight:700; letter-spacing:-.02em;}
+  .final h2 span{background:linear-gradient(92deg,var(--cyan),var(--teal)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;}
+  .final p{color:var(--muted); max-width:440px; line-height:1.5;}
+  .codepill{display:inline-flex; gap:9px; align-items:center; font-family:'JetBrains Mono',monospace; font-size:15px; border:1px solid #1b3a4d; border-radius:10px; padding:12px 18px; background:rgba(25,205,255,.05);}
+  .codepill .ym{font-weight:600; background:linear-gradient(92deg,var(--cyan),var(--teal)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;}
+  .stagewrap{position:relative;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="brand">
+      <span class="dot"></span>
+      <b>YOURMEMORY</b>
+      <span class="sub mono">interactive demo</span>
+    </div>
+    <div class="cta-top">
+      <a class="btn" href="https://github.com/sachitrafa/YourMemory" target="_blank" rel="noopener">★ GitHub</a>
+      <a class="btn primary" href="https://yourmemoryai.xyz" target="_blank" rel="noopener">Get started →</a>
+    </div>
+  </div>
+
+  <div class="narrate">
+    <div class="step-no" id="stepNo">01 / 06</div>
+    <div class="txt">
+      <h2 id="nTitle">Your AI is brilliant for one conversation. Then it forgets everything.</h2>
+      <p id="nBody">Click <b>Run</b> to watch what YourMemory does about that — in 6 steps.</p>
+    </div>
+    <div class="controls">
+      <div class="progress" id="progress"></div>
+      <button class="btn" id="restartBtn" onclick="restart()" style="display:none;">↻ Restart</button>
+      <button class="btn primary" id="nextBtn" onclick="next()">Run ▶</button>
+    </div>
+  </div>
+
+  <div class="stagewrap">
+    <div class="stage">
+      <!-- LEFT: agent -->
+      <div class="col">
+        <div class="col-head">
+          <span class="lbl">🤖 Your AI agent</span>
+          <span class="pill" id="sessionPill">session 1</span>
+        </div>
+        <div class="chat" id="chat"></div>
+      </div>
+
+      <!-- RIGHT: YourMemory -->
+      <div class="col">
+        <div class="col-head">
+          <span class="lbl" id="rightLbl">🧠 YourMemory · store</span>
+          <span class="stat" id="storeStat"></span>
+        </div>
+        <div class="store" id="store">
+          <div class="store-empty" id="storeEmpty">No memories yet — they appear as your AI learns.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- final overlay -->
+    <div class="final" id="final">
+      <h2>Give your AI <span>a memory worth keeping.</span></h2>
+      <p>Persistent, self-improving memory for AI agents — consolidates, recovers context, audits every change, and shares across your team. MCP-native, open source, self-hostable.</p>
+      <div class="codepill"><span style="color:var(--dim)">$</span><span style="color:var(--muted)">pip install</span><span class="ym">yourmemory</span></div>
+      <div class="cta-top">
+        <a class="btn" href="https://github.com/sachitrafa/YourMemory" target="_blank" rel="noopener">★ Star on GitHub</a>
+        <a class="btn primary" href="https://yourmemoryai.xyz" target="_blank" rel="noopener">Try it free →</a>
+      </div>
+      <button class="btn" onclick="restart()" style="margin-top:4px;">↻ Replay demo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const chat = document.getElementById('chat');
+const store = document.getElementById('store');
+const storeEmpty = document.getElementById('storeEmpty');
+const sessionPill = document.getElementById('sessionPill');
+const rightLbl = document.getElementById('rightLbl');
+const storeStat = document.getElementById('storeStat');
+const nextBtn = document.getElementById('nextBtn');
+const restartBtn = document.getElementById('restartBtn');
+const finalEl = document.getElementById('final');
+
+let mem = [];      // {id, cat, text, el}
+let audit = [];
+let nextId = 1;
+
+function setNarr(no, title, body){
+  document.getElementById('stepNo').textContent = no;
+  document.getElementById('nTitle').textContent = title;
+  document.getElementById('nBody').innerHTML = body;
+}
+function dots(active){
+  const p = document.getElementById('progress'); p.innerHTML='';
+  for(let i=0;i<6;i++){ const d=document.createElement('div'); d.className='pdot'+(i<active?' on':''); p.appendChild(d); }
+}
+function userMsg(t){ const d=document.createElement('div'); d.className='msg user'; d.innerHTML='<div class="who">you</div>'+t; chat.appendChild(d); chat.scrollTop=chat.scrollHeight; }
+function aiMsg(t){ const d=document.createElement('div'); d.className='msg ai'; d.innerHTML='<div class="who">ai</div>'+t; chat.appendChild(d); chat.scrollTop=chat.scrollHeight; }
+function addMem(cat,text,delay){
+  return new Promise(res=>setTimeout(()=>{
+    storeEmpty.style.display='none';
+    const id=nextId++; const el=document.createElement('div'); el.className='mcard';
+    el.innerHTML='<span class="cat">'+cat+'</span>'+text;
+    store.appendChild(el); store.scrollTop=store.scrollHeight;
+    mem.push({id,cat,text,el});
+    audit.push({act:'write',op:'store · mem#'+id,hash:rndHash()});
+    updateStat(); res();
+  }, delay||0));
+}
+function rndHash(){ return Math.random().toString(16).slice(2,6)+'…'+Math.random().toString(16).slice(2,5); }
+function updateStat(){ storeStat.innerHTML='<b>'+mem.length+'</b> memories'; }
+
+// ---- steps ----
+const steps = [
+  // 0 -> shown initially; Run triggers step 1
+  async ()=>{ // STORE
+    setNarr('01 / 06','You tell your AI about your work.','It quietly extracts the durable facts and stores them as memory — no copy-paste, no setup.');
+    dots(1);
+    userMsg("I'm building a Rust CLI. I deploy on Railway with Postgres, and I prefer tabs over spaces.");
+    await wait(500);
+    aiMsg("Got it 👍");
+    await addMem('fact',"The user is building a Rust CLI.",450);
+    await addMem('fact',"The user deploys on Railway with Postgres.",550);
+    await addMem('fact',"The user prefers tabs over spaces.",550);
+  },
+  async ()=>{ // RESET + RECALL
+    setNarr('02 / 06','New session. Your AI usually forgets everything…','…but YourMemory hands the context back the moment a session starts. Continuity, automatically.');
+    dots(2);
+    chat.innerHTML='';
+    sessionPill.textContent='session 2'; sessionPill.className='pill reset';
+    aiMsg("<i style='color:#7d8ba0'>fresh session — context cleared</i>");
+    await wait(650);
+    const r=document.createElement('div'); r.className='recall-chip';
+    r.innerHTML='<div class="h">↻ YourMemory recalled</div><ul><li>Building a Rust CLI</li><li>Deploys on Railway + Postgres</li><li>Prefers tabs over spaces</li></ul>';
+    chat.appendChild(r);
+    audit.push({act:'read',op:'recall · 3 memories',hash:rndHash()});
+    sessionPill.className='pill live';
+    await wait(500);
+    userMsg("Where do I deploy again?");
+    await wait(450);
+    aiMsg("On Railway, with Postgres — same as before. 🚀");
+  },
+  async ()=>{ // ACCUMULATE
+    setNarr('03 / 06','Over time, related facts pile up.','Most memory tools just keep growing — hoarding near-duplicates until the signal drowns in noise.');
+    dots(3);
+    await addMem('fact',"Railway deploy uses the Nixpacks builder.",300);
+    await addMem('fact',"The Railway project is on the Pro plan.",500);
+    await addMem('fact',"Railway env vars hold the Postgres URL.",500);
+    storeStat.innerHTML='<b>'+mem.length+'</b> memories · <span style="color:#f0b46b">getting noisy</span>';
+  },
+  async ()=>{ // CONSOLIDATE (the wow)
+    setNarr('04 / 06','Watch it consolidate.','When enough related facts gather, YourMemory compresses them into one clean summary and archives the rest. Sharper, not bloated.');
+    dots(4);
+    // fade the 4 railway-related memories
+    const railway = mem.filter(m=>/railway/i.test(m.text));
+    railway.forEach(m=>m.el.classList.add('fade'));
+    await wait(720);
+    railway.forEach(m=>{ m.el.remove(); });
+    mem = mem.filter(m=>!/railway/i.test(m.text));
+    // insert summary
+    const el=document.createElement('div'); el.className='mcard summary';
+    el.innerHTML='<span class="badge">summary</span><span class="cat">consolidated · 4 → 1</span>The user deploys on Railway (Pro plan, Nixpacks builder) with Postgres, configured via env vars.';
+    store.insertBefore(el, store.firstChild);
+    mem.unshift({id:nextId++,cat:'summary',text:'railway summary',el});
+    audit.push({act:'compact',op:'compact · 4 archived → 1 summary',hash:rndHash()});
+    updateStat();
+    storeStat.innerHTML='<b>'+mem.length+'</b> memories · <span style="color:var(--teal)">leaner ✓</span>';
+  },
+  async ()=>{ // AUDIT
+    setNarr('05 / 06','Every change is provable.','Reads, writes, deletes, consolidations — all logged in a hash-chained, tamper-evident audit trail. Alter one record and the chain breaks.');
+    dots(5);
+    rightLbl.textContent='🔒 YourMemory · audit';
+    store.style.display='none';
+    const a=document.createElement('div'); a.className='audit'; a.id='auditView';
+    store.parentElement.insertBefore(a, store.nextSibling);
+    for(let i=0;i<audit.length;i++){
+      await wait(140);
+      const ev=audit[i]; const row=document.createElement('div'); row.className='arow';
+      row.innerHTML='<span class="act '+ev.act+'">'+ev.act.toUpperCase()+'</span><span class="op">'+ev.op+'</span><span class="hash">'+ev.hash+'</span>';
+      a.appendChild(row);
+    }
+    const v=document.createElement('div'); v.className='verify';
+    v.innerHTML='<span style="color:var(--cyan)">✓</span> chain verified · '+audit.length+' events · tamper-evident';
+    a.appendChild(v);
+  },
+  async ()=>{ // FINAL
+    setNarr('06 / 06','That’s YourMemory.','Memory that gets sharper over time, survives context resets, proves itself, and is shared across your team.');
+    dots(6);
+    finalEl.classList.add('show');
+    nextBtn.style.display='none';
+  },
+];
+
+let idx = 0, running=false;
+function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+async function next(){
+  if(running || idx>=steps.length) return;
+  running=true; nextBtn.disabled=true; restartBtn.style.display='inline-block';
+  await steps[idx]();
+  idx++;
+  nextBtn.textContent = idx>=steps.length-0 ? 'Next ▶' : 'Next ▶';
+  if(idx>=steps.length){ nextBtn.style.display='none'; }
+  running=false; nextBtn.disabled=false;
+}
+function restart(){
+  idx=0; mem=[]; audit=[]; nextId=1; running=false;
+  chat.innerHTML=''; store.innerHTML=''; store.style.display='flex';
+  store.appendChild(storeEmpty); storeEmpty.style.display='block';
+  const av=document.getElementById('auditView'); if(av) av.remove();
+  rightLbl.textContent='🧠 YourMemory · store'; storeStat.textContent='';
+  sessionPill.textContent='session 1'; sessionPill.className='pill';
+  finalEl.classList.remove('show');
+  nextBtn.style.display='inline-block'; nextBtn.textContent='Run ▶'; nextBtn.disabled=false;
+  restartBtn.style.display='none';
+  setNarr('01 / 06','Your AI is brilliant for one conversation. Then it forgets everything.','Click <b>Run</b> to watch what YourMemory does about that — in 6 steps.');
+  dots(0);
+}
+dots(0);
+</script>
+</body>
+</html>
