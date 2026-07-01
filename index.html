@@ -805,6 +805,7 @@ recall("customer edge case")
               <input type="email" placeholder="you@company.com" value="{{ email }}" onInput="{{ onEmail }}" style="flex: 1; min-width: 200px; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; color: #0a2540; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
               <button onClick="{{ sendCode }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; background: #19cdff; border: none; padding: 13px 22px; border-radius: 12px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Send code</button>
             </div>
+            <sc-if value="{{ sendError }}" hint-placeholder-val="{{ false }}"><div style="margin-top: 10px; font-size: 13px; color: #e0475c;">{{ sendError }}</div></sc-if>
             <div style="margin-top: 12px; font-size: 12.5px; color: #6b829c;">No password stored · takes 30 seconds</div>
           </div>
         </sc-if>
@@ -816,6 +817,7 @@ recall("customer edge case")
               <input type="text" inputmode="numeric" maxlength="6" placeholder="000000" value="{{ code }}" onInput="{{ onCode }}" style="flex: 1; min-width: 200px; font-family: 'JetBrains Mono', monospace; letter-spacing: 6px; font-size: 18px; color: #0a2540; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
               <button onClick="{{ verifyCode }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; background: #19cdff; border: none; padding: 13px 22px; border-radius: 12px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Verify</button>
             </div>
+            <sc-if value="{{ verifyError }}" hint-placeholder-val="{{ false }}"><div style="margin-top: 10px; font-size: 13px; color: #e0475c;">{{ verifyError }}</div></sc-if>
             <button onClick="{{ backToEmail }}" style="cursor: pointer; margin-top: 14px; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 13.5px; font-weight: 500; color: #5b6b80; background: none; border: none; padding: 0;" style-hover="color: #0a87cc;">← Back</button>
           </div>
         </sc-if>
@@ -861,7 +863,7 @@ recall("customer edge case")
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { halfLife: 24, tab: 'long', regStep: 'email', email: '', code: '', token: '', calcHistory: '', calcSessions: 120, calcModel: 'sonnet', faqOpen: 0, copiedAudit: false, menuOpen: false, browserTab: 'memories' };
+  state = { halfLife: 24, tab: 'long', regStep: 'email', email: '', code: '', token: '', sendError: '', verifyError: '', calcHistory: '', calcSessions: 120, calcModel: 'sonnet', faqOpen: 0, copiedAudit: false, menuOpen: false, browserTab: 'memories' };
 
   // ---------- hero neural canvas ----------
   componentWillUnmount() {
@@ -1194,9 +1196,44 @@ class Component extends DCLogic {
       email: em, maskedEmail, code: this.state.code, token: this.state.token,
       onEmail: (e) => this.setState({ email: e.target.value }),
       onCode: (e) => this.setState({ code: e.target.value.replace(/[^0-9]/g, '').slice(0, 6) }),
-      sendCode: () => { if (validEmail) this.setState({ regStep: 'code' }); },
-      verifyCode: () => this.setState({ regStep: 'done', token: 'ym_' + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6) }),
-      backToEmail: () => this.setState({ regStep: 'email', code: '' }),
+      sendError: this.state.sendError || '',
+      sendCode: async () => {
+        if (!validEmail) return;
+        try {
+          const res = await fetch('https://yourmemory-backend.yourmemoryai.workers.dev/send-otp', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: em })
+          });
+          if (res.ok) {
+            this.setState({ regStep: 'code', sendError: '' });
+          } else {
+            const d = await res.json().catch(() => ({}));
+            this.setState({ sendError: d.reason || 'Failed to send code. Try again.' });
+          }
+        } catch (e) {
+          this.setState({ sendError: 'Network error. Check your connection.' });
+        }
+      },
+      verifyError: this.state.verifyError || '',
+      verifyCode: async () => {
+        const c = this.state.code;
+        if (!c || c.length !== 6) return;
+        try {
+          const res = await fetch('https://yourmemory-backend.yourmemoryai.workers.dev/verify-otp', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: em, code: c })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (res.ok && data.token) {
+            this.setState({ regStep: 'done', token: data.token, verifyError: '' });
+          } else {
+            this.setState({ verifyError: data.reason || 'Invalid code. Try again.' });
+          }
+        } catch (e) {
+          this.setState({ verifyError: 'Network error. Check your connection.' });
+        }
+      },
+      backToEmail: () => this.setState({ regStep: 'email', code: '', verifyError: '' }),
       entFeatures: [
         { title: 'Org memory sharing', desc: 'Shared memories surface automatically across every team member\u2019s session. What one engineer learns, the whole team benefits from — instantly.' },
         { title: 'Private memories', desc: 'Mark any memory private and it stays yours alone. Sensitive context, personal notes, draft decisions — never visible to colleagues or admins.' },
