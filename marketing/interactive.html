@@ -128,6 +128,7 @@
     <div class="controls">
       <div class="progress" id="progress"></div>
       <button class="btn" id="restartBtn" onclick="restart()" style="display:none;">↻ Restart</button>
+      <button class="btn" id="autoBtn" onclick="autoplay()">Auto-play ▶</button>
       <button class="btn primary" id="nextBtn" onclick="next()">Run ▶</button>
     </div>
   </div>
@@ -178,6 +179,7 @@ const rightLbl = document.getElementById('rightLbl');
 const storeStat = document.getElementById('storeStat');
 const nextBtn = document.getElementById('nextBtn');
 const restartBtn = document.getElementById('restartBtn');
+const autoBtn = document.getElementById('autoBtn');
 const finalEl = document.getElementById('final');
 
 let mem = [];      // {id, cat, text, el}
@@ -301,6 +303,20 @@ async function next(){
   if(idx>=steps.length){ nextBtn.style.display='none'; }
   running=false; nextBtn.disabled=false;
 }
+// Auto-play: run the whole story hands-free (no mouse needed while recording).
+async function autoplay(){
+  if(running) return;
+  running=true;
+  autoBtn.style.display='none'; nextBtn.style.display='none';
+  restartBtn.style.display='inline-block';
+  for(let i=0;i<steps.length;i++){
+    idx=i;
+    await steps[i]();
+    idx++;
+    if(i<steps.length-1) await wait(1600);
+  }
+  running=false;
+}
 function restart(){
   idx=0; mem=[]; audit=[]; nextId=1; running=false;
   chat.innerHTML=''; store.innerHTML=''; store.style.display='flex';
@@ -310,11 +326,16 @@ function restart(){
   sessionPill.textContent='session 1'; sessionPill.className='pill';
   finalEl.classList.remove('show');
   nextBtn.style.display='inline-block'; nextBtn.textContent='Run ▶'; nextBtn.disabled=false;
+  autoBtn.style.display='inline-block';
   restartBtn.style.display='none';
   setNarr('01 / 06','Your AI is brilliant for one conversation. Then it forgets everything.','Click <b>Run</b> to watch what YourMemory does about that — in 6 steps.');
   dots(0);
 }
 dots(0);
+// ?autoplay=1 starts the story automatically on load — clean for screen recording.
+if(new URLSearchParams(location.search).get('autoplay')==='1'){
+  window.addEventListener('load', ()=>setTimeout(autoplay, 700));
+}
 </script>
 </body>
 </html>
