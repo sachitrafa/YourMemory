@@ -37,7 +37,7 @@
 <style>
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin: 0; padding: 0; background: #070b13; color: #e6edf6; font-family: 'Google Sans', 'Figtree', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  body { margin: 0; padding: 0; background: #070b13; color: #ffffff; font-family: 'Google Sans', 'Figtree', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
   ::selection { background: rgba(25,205,255,0.3); }
   @keyframes ymFadeUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
   @keyframes ymBlink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
@@ -76,7 +76,7 @@
       <a href="https://github.com/sachitrafa/YourMemory" style="font-size: 14.5px; font-weight: 600; color: #cdd9e8;">GitHub</a>
       <a href="#start" style="font-size: 14.5px; font-weight: 600; white-space: nowrap; color: #ffffff; background: #19cdff; padding: 9px 18px; border-radius: 999px; box-shadow: 0 0 22px rgba(25,205,255,0.35); transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-1px); box-shadow: 0 0 30px rgba(25,205,255,0.55);">Get started</a>
     </div>
-    <button class="ym-burger" onClick="{{ toggleMenu }}" aria-label="Menu" style="align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); cursor: pointer; color: #e6edf6; padding: 0;">
+    <button class="ym-burger" onClick="{{ toggleMenu }}" aria-label="Menu" style="align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); cursor: pointer; color: #ffffff; padding: 0;">
       <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}"><span style="font-size: 18px; line-height: 1;">✕</span></sc-if>
       <sc-if value="{{ menuClosed }}" hint-placeholder-val="{{ true }}"><span style="font-size: 20px; line-height: 1;">☰</span></sc-if>
     </button>
@@ -87,7 +87,7 @@
           <a href="{{ ml.href }}" onClick="{{ closeMenu }}" style="padding: 13px 4px; font-size: 16px; font-weight: 600; color: #cdd9e8; border-bottom: 1px solid rgba(255,255,255,0.07); transition: color .2s;" style-hover="color: #19cdff;">{{ ml.label }}</a>
         </sc-for>
         <div style="display: flex; gap: 12px; margin-top: 18px;">
-          <a href="https://github.com/sachitrafa/YourMemory" onClick="{{ closeMenu }}" style="flex: 1; text-align: center; font-size: 15px; font-weight: 600; color: #e6edf6; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); padding: 13px 18px; border-radius: 999px;">GitHub</a>
+          <a href="https://github.com/sachitrafa/YourMemory" onClick="{{ closeMenu }}" style="flex: 1; text-align: center; font-size: 15px; font-weight: 600; color: #ffffff; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); padding: 13px 18px; border-radius: 999px;">GitHub</a>
           <a href="#start" onClick="{{ closeMenu }}" style="flex: 1; text-align: center; font-size: 15px; font-weight: 600; color: #ffffff; background: #19cdff; padding: 13px 18px; border-radius: 999px; box-shadow: 0 0 22px rgba(25,205,255,0.35);">Get started</a>
         </div>
       </div>
@@ -117,7 +117,7 @@
 
       <div style="display: flex; gap: 14px; margin-top: 36px; flex-wrap: wrap;">
         <a href="#start" style="display: inline-flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 600; color: #ffffff; background: #19cdff; padding: 14px 26px; border-radius: 999px; box-shadow: 0 8px 30px rgba(25,205,255,0.35); transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-2px); box-shadow: 0 12px 38px rgba(25,205,255,0.5);">Get started free →</a>
-        <a href="https://github.com/sachitrafa/YourMemory" style="display: inline-flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 600; color: #e6edf6; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.16); padding: 14px 26px; border-radius: 999px; transition: background .2s, border-color .2s;" style-hover="background: rgba(255,255,255,0.12); border-color: rgba(12,20,36,0.28);">View on GitHub</a>
+        <a href="https://github.com/sachitrafa/YourMemory" style="display: inline-flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 600; color: #ffffff; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.16); padding: 14px 26px; border-radius: 999px; transition: background .2s, border-color .2s;" style-hover="background: rgba(255,255,255,0.12); border-color: rgba(12,20,36,0.28);">View on GitHub</a>
       </div>
 
       <div style="display: flex; gap: clamp(20px, 4vw, 52px); margin-top: 56px; flex-wrap: wrap;">
@@ -127,12 +127,12 @@
         </div>
         <div style="width: 1px; background: rgba(255,255,255,0.12);"></div>
         <div>
-          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(26px, 3vw, 40px); color: #e6edf6; line-height: 1;">−84%</div>
+          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(26px, 3vw, 40px); color: #ffffff; line-height: 1;">−84%</div>
           <div style="font-size: 13px; color: #cdd9e8; margin-top: 6px;">Token waste at 30 sessions</div>
         </div>
         <div style="width: 1px; background: rgba(255,255,255,0.12);"></div>
         <div>
-          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(26px, 3vw, 40px); color: #e6edf6; line-height: 1;">7</div>
+          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(26px, 3vw, 40px); color: #ffffff; line-height: 1;">7</div>
           <div style="font-size: 13px; color: #cdd9e8; margin-top: 6px;">MCP clients supported</div>
         </div>
       </div>
@@ -327,7 +327,7 @@
           </sc-for>
         </div>
 
-        <div style="font-size: 13px; color: #cdd9e8; margin-bottom: 8px; display: flex; justify-content: space-between;"><span>Half-life</span><span style="font-family: 'JetBrains Mono', monospace; color: #e6edf6;">{{ halfLifeLabel }}</span></div>
+        <div style="font-size: 13px; color: #cdd9e8; margin-bottom: 8px; display: flex; justify-content: space-between;"><span>Half-life</span><span style="font-family: 'JetBrains Mono', monospace; color: #ffffff;">{{ halfLifeLabel }}</span></div>
         <input type="range" min="3" max="60" step="1" value="{{ halfLife }}" onInput="{{ onHalfLife }}" style="width: 100%; accent-color: #19cdff; cursor: pointer;">
 
         <div style="margin-top: 26px; display: flex; gap: 26px;">
@@ -336,7 +336,7 @@
             <div style="font-size: 13px; color: #cdd9e8; margin-top: 4px;">Strength after 14 days</div>
           </div>
           <div>
-            <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 30px; color: #e6edf6;">{{ pruneDayLabel }}</div>
+            <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 30px; color: #ffffff;">{{ pruneDayLabel }}</div>
             <div style="font-size: 13px; color: #cdd9e8; margin-top: 4px;">Pruned at S &lt; 0.05</div>
           </div>
         </div>
@@ -363,7 +363,7 @@
     <div style="display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr); gap: clamp(24px, 4vw, 60px); align-items: start;">
       <div>
         <div style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: clamp(56px, 8vw, 104px); line-height: 0.9; background: linear-gradient(130deg, #19cdff, #5eead4); -webkit-background-clip: text; background-clip: text; color: transparent;">{{ bigNum }}</div>
-        <div style="font-size: 16px; font-weight: 600; color: #e6edf6; margin-top: 12px;">{{ bigLabel }}</div>
+        <div style="font-size: 16px; font-weight: 600; color: #ffffff; margin-top: 12px;">{{ bigLabel }}</div>
         <p style="margin: 14px 0 0; font-size: 15px; line-height: 1.6; color: #cdd9e8; max-width: 320px;">{{ bigDesc }}</p>
       </div>
 
@@ -409,10 +409,10 @@
           <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#19cdff; background:rgba(25,205,255,0.12); border:1px solid rgba(25,205,255,0.3); padding:4px 10px; border-radius:999px;">local · private</span>
         </div>
         <p style="margin:0 0 14px; font-size:14.5px; line-height:1.6; color:#cdd9e8;">Export any AI chat and paste it below. Tokenized in your browser — nothing is sent anywhere.</p>
-        <textarea placeholder="Paste your conversation history…" value="{{ calcHistory }}" onInput="{{ onCalcHistory }}" style="width:100%; min-height:96px; resize:vertical; font-family:'Google Sans','Figtree',sans-serif; font-size:14px; line-height:1.5; color:#e6edf6; background:rgba(12,20,36,0.7); border:1px solid rgba(255,255,255,0.16); border-radius:12px; padding:12px 14px; outline:none; box-sizing:border-box;"></textarea>
+        <textarea placeholder="Paste your conversation history…" value="{{ calcHistory }}" onInput="{{ onCalcHistory }}" style="width:100%; min-height:96px; resize:vertical; font-family:'Google Sans','Figtree',sans-serif; font-size:14px; line-height:1.5; color:#ffffff; background:rgba(12,20,36,0.7); border:1px solid rgba(255,255,255,0.16); border-radius:12px; padding:12px 14px; outline:none; box-sizing:border-box;"></textarea>
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:8px; font-size:12.5px; color:#cdd9e8;"><span style="font-family:'JetBrains Mono',monospace; color:#19cdff;">{{ calcTokensFmt }} tokens</span><span>~0.75 words per token</span></div>
 
-        <div style="display:flex; justify-content:space-between; align-items:baseline; margin:18px 0 6px; font-size:13px; color:#cdd9e8;"><span>Sessions this spans</span><span style="font-family:'JetBrains Mono',monospace; color:#e6edf6;">{{ calcSessions }}</span></div>
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin:18px 0 6px; font-size:13px; color:#cdd9e8;"><span>Sessions this spans</span><span style="font-family:'JetBrains Mono',monospace; color:#ffffff;">{{ calcSessions }}</span></div>
         <input type="range" min="2" max="300" step="1" value="{{ calcSessions }}" onInput="{{ onCalcSessions }}" style="width:100%; accent-color:#19cdff; cursor:pointer;">
 
         <div style="margin-top:18px; display:flex; gap:8px; flex-wrap:wrap;">
@@ -762,7 +762,7 @@ recall("customer edge case")
       <sc-for list="{{ press }}" as="a" hint-placeholder-count="6">
         <a href="{{ a.url }}" style="display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: transform .25s, border-color .25s, background .25s;" style-hover="transform: translateY(-5px); border-color: rgba(25,205,255,0.35); background: rgba(25,205,255,0.04);">
           <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.5px; text-transform: uppercase; color: #19cdff;">{{ a.source }}</span>
-          <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 18px; line-height: 1.25; letter-spacing: -0.2px; color: #e6edf6;">{{ a.title }}</span>
+          <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 18px; line-height: 1.25; letter-spacing: -0.2px; color: #ffffff;">{{ a.title }}</span>
           <span style="font-size: 14px; color: #cdd9e8; line-height: 1.5;">{{ a.desc }}</span>
           <span style="margin-top: 2px; font-size: 13.5px; font-weight: 600; color: #19cdff;">Read →</span>
         </a>
@@ -777,7 +777,7 @@ recall("customer edge case")
     <div style="display:flex; flex-direction:column; gap:12px;">
       <sc-for list="{{ faqs }}" as="item" hint-placeholder-count="5">
         <div style="border-radius:16px; border:1px solid {{ item.bd }}; background:{{ item.bg }}; overflow:hidden; transition:border-color .2s, background .2s;">
-          <button onClick="{{ item.onClick }}" style="cursor:pointer; width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px; text-align:left; background:none; border:none; padding:20px 24px; font-family:'Montserrat',sans-serif; font-weight:600; font-size:17px; color:#e6edf6;">
+          <button onClick="{{ item.onClick }}" style="cursor:pointer; width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px; text-align:left; background:none; border:none; padding:20px 24px; font-family:'Montserrat',sans-serif; font-weight:600; font-size:17px; color:#ffffff;">
             <span>{{ item.q }}</span>
             <span style="flex:none; font-family:'Figtree',sans-serif; font-size:24px; font-weight:400; line-height:1; color:#19cdff; transition:transform .2s; transform:{{ item.iconRot }};">+</span>
           </button>
@@ -802,7 +802,7 @@ recall("customer edge case")
             <h3 style="margin: 0 0 6px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.3px;">Get your activation token.</h3>
             <p style="margin: 0 0 18px; font-size: 14.5px; color: #cdd9e8;">Enter your email — we'll send a 6-digit code to verify.</p>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <input type="email" placeholder="you@company.com" value="{{ email }}" onInput="{{ onEmail }}" style="flex: 1; min-width: 200px; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; color: #e6edf6; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
+              <input type="email" placeholder="you@company.com" value="{{ email }}" onInput="{{ onEmail }}" style="flex: 1; min-width: 200px; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; color: #ffffff; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
               <button onClick="{{ sendCode }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; background: #19cdff; border: none; padding: 13px 22px; border-radius: 12px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Send code</button>
             </div>
             <sc-if value="{{ sendError }}" hint-placeholder-val="{{ false }}"><div style="margin-top: 10px; font-size: 13px; color: #e0475c;">{{ sendError }}</div></sc-if>
@@ -814,7 +814,7 @@ recall("customer edge case")
             <h3 style="margin: 0 0 6px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.3px;">Enter the code.</h3>
             <p style="margin: 0 0 18px; font-size: 14.5px; color: #cdd9e8;">We sent a code to <span style="color: #19cdff;">{{ maskedEmail }}</span> — expires in 10 minutes.</p>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <input type="text" inputmode="numeric" maxlength="6" placeholder="000000" value="{{ code }}" onInput="{{ onCode }}" style="flex: 1; min-width: 200px; font-family: 'JetBrains Mono', monospace; letter-spacing: 6px; font-size: 18px; color: #e6edf6; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
+              <input type="text" inputmode="numeric" maxlength="6" placeholder="000000" value="{{ code }}" onInput="{{ onCode }}" style="flex: 1; min-width: 200px; font-family: 'JetBrains Mono', monospace; letter-spacing: 6px; font-size: 18px; color: #ffffff; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
               <button onClick="{{ verifyCode }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; background: #19cdff; border: none; padding: 13px 22px; border-radius: 12px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Verify</button>
             </div>
             <sc-if value="{{ verifyError }}" hint-placeholder-val="{{ false }}"><div style="margin-top: 10px; font-size: 13px; color: #e0475c;">{{ verifyError }}</div></sc-if>
@@ -841,7 +841,7 @@ recall("customer edge case")
       </div>
       <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
         <a href="https://github.com/sachitrafa/YourMemory" style="font-size: 16px; font-weight: 600; color: #ffffff; background: #19cdff; padding: 14px 28px; border-radius: 999px; box-shadow: 0 8px 30px rgba(25,205,255,0.35); transition: transform .2s;" style-hover="transform: translateY(-2px);">View on GitHub</a>
-        <a href="https://discord.gg/TWCKjEThe" style="font-size: 16px; font-weight: 600; color: #e6edf6; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.16); padding: 14px 28px; border-radius: 999px;" style-hover="background: rgba(255,255,255,0.12);">Join Discord</a>
+        <a href="https://discord.gg/TWCKjEThe" style="font-size: 16px; font-weight: 600; color: #ffffff; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.16); padding: 14px 28px; border-radius: 999px;" style-hover="background: rgba(255,255,255,0.12);">Join Discord</a>
       </div>
     </div>
   </section>
