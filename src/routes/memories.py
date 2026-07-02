@@ -348,6 +348,7 @@ def list_memories(
     limit: int = Query(50, ge=1, le=500),
     category: Optional[str] = Query(None),
     agent_id: Optional[str] = Query(None, description="Filter by agent_id; 'user' for user-owned only"),
+    audit: bool = Query(True, description="Log a read/list audit event. The dashboard passes false so its own render/refresh fetches don't pollute the audit trail."),
 ):
     userId = userId.strip().lower()
     backend = get_backend()
@@ -408,9 +409,10 @@ def list_memories(
             "agent_id":         m.get("agent_id") or "user",
         })
 
-    log_event("read", "list", userId,
-              detail={"count": len(memories), "category": category, "agent_id": agent_id,
-                      "ids": [m["id"] for m in memories][:10]})
+    if audit:
+        log_event("read", "list", userId,
+                  detail={"count": len(memories), "category": category, "agent_id": agent_id,
+                          "ids": [m["id"] for m in memories][:10]})
 
     return {"total": len(memories), "memories": memories}
 

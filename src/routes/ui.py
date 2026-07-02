@@ -279,7 +279,7 @@ _HTML = """<!DOCTYPE html>
 
     try {
       const [memRes, agentRes] = await Promise.all([
-        fetch(`/memories?userId=${encodeURIComponent(uid)}&limit=500`),
+        fetch(`/memories?userId=${encodeURIComponent(uid)}&limit=500&audit=false`),
         fetch(`/agents?user_id=${encodeURIComponent(uid)}`),
       ]);
 
