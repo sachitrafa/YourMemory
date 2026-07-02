@@ -1,0 +1,26 @@
+{
+  "benchmark": "HotpotQA Multi-Hop Reasoning",
+  "dataset": "~/hotpot_dev_distractor.json",
+  "limit": 200,
+  "timestamp": "20260506_121234",
+  "results": {
+    "BOTH_FOUND": 143,
+    "ONE_FOUND": 53,
+    "NONE_FOUND": 4
+  },
+  "multi_hop_coverage": 0.715,
+  "single_hop_partial": 0.265,
+  "graph_expansion_hits": 0,
+  "by_type": {
+    "comparison": {
+      "BOTH_FOUND": 29,
+      "ONE_FOUND": 5,
+      "NONE_FOUND": 0
+    },
+    "bridge": {
+      "BOTH_FOUND": 114,
+      "ONE_FOUND": 48,
+      "NONE_FOUND": 4
+    }
+  }
+}

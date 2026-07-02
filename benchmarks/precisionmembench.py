@@ -6,7 +6,7 @@ Runs the official retrieval.cases.json + session-retrieval.cases.json
 directly against YourMemory's internal Python API (no HTTP wrapper, no Docker).
 
 Usage:
-    cd /Users/sachit.misra/Desktop/YourMemory
+    cd /path/to/YourMemory
     python3 benchmarks/precisionmembench.py
 
 Results written to:

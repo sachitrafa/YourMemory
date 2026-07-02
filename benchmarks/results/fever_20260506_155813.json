@@ -1,0 +1,14 @@
+{
+  "benchmark": "FEVER Contradiction Handling",
+  "dataset": "~/fever_dev.jsonl",
+  "limit": 200,
+  "timestamp": "20260506_155813",
+  "results": {
+    "RESOLVED": 14,
+    "CORRUPTED": 5,
+    "CONFUSED": 177,
+    "MISSED": 4
+  },
+  "contradiction_resolution_rate": 0.07,
+  "corruption_rate": 0.025
+}
