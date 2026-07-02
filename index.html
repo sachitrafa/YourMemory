@@ -229,7 +229,7 @@
           <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(25,205,255,0.12); border: 1px solid rgba(25,205,255,0.3); font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 19px; color: #19cdff;">{{ step.n }}</div>
           <h3 style="margin: 22px 0 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.4px;">{{ step.title }}</h3>
           <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.55; color: #cdd9e8;">{{ step.desc }}</p>
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #19cdff; background: rgba(234,242,251,0.95); border: 1px solid rgba(255,255,255,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre-wrap;">{{ step.code }}</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #19cdff; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre-wrap;">{{ step.code }}</div>
         </div>
       </sc-for>
     </div>
@@ -397,7 +397,7 @@
           <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#19cdff; background:rgba(15,181,168,0.1); border:1px solid rgba(15,181,168,0.25); padding:4px 10px; border-radius:999px;">30 sec</span>
         </div>
         <p style="margin:0 0 16px; font-size:14.5px; line-height:1.6; color:#cdd9e8;">Paste this at the end of any session — <strong style="color:#cdd9e8;">Claude, ChatGPT, Gemini, Cursor, Copilot</strong>. It needs no knowledge of YourMemory; your AI measures and compresses the conversation itself.</p>
-        <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; color:#19cdff; background:rgba(234,242,251,0.95); border:1px solid rgba(255,255,255,0.09); border-radius:12px; padding:14px 16px; white-space:pre-wrap; flex:1;">{{ auditPrompt }}</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; color:#19cdff; background:rgba(255,255,255,0.045); border:1px solid rgba(255,255,255,0.09); border-radius:12px; padding:14px 16px; white-space:pre-wrap; flex:1;">{{ auditPrompt }}</div>
         <button onClick="{{ copyAudit }}" style="cursor:pointer; margin-top:14px; align-self:flex-start; font-family:'Google Sans','Figtree',sans-serif; font-size:14px; font-weight:600; color:#ffffff; background:#19cdff; border:none; padding:11px 20px; border-radius:999px; transition:transform .2s;" style-hover="transform:translateY(-1px);">{{ copyAuditLabel }}</button>
         <div style="margin-top:14px; font-size:12.5px; color:#cdd9e8; line-height:1.6;">Your AI replies with: <span style="font-family:'JetBrains Mono',monospace; color:#19cdff;">Full ~X,XXX · Memory ~XXX · Savings XX%</span></div>
       </div>
@@ -591,7 +591,7 @@
       <div style="padding: 34px; border-radius: 20px; background: rgba(251,113,133,0.05); border: 1px solid rgba(251,113,133,0.2);">
         <div style="font-size: 12.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #fb7185; margin-bottom: 18px;">Without YourMemory</div>
         <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.6; color: #cdd9e8;">Engineer A spends two hours debugging a customer edge case. Session closes. The knowledge is gone — and Engineer B starts from scratch next week.</p>
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #e11d48; background: rgba(234,242,251,0.95); border: 1px solid rgba(255,255,255,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre;">// Session ended
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #e11d48; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre;">// Session ended
 context        = null
 customer_hist  = null
 team_knowledge = null</div>
@@ -599,7 +599,7 @@ team_knowledge = null</div>
       <div style="padding: 34px; border-radius: 20px; background: rgba(25,205,255,0.06); border: 1px solid rgba(25,205,255,0.28);">
         <div style="font-size: 12.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #19cdff; margin-bottom: 18px;">With YourMemory Enterprise</div>
         <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.6; color: #cdd9e8;">Engineer A solves it once. The memory persists, shared with the org, and surfaces automatically when Engineer B opens a session — solved in minutes.</p>
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #19cdff; background: rgba(234,242,251,0.95); border: 1px solid rgba(255,255,255,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre;">// Session opened
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #19cdff; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre;">// Session opened
 recall("customer edge case")
 → 3 relevant memories surfaced
 → last solved: 6 days ago by alice</div>
@@ -802,7 +802,7 @@ recall("customer edge case")
             <h3 style="margin: 0 0 6px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.3px;">Get your activation token.</h3>
             <p style="margin: 0 0 18px; font-size: 14.5px; color: #cdd9e8;">Enter your email — we'll send a 6-digit code to verify.</p>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <input type="email" placeholder="you@company.com" value="{{ email }}" onInput="{{ onEmail }}" style="flex: 1; min-width: 200px; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; color: #e6edf6; background: rgba(234,242,251,0.95); border: 1px solid rgba(255,255,255,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
+              <input type="email" placeholder="you@company.com" value="{{ email }}" onInput="{{ onEmail }}" style="flex: 1; min-width: 200px; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; color: #e6edf6; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
               <button onClick="{{ sendCode }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; background: #19cdff; border: none; padding: 13px 22px; border-radius: 12px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Send code</button>
             </div>
             <sc-if value="{{ sendError }}" hint-placeholder-val="{{ false }}"><div style="margin-top: 10px; font-size: 13px; color: #e0475c;">{{ sendError }}</div></sc-if>
@@ -814,7 +814,7 @@ recall("customer edge case")
             <h3 style="margin: 0 0 6px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.3px;">Enter the code.</h3>
             <p style="margin: 0 0 18px; font-size: 14.5px; color: #cdd9e8;">We sent a code to <span style="color: #19cdff;">{{ maskedEmail }}</span> — expires in 10 minutes.</p>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <input type="text" inputmode="numeric" maxlength="6" placeholder="000000" value="{{ code }}" onInput="{{ onCode }}" style="flex: 1; min-width: 200px; font-family: 'JetBrains Mono', monospace; letter-spacing: 6px; font-size: 18px; color: #e6edf6; background: rgba(234,242,251,0.95); border: 1px solid rgba(255,255,255,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
+              <input type="text" inputmode="numeric" maxlength="6" placeholder="000000" value="{{ code }}" onInput="{{ onCode }}" style="flex: 1; min-width: 200px; font-family: 'JetBrains Mono', monospace; letter-spacing: 6px; font-size: 18px; color: #e6edf6; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
               <button onClick="{{ verifyCode }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; background: #19cdff; border: none; padding: 13px 22px; border-radius: 12px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Verify</button>
             </div>
             <sc-if value="{{ verifyError }}" hint-placeholder-val="{{ false }}"><div style="margin-top: 10px; font-size: 13px; color: #e0475c;">{{ verifyError }}</div></sc-if>
@@ -828,13 +828,13 @@ recall("customer edge case")
               <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 21px;">Verified — token ready</span>
             </div>
             <p style="margin: 0 0 12px; font-size: 14.5px; color: #cdd9e8;">Run this command to activate:</p>
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #19cdff; background: rgba(234,242,251,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px 16px; word-break: break-all;"><span style="color: #19cdff;">yourmemory-register</span> {{ token }}</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #19cdff; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px 16px; word-break: break-all;"><span style="color: #19cdff;">yourmemory-register</span> {{ token }}</div>
             <p style="margin: 12px 0 0; font-size: 12.5px; color: #cdd9e8;">Token also sent to your email as a backup.</p>
           </div>
         </sc-if>
       </div>
 
-      <div style="display: inline-flex; flex-direction: column; gap: 10px; padding: 20px 22px; border-radius: 16px; background: rgba(234,242,251,0.95); border: 1px solid rgba(255,255,255,0.12); font-family: 'JetBrains Mono', monospace; font-size: 14.5px; text-align: left; margin-bottom: 32px;">
+      <div style="display: inline-flex; flex-direction: column; gap: 10px; padding: 20px 22px; border-radius: 16px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.12); font-family: 'JetBrains Mono', monospace; font-size: 14.5px; text-align: left; margin-bottom: 32px;">
         <div style="color: #19cdff;"><span style="color: #cdd9e8;">$</span> <span style="color: #19cdff;">pip install</span> yourmemory</div>
         <div style="color: #19cdff;"><span style="color: #19cdff;">yourmemory-register</span> &lt;token&gt;</div>
         <div style="color: #19cdff;"><span style="color: #19cdff;">yourmemory-setup</span><span style="display: inline-block; width: 9px; height: 17px; background: #19cdff; margin-left: 4px; vertical-align: middle; animation: ymBlink 1.1s steps(1) infinite;"></span></div>
@@ -901,7 +901,7 @@ class Component extends DCLogic {
         const cleft = ny < -0.04 && Math.abs(nx) < 0.055 + (ny + 0.04) * -0.16; // central fissure between hemispheres
         return body && !cleft;
       };
-      const N = Math.max(95, Math.round(W / 8.5));
+      const N = Math.max(34, Math.round(W / 24));
       nodes = [];
       let guard = 0;
       while (nodes.length < N && guard < N * 60) {
@@ -939,20 +939,20 @@ class Component extends DCLogic {
       for (const e of edges) {
         const a = nodes[e.a], b = nodes[e.b];
         const col = (a.decaying || b.decaying) ? AMBER : CYAN;
-        const alpha = e.base * 0.30 * Math.min(a.str, b.str);
+        const alpha = e.base * 0.14 * Math.min(a.str, b.str);
         if (alpha < 0.01) continue;
         ctx.strokeStyle = mix(col, alpha);
         ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
       }
       for (const n of nodes) {
         const col = n.decaying ? AMBER : (n.mint ? MINT : CYAN);
-        const glow = n.r * (n.decaying ? 5 : 6.5);
+        const glow = n.r * (n.decaying ? 3 : 4);
         const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, glow);
-        g.addColorStop(0, mix(col, 0.5 * n.str));
-        g.addColorStop(0.4, mix(col, 0.14 * n.str));
+        g.addColorStop(0, mix(col, 0.3 * n.str));
+        g.addColorStop(0.4, mix(col, 0.07 * n.str));
         g.addColorStop(1, mix(col, 0));
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(n.x, n.y, glow, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = mix(col, Math.min(1, 0.85 * n.str + 0.15));
+        ctx.fillStyle = mix(col, Math.min(1, 0.5 * n.str + 0.12));
         ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
       }
       ctx.globalCompositeOperation = 'source-over';
