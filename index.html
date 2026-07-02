@@ -64,7 +64,6 @@
     </a>
     <div class="ym-navlinks" style="display: flex; align-items: center; gap: clamp(14px, 2.2vw, 34px); font-size: 14.5px; color: #ffffff; font-weight: 500;">
       <a href="#how" style="transition: color .2s;" style-hover="color: #19cdff;">How it works</a>
-      <a href="#engine" style="transition: color .2s;" style-hover="color: #19cdff;">Engine</a>
       <a href="#benchmarks" style="transition: color .2s;" style-hover="color: #19cdff;">Benchmarks</a>
       <a href="#savings" style="transition: color .2s;" style-hover="color: #19cdff;">Savings</a>
       <a href="#compare" style="transition: color .2s;" style-hover="color: #19cdff;">Compare</a>
@@ -235,118 +234,7 @@
     </div>
   </section>
 
-  <!-- ENGINE / THREE LAYERS -->
-  <section id="engine" style="position: relative; padding: clamp(92px, 11vw, 168px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
-    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #19cdff; text-transform: uppercase; margin-bottom: 16px;">Under the hood</div>
-    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">Three layers. One engine.</h2>
-    <p style="margin: 0; max-width: 620px; font-size: 18px; color: #cdd9e8; line-height: 1.5;">Vector search finds what you asked for. The graph finds what you forgot to ask for. Ebbinghaus decides what survives.</p>
 
-    <!-- ✦ ARCHITECTURE DIAGRAM -->
-    <div style="margin: 44px 0 0; padding: 34px 32px 28px; border-radius: 24px; background: linear-gradient(135deg, #0c1a30 0%, #0a1424 60%, #0c1a30 100%); border: 1px solid rgba(15,181,168,0.15); overflow: hidden;">
-      <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #19cdff; margin-bottom: 20px;">How the engine works</div>
-      <svg width="100%" viewBox="0 0 900 188" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="ymcyan" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0e1a2c"/><stop offset="100%" stop-color="#0e1a2c"/></linearGradient>
-          <linearGradient id="ymteal" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0e1a2c"/><stop offset="100%" stop-color="#0e1a2c"/></linearGradient>
-          <linearGradient id="ymamb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0e1a2c"/><stop offset="100%" stop-color="#0e1a2c"/></linearGradient>
-          <marker id="ymeng" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#19cdff" opacity=".5"/></marker>
-        </defs>
-        <!-- Query flows right → -->
-        <text x="14" y="100" font-size="10" fill="#cdd9e8" font-family="Figtree,sans-serif">Query →</text>
-
-        <!-- Layer 1: Vector Search -->
-        <rect x="64" y="20" width="234" height="148" rx="16" fill="url(#ymcyan)" stroke="#19cdff" stroke-width="1.5"/>
-        <rect x="64" y="20" width="234" height="4" rx="2" fill="#19cdff" opacity=".6"/>
-        <g transform="translate(96,53)" stroke="#19cdff" stroke-width="1.8" fill="none" stroke-linecap="round"><circle cx="-2" cy="-2" r="6"/><line x1="2.5" y1="2.5" x2="7" y2="7"/></g>
-        <text x="116" y="58" font-size="13" fill="#0a192f" font-family="Figtree,sans-serif" font-weight="700">Vector Search</text>
-        <text x="84" y="87" font-size="11" fill="#cdd9e8" font-family="Figtree,sans-serif">Dense + BM25 hybrid</text>
-        <text x="84" y="104" font-size="11" fill="#cdd9e8" font-family="Figtree,sans-serif">Semantic similarity</text>
-        <text x="84" y="121" font-size="11" fill="#cdd9e8" font-family="Figtree,sans-serif">Top-K candidates</text>
-        <text x="84" y="155" font-size="10" fill="#19cdff" font-family="JetBrains Mono,monospace">score ≥ 0.72</text>
-
-        <!-- Connector 1→2 -->
-        <line x1="300" y1="94" x2="370" y2="94" stroke="#19cdff" stroke-width="1.5" stroke-dasharray="5 3" opacity=".5" marker-end="url(#ymeng)"><animate attributeName="stroke-dashoffset" from="0" to="-16" dur="1s" repeatCount="indefinite"/></line>
-        <text x="314" y="88" font-size="9" fill="#cdd9e8" font-family="Figtree,sans-serif">expand</text>
-
-        <!-- Layer 2: Entity Graph -->
-        <rect x="374" y="20" width="234" height="148" rx="16" fill="url(#ymteal)" stroke="#19cdff" stroke-width="1.5"/>
-        <rect x="374" y="20" width="234" height="4" rx="2" fill="#19cdff" opacity=".6"/>
-        <g transform="translate(404,53)" stroke="#19cdff" stroke-width="1.6"><line x1="-6" y1="-4" x2="6" y2="-5"/><line x1="6" y1="-5" x2="-1" y2="6"/><line x1="-6" y1="-4" x2="-1" y2="6"/><circle cx="-6" cy="-4" r="2.6" fill="#19cdff" stroke="none"/><circle cx="6" cy="-5" r="2.6" fill="#19cdff" stroke="none"/><circle cx="-1" cy="6" r="2.6" fill="#19cdff" stroke="none"/></g>
-        <text x="422" y="58" font-size="13" fill="#0a192f" font-family="Figtree,sans-serif" font-weight="700">Entity Graph</text>
-        <text x="394" y="87" font-size="11" fill="#cdd9e8" font-family="Figtree,sans-serif">Node expansion</text>
-        <text x="394" y="104" font-size="11" fill="#cdd9e8" font-family="Figtree,sans-serif">Related memory hops</text>
-        <text x="394" y="121" font-size="11" fill="#cdd9e8" font-family="Figtree,sans-serif">Temporal reasoning</text>
-        <text x="394" y="155" font-size="10" fill="#19cdff" font-family="JetBrains Mono,monospace">depth ≤ 2 hops</text>
-
-        <!-- Connector 2→3 -->
-        <line x1="610" y1="94" x2="680" y2="94" stroke="#b8690a" stroke-width="1.5" stroke-dasharray="5 3" opacity=".5" marker-end="url(#ymeng)"><animate attributeName="stroke-dashoffset" from="0" to="-16" dur="1.2s" repeatCount="indefinite"/></line>
-        <text x="622" y="88" font-size="9" fill="#cdd9e8" font-family="Figtree,sans-serif">filter</text>
-
-        <!-- Layer 3: Decay -->
-        <rect x="684" y="20" width="202" height="148" rx="16" fill="url(#ymamb)" stroke="#fbbf73" stroke-width="1.5"/>
-        <rect x="684" y="20" width="202" height="4" rx="2" fill="#fbbf73" opacity=".7"/>
-        <g transform="translate(712,53)" stroke="#b8690a" stroke-width="1.8" fill="none" stroke-linecap="round"><path d="M-7 -5 C -2 -5, -1 5, 6 5"/><circle cx="6" cy="5" r="1.6" fill="#b8690a" stroke="none"/></g>
-        <text x="730" y="58" font-size="13" fill="#0a192f" font-family="Figtree,sans-serif" font-weight="700">Decay Filter</text>
-        <text x="704" y="87" font-size="11" fill="#cdd9e8" font-family="Figtree,sans-serif">Ebbinghaus S(t)</text>
-        <text x="704" y="104" font-size="11" fill="#cdd9e8" font-family="Figtree,sans-serif">Prune S &lt; 0.05</text>
-        <text x="704" y="121" font-size="11" fill="#cdd9e8" font-family="Figtree,sans-serif">Ranked output</text>
-        <text x="704" y="155" font-size="10" fill="#b8690a" font-family="JetBrains Mono,monospace">e^(−λt)</text>
-      </svg>
-    </div>
-
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 30px; margin-top: 56px;">
-      <sc-for list="{{ layers }}" as="layer" hint-placeholder-count="3">
-        <div style="padding: 36px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-6px); border-color: rgba(94,234,212,0.35);">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 1px; color: #19cdff; text-transform: uppercase;">{{ layer.tag }}</div>
-          <h3 style="margin: 12px 0 12px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 23px; letter-spacing: -0.4px;">{{ layer.title }}</h3>
-          <p style="margin: 0 0 20px; font-size: 15px; line-height: 1.6; color: #cdd9e8;">{{ layer.desc }}</p>
-          <div style="display: flex; flex-direction: column; gap: 10px;">
-            <sc-for list="{{ layer.points }}" as="pt" hint-placeholder-count="3">
-              <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #cdd9e8;">
-                <span style="width: 6px; height: 6px; border-radius: 50%; background: #19cdff; flex: none;"></span>{{ pt }}
-              </div>
-            </sc-for>
-          </div>
-        </div>
-      </sc-for>
-    </div>
-  </section>
-
-  <!-- INTERACTIVE DECAY -->
-  <section id="decay" style="position: relative; padding: clamp(92px, 11vw, 168px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
-    <div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.25fr); gap: clamp(30px, 5vw, 70px); align-items: center;">
-      <div>
-        <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #b8690a; text-transform: uppercase; margin-bottom: 16px;">The forgetting curve</div>
-        <h2 style="margin: 0 0 16px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 54px); letter-spacing: -1.4px; line-height: 1.03;">Watch memory fade.</h2>
-        <p style="margin: 0 0 28px; font-size: 17px; line-height: 1.6; color: #cdd9e8;">Every memory carries a strength score <span style="font-family: 'JetBrains Mono', monospace; color: #19cdff;">S(t) = e<sup>−λt</sup></span>. Different categories age at different rates. Drag to set the half-life — when strength drops below the prune line, the memory fades from retrieval.</p>
-
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 26px;">
-          <sc-for list="{{ presets }}" as="p" hint-placeholder-count="3">
-            <button onClick="{{ p.onClick }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 13.5px; font-weight: 600; color: {{ p.fg }}; background: {{ p.bg }}; border: 1px solid {{ p.bd }}; padding: 9px 16px; border-radius: 999px; transition: all .2s;">{{ p.label }}</button>
-          </sc-for>
-        </div>
-
-        <div style="font-size: 13px; color: #cdd9e8; margin-bottom: 8px; display: flex; justify-content: space-between;"><span>Half-life</span><span style="font-family: 'JetBrains Mono', monospace; color: #ffffff;">{{ halfLifeLabel }}</span></div>
-        <input type="range" min="3" max="60" step="1" value="{{ halfLife }}" onInput="{{ onHalfLife }}" style="width: 100%; accent-color: #19cdff; cursor: pointer;">
-
-        <div style="margin-top: 26px; display: flex; gap: 26px;">
-          <div>
-            <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 30px; color: #b8690a;">{{ strengthLabel }}</div>
-            <div style="font-size: 13px; color: #cdd9e8; margin-top: 4px;">Strength after 14 days</div>
-          </div>
-          <div>
-            <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 30px; color: #ffffff;">{{ pruneDayLabel }}</div>
-            <div style="font-size: 13px; color: #cdd9e8; margin-top: 4px;">Pruned at S &lt; 0.05</div>
-          </div>
-        </div>
-      </div>
-
-      <div style="position: relative; border-radius: 22px; background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(12,20,36,0.01)); border: 1px solid rgba(255,255,255,0.1); padding: 22px;">
-        <canvas ref="{{ decayCanvasRef }}" style="width: 100%; height: 360px; display: block;"></canvas>
-      </div>
-    </div>
-  </section>
 
   <!-- BENCHMARKS -->
   <section id="benchmarks" style="position: relative; padding: clamp(92px, 11vw, 168px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
@@ -1116,7 +1004,6 @@ class Component extends DCLogic {
       closeMenu: () => this.setState({ menuOpen: false }),
       mobileLinks: [
         { href: '#how', label: 'How it works' },
-        { href: '#engine', label: 'Engine' },
         { href: '#benchmarks', label: 'Benchmarks' },
         { href: '#savings', label: 'Savings' },
         { href: '#compare', label: 'Compare' },
