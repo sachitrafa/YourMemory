@@ -38,7 +38,7 @@
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body { margin: 0; padding: 0; background: #ffffff; color: #0a192f; font-family: 'Google Sans', 'Figtree', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-  ::selection { background: rgba(0,212,255,0.3); }
+  ::selection { background: rgba(30,58,138,0.3); }
   @keyframes ymFadeUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
   @keyframes ymBlink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
   a { color: inherit; text-decoration: none; }
@@ -59,22 +59,22 @@
   <!-- NAV -->
   <nav style="position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; padding: 16px clamp(20px, 5vw, 72px); background: rgba(255,255,255,0.82); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(10,37,64,0.09);">
     <a href="#top" style="display: flex; align-items: center; gap: 11px;">
-      <img src="assets/logo.png" alt="YourMemory" style="width: 30px; height: 30px; border-radius: 9px; box-shadow: 0 0 18px rgba(0,212,255,0.4);">
-      <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 19px; letter-spacing: -0.6px;">Your<span style="color: #0393b6;">Memory</span></span>
+      <img src="assets/logo.png" alt="YourMemory" style="width: 30px; height: 30px; border-radius: 9px; box-shadow: 0 0 18px rgba(30,58,138,0.4);">
+      <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 19px; letter-spacing: -0.6px;">Your<span style="color: #1e3a8a;">Memory</span></span>
     </a>
     <div class="ym-navlinks" style="display: flex; align-items: center; gap: clamp(14px, 2.2vw, 34px); font-size: 14.5px; color: #44566e; font-weight: 500;">
-      <a href="#how" style="transition: color .2s;" style-hover="color: #0393b6;">How it works</a>
-      <a href="#engine" style="transition: color .2s;" style-hover="color: #0393b6;">Engine</a>
-      <a href="#benchmarks" style="transition: color .2s;" style-hover="color: #0393b6;">Benchmarks</a>
-      <a href="#savings" style="transition: color .2s;" style-hover="color: #0393b6;">Savings</a>
-      <a href="#compare" style="transition: color .2s;" style-hover="color: #0393b6;">Compare</a>
-      <a href="#enterprise" style="transition: color .2s;" style-hover="color: #0393b6;">Enterprise</a>
-      <a href="#audit" style="transition: color .2s;" style-hover="color: #0393b6;">Audit</a>
-      <a href="#faq" style="transition: color .2s;" style-hover="color: #0393b6;">FAQ</a>
+      <a href="#how" style="transition: color .2s;" style-hover="color: #1e3a8a;">How it works</a>
+      <a href="#engine" style="transition: color .2s;" style-hover="color: #1e3a8a;">Engine</a>
+      <a href="#benchmarks" style="transition: color .2s;" style-hover="color: #1e3a8a;">Benchmarks</a>
+      <a href="#savings" style="transition: color .2s;" style-hover="color: #1e3a8a;">Savings</a>
+      <a href="#compare" style="transition: color .2s;" style-hover="color: #1e3a8a;">Compare</a>
+      <a href="#enterprise" style="transition: color .2s;" style-hover="color: #1e3a8a;">Enterprise</a>
+      <a href="#audit" style="transition: color .2s;" style-hover="color: #1e3a8a;">Audit</a>
+      <a href="#faq" style="transition: color .2s;" style-hover="color: #1e3a8a;">FAQ</a>
     </div>
     <div class="ym-navcta" style="display: flex; align-items: center; gap: 14px;">
       <a href="https://github.com/sachitrafa/YourMemory" style="font-size: 14.5px; font-weight: 600; color: #37485c;">GitHub</a>
-      <a href="#start" style="font-size: 14.5px; font-weight: 600; white-space: nowrap; color: #ffffff; background: #00d4ff; padding: 9px 18px; border-radius: 999px; box-shadow: 0 0 22px rgba(0,212,255,0.35); transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-1px); box-shadow: 0 0 30px rgba(0,212,255,0.55);">Get started</a>
+      <a href="#start" style="font-size: 14.5px; font-weight: 600; white-space: nowrap; color: #ffffff; background: #1e3a8a; padding: 9px 18px; border-radius: 999px; box-shadow: 0 0 22px rgba(30,58,138,0.35); transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-1px); box-shadow: 0 0 30px rgba(30,58,138,0.55);">Get started</a>
     </div>
     <button class="ym-burger" onClick="{{ toggleMenu }}" aria-label="Menu" style="align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(10,37,64,0.05); border: 1px solid rgba(10,37,64,0.12); cursor: pointer; color: #0a192f; padding: 0;">
       <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}"><span style="font-size: 18px; line-height: 1;">✕</span></sc-if>
@@ -84,11 +84,11 @@
     <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
       <div class="ym-mobile-panel" style="position: fixed; top: 63px; left: 0; right: 0; z-index: 49; display: flex; flex-direction: column; padding: 10px clamp(20px, 5vw, 72px) 22px; background: rgba(255,255,255,0.98); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(10,37,64,0.09); box-shadow: 0 22px 44px rgba(10,37,64,0.13);">
         <sc-for list="{{ mobileLinks }}" as="ml" hint-placeholder-count="7">
-          <a href="{{ ml.href }}" onClick="{{ closeMenu }}" style="padding: 13px 4px; font-size: 16px; font-weight: 600; color: #37485c; border-bottom: 1px solid rgba(10,37,64,0.07); transition: color .2s;" style-hover="color: #0393b6;">{{ ml.label }}</a>
+          <a href="{{ ml.href }}" onClick="{{ closeMenu }}" style="padding: 13px 4px; font-size: 16px; font-weight: 600; color: #37485c; border-bottom: 1px solid rgba(10,37,64,0.07); transition: color .2s;" style-hover="color: #1e3a8a;">{{ ml.label }}</a>
         </sc-for>
         <div style="display: flex; gap: 12px; margin-top: 18px;">
           <a href="https://github.com/sachitrafa/YourMemory" onClick="{{ closeMenu }}" style="flex: 1; text-align: center; font-size: 15px; font-weight: 600; color: #0a192f; background: rgba(10,37,64,0.06); border: 1px solid rgba(10,37,64,0.14); padding: 13px 18px; border-radius: 999px;">GitHub</a>
-          <a href="#start" onClick="{{ closeMenu }}" style="flex: 1; text-align: center; font-size: 15px; font-weight: 600; color: #ffffff; background: #00d4ff; padding: 13px 18px; border-radius: 999px; box-shadow: 0 0 22px rgba(0,212,255,0.35);">Get started</a>
+          <a href="#start" onClick="{{ closeMenu }}" style="flex: 1; text-align: center; font-size: 15px; font-weight: 600; color: #ffffff; background: #1e3a8a; padding: 13px 18px; border-radius: 999px; box-shadow: 0 0 22px rgba(30,58,138,0.35);">Get started</a>
         </div>
       </div>
     </sc-if>
@@ -100,15 +100,15 @@
     <div style="position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(70% 80% at 18% 45%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0) 70%), linear-gradient(180deg, rgba(255,255,255,0) 60%, #ffffff 100%);"></div>
 
     <div style="max-width: 760px;">
-      <div style="display: inline-flex; align-items: center; gap: 10px; padding: 7px 15px; border: 1px solid rgba(0,212,255,0.3); border-radius: 999px; background: rgba(0,212,255,0.07); margin-bottom: 30px; backdrop-filter: blur(6px);">
-        <span style="width: 7px; height: 7px; border-radius: 50%; background: #00d4ff; box-shadow: 0 0 10px #00d4ff;"></span>
+      <div style="display: inline-flex; align-items: center; gap: 10px; padding: 7px 15px; border: 1px solid rgba(30,58,138,0.3); border-radius: 999px; background: rgba(30,58,138,0.07); margin-bottom: 30px; backdrop-filter: blur(6px);">
+        <span style="width: 7px; height: 7px; border-radius: 50%; background: #1e3a8a; box-shadow: 0 0 10px #1e3a8a;"></span>
         <span style="font-size: 12.5px; font-weight: 600; letter-spacing: 0.6px; color: #0a5a8a;">MCP COMPATIBLE</span>
         <span style="width: 1px; height: 13px; background: rgba(10,37,64,0.18);"></span>
-        <span style="font-size: 12.5px; font-weight: 600; letter-spacing: 0.4px; color: #0393b6;">89.4% Recall@5</span>
+        <span style="font-size: 12.5px; font-weight: 600; letter-spacing: 0.4px; color: #1e3a8a;">89.4% Recall@5</span>
       </div>
 
       <h1 style="margin: 0; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(42px, 6.4vw, 92px); line-height: 0.98; letter-spacing: -2px; text-wrap: balance;">
-        Your AI should<br><span style="background: linear-gradient(100deg, #00d4ff, #0393b6 55%, #0393b6); -webkit-background-clip: text; background-clip: text; color: transparent;">remember you.</span>
+        Your AI should<br><span style="background: linear-gradient(100deg, #1e3a8a, #0a192f 55%, #0a192f); -webkit-background-clip: text; background-clip: text; color: transparent;">remember you.</span>
       </h1>
 
       <p style="margin: 28px 0 0; max-width: 540px; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.55; color: #566375; font-weight: 450;">
@@ -116,13 +116,13 @@
       </p>
 
       <div style="display: flex; gap: 14px; margin-top: 36px; flex-wrap: wrap;">
-        <a href="#start" style="display: inline-flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 600; color: #ffffff; background: #00d4ff; padding: 14px 26px; border-radius: 999px; box-shadow: 0 8px 30px rgba(0,212,255,0.35); transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-2px); box-shadow: 0 12px 38px rgba(0,212,255,0.5);">Get started free →</a>
+        <a href="#start" style="display: inline-flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 600; color: #ffffff; background: #1e3a8a; padding: 14px 26px; border-radius: 999px; box-shadow: 0 8px 30px rgba(30,58,138,0.35); transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-2px); box-shadow: 0 12px 38px rgba(30,58,138,0.5);">Get started free →</a>
         <a href="https://github.com/sachitrafa/YourMemory" style="display: inline-flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 600; color: #0a192f; background: rgba(10,37,64,0.09); border: 1px solid rgba(10,37,64,0.16); padding: 14px 26px; border-radius: 999px; transition: background .2s, border-color .2s;" style-hover="background: rgba(10,37,64,0.12); border-color: rgba(255,255,255,0.28);">View on GitHub</a>
       </div>
 
       <div style="display: flex; gap: clamp(20px, 4vw, 52px); margin-top: 56px; flex-wrap: wrap;">
         <div>
-          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(26px, 3vw, 40px); color: #0393b6; line-height: 1;">89.4%</div>
+          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(26px, 3vw, 40px); color: #1e3a8a; line-height: 1;">89.4%</div>
           <div style="font-size: 13px; color: #6b7d92; margin-top: 6px;">Recall@5 · LongMemEval</div>
         </div>
         <div style="width: 1px; background: rgba(10,37,64,0.12);"></div>
@@ -141,70 +141,70 @@
 
   <!-- HOW IT WORKS -->
   <section id="how" style="position: relative; padding: clamp(80px, 11vw, 150px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
-    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0393b6; text-transform: uppercase; margin-bottom: 16px;">Simple by design</div>
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 16px;">Simple by design</div>
     <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">Memory that works like yours.</h2>
     <p style="margin: 0; max-width: 560px; font-size: 18px; color: #566375; line-height: 1.5;">Three steps. Your agent learns, remembers, and naturally forgets what it no longer needs.</p>
 
     <!-- ✦ MEMORY LIFECYCLE GRAPHIC -->
     <div style="margin: 44px 0 0; padding: 28px 32px 22px; border-radius: 24px; background: linear-gradient(135deg, #f0f8ff 0%, #e8f5fc 55%, #f4fefd 100%); border: 1px solid rgba(13,143,214,0.13); overflow: hidden;">
-      <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #0393b6; margin-bottom: 18px;">Memory lifecycle</div>
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #1e3a8a; margin-bottom: 18px;">Memory lifecycle</div>
       <svg width="100%" viewBox="0 0 900 138" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <radialGradient id="ymrg1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00d4ff" stop-opacity=".2"/><stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/></radialGradient>
-          <radialGradient id="ymrg2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0393b6" stop-opacity=".2"/><stop offset="100%" stop-color="#0393b6" stop-opacity="0"/></radialGradient>
-          <radialGradient id="ymrg3" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0393b6" stop-opacity=".2"/><stop offset="100%" stop-color="#0393b6" stop-opacity="0"/></radialGradient>
-          <radialGradient id="ymrg4" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0393b6" stop-opacity=".2"/><stop offset="100%" stop-color="#0393b6" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ymrg1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1e3a8a" stop-opacity=".2"/><stop offset="100%" stop-color="#1e3a8a" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ymrg2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1e3a8a" stop-opacity=".2"/><stop offset="100%" stop-color="#1e3a8a" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ymrg3" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1e3a8a" stop-opacity=".2"/><stop offset="100%" stop-color="#1e3a8a" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ymrg4" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1e3a8a" stop-opacity=".2"/><stop offset="100%" stop-color="#1e3a8a" stop-opacity="0"/></radialGradient>
           <radialGradient id="ymrg5" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fbbf73" stop-opacity=".3"/><stop offset="100%" stop-color="#fbbf73" stop-opacity="0"/></radialGradient>
-          <marker id="yma1" markerWidth="9" markerHeight="7" refX="7.5" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#0393b6" opacity=".85"/></marker>
-          <marker id="yma2" markerWidth="9" markerHeight="7" refX="7.5" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#0393b6" opacity=".85"/></marker>
+          <marker id="yma1" markerWidth="9" markerHeight="7" refX="7.5" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#1e3a8a" opacity=".85"/></marker>
+          <marker id="yma2" markerWidth="9" markerHeight="7" refX="7.5" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#1e3a8a" opacity=".85"/></marker>
           <marker id="yma3" markerWidth="9" markerHeight="7" refX="7.5" refY="3.5" orient="auto"><polygon points="0 0, 9 3.5, 0 7" fill="#fbbf73" opacity=".85"/></marker>
         </defs>
         <!-- connectors -->
-        <line x1="128" y1="50" x2="232" y2="50" stroke="#0393b6" stroke-width="2" stroke-dasharray="6 4" opacity=".55" marker-end="url(#yma1)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1s" repeatCount="indefinite"/></line>
-        <line x1="308" y1="50" x2="412" y2="50" stroke="#0393b6" stroke-width="2" stroke-dasharray="6 4" opacity=".55" marker-end="url(#yma2)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line>
-        <line x1="488" y1="50" x2="592" y2="50" stroke="#0393b6" stroke-width="2" stroke-dasharray="6 4" opacity=".55" marker-end="url(#yma1)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.1s" repeatCount="indefinite"/></line>
+        <line x1="128" y1="50" x2="232" y2="50" stroke="#1e3a8a" stroke-width="2" stroke-dasharray="6 4" opacity=".55" marker-end="url(#yma1)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1s" repeatCount="indefinite"/></line>
+        <line x1="308" y1="50" x2="412" y2="50" stroke="#1e3a8a" stroke-width="2" stroke-dasharray="6 4" opacity=".55" marker-end="url(#yma2)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line>
+        <line x1="488" y1="50" x2="592" y2="50" stroke="#1e3a8a" stroke-width="2" stroke-dasharray="6 4" opacity=".55" marker-end="url(#yma1)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.1s" repeatCount="indefinite"/></line>
         <line x1="668" y1="50" x2="772" y2="50" stroke="#fbbf73" stroke-width="2" stroke-dasharray="5 5" opacity=".5" marker-end="url(#yma3)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite"/></line>
 
         <!-- Node 1: User Input -->
         <ellipse cx="90" cy="50" rx="46" ry="46" fill="url(#ymrg1)"/>
-        <circle cx="90" cy="50" r="32" fill="white" stroke="#0393b6" stroke-width="1.5"/>
-        <g transform="translate(90,50)" stroke="#0393b6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="90" cy="50" r="32" fill="white" stroke="#1e3a8a" stroke-width="1.5"/>
+        <g transform="translate(90,50)" stroke="#1e3a8a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <path d="M-12 -9 h24 a3 3 0 0 1 3 3 v10 a3 3 0 0 1 -3 3 h-14 l-7 5 v-5 h-3 a3 3 0 0 1 -3 -3 v-10 a3 3 0 0 1 3 -3 z"/>
         </g>
-        <circle cx="85" cy="49" r="1.3" fill="#0393b6"/><circle cx="90" cy="49" r="1.3" fill="#0393b6"/><circle cx="95" cy="49" r="1.3" fill="#0393b6"/>
+        <circle cx="85" cy="49" r="1.3" fill="#1e3a8a"/><circle cx="90" cy="49" r="1.3" fill="#1e3a8a"/><circle cx="95" cy="49" r="1.3" fill="#1e3a8a"/>
         <text x="90" y="100" text-anchor="middle" font-size="12" fill="#415062" font-family="Figtree,sans-serif" font-weight="600">User Input</text>
 
         <!-- Node 2: Memory Born -->
         <ellipse cx="270" cy="50" rx="46" ry="46" fill="url(#ymrg2)"/>
-        <circle cx="270" cy="50" r="32" fill="white" stroke="#0393b6" stroke-width="1.5"/>
-        <circle cx="270" cy="50" r="24" fill="none" stroke="#00d4ff" stroke-width="1" stroke-dasharray="4 3" opacity=".5"><animateTransform attributeName="transform" type="rotate" from="0 270 50" to="360 270 50" dur="8s" repeatCount="indefinite"/></circle>
-        <g transform="translate(270,50)" fill="#0393b6">
+        <circle cx="270" cy="50" r="32" fill="white" stroke="#1e3a8a" stroke-width="1.5"/>
+        <circle cx="270" cy="50" r="24" fill="none" stroke="#1e3a8a" stroke-width="1" stroke-dasharray="4 3" opacity=".5"><animateTransform attributeName="transform" type="rotate" from="0 270 50" to="360 270 50" dur="8s" repeatCount="indefinite"/></circle>
+        <g transform="translate(270,50)" fill="#1e3a8a">
           <path d="M0 -13 L3 -3 L13 0 L3 3 L0 13 L-3 3 L-13 0 L-3 -3 Z"/>
         </g>
         <text x="270" y="100" text-anchor="middle" font-size="12" fill="#415062" font-family="Figtree,sans-serif" font-weight="600">Memory Born</text>
         <rect x="242" y="114" width="56" height="3.5" rx="1.75" fill="#dce8f5"/>
-        <rect x="242" y="114" width="56" height="3.5" rx="1.75" fill="#0393b6"/>
+        <rect x="242" y="114" width="56" height="3.5" rx="1.75" fill="#1e3a8a"/>
 
         <!-- Node 3: Stored + Linked -->
         <ellipse cx="450" cy="50" rx="46" ry="46" fill="url(#ymrg3)"/>
-        <circle cx="450" cy="50" r="32" fill="white" stroke="#0393b6" stroke-width="1.5"/>
-        <g transform="translate(450,50)" stroke="#0393b6" stroke-width="1.8">
+        <circle cx="450" cy="50" r="32" fill="white" stroke="#1e3a8a" stroke-width="1.5"/>
+        <g transform="translate(450,50)" stroke="#1e3a8a" stroke-width="1.8">
           <line x1="-9" y1="-7" x2="8" y2="-3"/><line x1="8" y1="-3" x2="-3" y2="9"/><line x1="-9" y1="-7" x2="-3" y2="9"/>
-          <circle cx="-9" cy="-7" r="3.4" fill="#0393b6" stroke="none"/><circle cx="8" cy="-3" r="3.4" fill="#0393b6" stroke="none"/><circle cx="-3" cy="9" r="3.4" fill="#0393b6" stroke="none"/>
+          <circle cx="-9" cy="-7" r="3.4" fill="#1e3a8a" stroke="none"/><circle cx="8" cy="-3" r="3.4" fill="#1e3a8a" stroke="none"/><circle cx="-3" cy="9" r="3.4" fill="#1e3a8a" stroke="none"/>
         </g>
         <text x="450" y="100" text-anchor="middle" font-size="12" fill="#415062" font-family="Figtree,sans-serif" font-weight="600">Stored + Linked</text>
         <rect x="422" y="114" width="56" height="3.5" rx="1.75" fill="#dce8f5"/>
-        <rect x="422" y="114" width="56" height="3.5" rx="1.75" fill="#0393b6"/>
+        <rect x="422" y="114" width="56" height="3.5" rx="1.75" fill="#1e3a8a"/>
 
         <!-- Node 4: Recalled -->
         <ellipse cx="630" cy="50" rx="46" ry="46" fill="url(#ymrg4)"/>
-        <circle cx="630" cy="50" r="32" fill="white" stroke="#0393b6" stroke-width="1.5"/>
-        <g transform="translate(630,50)" stroke="#0393b6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="630" cy="50" r="32" fill="white" stroke="#1e3a8a" stroke-width="1.5"/>
+        <g transform="translate(630,50)" stroke="#1e3a8a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <path d="M0 10 V-8"/><path d="M-6 -2 L0 -8 L6 -2"/>
         </g>
         <text x="630" y="100" text-anchor="middle" font-size="12" fill="#415062" font-family="Figtree,sans-serif" font-weight="600">Recalled</text>
         <rect x="602" y="114" width="56" height="3.5" rx="1.75" fill="#dce8f5"/>
-        <rect x="602" y="114" width="56" height="3.5" rx="1.75" fill="#0393b6"/>
+        <rect x="602" y="114" width="56" height="3.5" rx="1.75" fill="#1e3a8a"/>
 
         <!-- Node 5: Fades Naturally -->
         <ellipse cx="810" cy="50" rx="46" ry="46" fill="url(#ymrg5)"/>
@@ -217,7 +217,7 @@
         <rect x="782" y="114" width="20" height="3.5" rx="1.75" fill="#fbbf73"><animate attributeName="width" values="44;8;44" dur="3.5s" repeatCount="indefinite"/></rect>
       </svg>
       <div style="display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 12px; color: #6b7d92; font-family: 'Figtree', sans-serif;">
-        <span style="display: inline-block; width: 22px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, #0393b6, #fbbf73);"></span>
+        <span style="display: inline-block; width: 22px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, #1e3a8a, #fbbf73);"></span>
         Bars show memory strength — full when recently created or recalled, fading as it ages unused.
       </div>
     </div>
@@ -225,11 +225,11 @@
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 22px; margin-top: 56px;">
       <sc-for list="{{ steps }}" as="step" hint-placeholder-count="3">
-        <div style="position: relative; padding: 30px; border-radius: 20px; background: linear-gradient(180deg, rgba(10,37,64,0.045), rgba(10,37,64,0.02)); border: 1px solid rgba(10,37,64,0.1); transition: transform .25s, border-color .25s, box-shadow .25s;" style-hover="transform: translateY(-6px); border-color: rgba(0,212,255,0.35); box-shadow: 0 18px 50px rgba(0,0,0,0.4);">
-          <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(0,212,255,0.12); border: 1px solid rgba(0,212,255,0.3); font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 19px; color: #0393b6;">{{ step.n }}</div>
+        <div style="position: relative; padding: 30px; border-radius: 20px; background: linear-gradient(180deg, rgba(10,37,64,0.045), rgba(10,37,64,0.02)); border: 1px solid rgba(10,37,64,0.1); transition: transform .25s, border-color .25s, box-shadow .25s;" style-hover="transform: translateY(-6px); border-color: rgba(30,58,138,0.35); box-shadow: 0 18px 50px rgba(0,0,0,0.4);">
+          <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(30,58,138,0.12); border: 1px solid rgba(30,58,138,0.3); font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 19px; color: #1e3a8a;">{{ step.n }}</div>
           <h3 style="margin: 22px 0 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.4px;">{{ step.title }}</h3>
           <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.55; color: #5b6b80;">{{ step.desc }}</p>
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #0393b6; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre-wrap;">{{ step.code }}</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #1e3a8a; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre-wrap;">{{ step.code }}</div>
         </div>
       </sc-for>
     </div>
@@ -237,46 +237,46 @@
 
   <!-- ENGINE / THREE LAYERS -->
   <section id="engine" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
-    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0393b6; text-transform: uppercase; margin-bottom: 16px;">Under the hood</div>
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 16px;">Under the hood</div>
     <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">Three layers. One engine.</h2>
     <p style="margin: 0; max-width: 620px; font-size: 18px; color: #566375; line-height: 1.5;">Vector search finds what you asked for. The graph finds what you forgot to ask for. Ebbinghaus decides what survives.</p>
 
     <!-- ✦ ARCHITECTURE DIAGRAM -->
     <div style="margin: 44px 0 0; padding: 28px 32px 28px; border-radius: 24px; background: linear-gradient(135deg, #f4fefd 0%, #e8f5fc 60%, #f0f8ff 100%); border: 1px solid rgba(15,181,168,0.15); overflow: hidden;">
-      <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #0393b6; margin-bottom: 20px;">How the engine works</div>
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #1e3a8a; margin-bottom: 20px;">How the engine works</div>
       <svg width="100%" viewBox="0 0 900 188" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="ymcyan" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8f9ff"/><stop offset="100%" stop-color="#f0f8ff"/></linearGradient>
           <linearGradient id="ymteal" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8fdf9"/><stop offset="100%" stop-color="#f0fefd"/></linearGradient>
           <linearGradient id="ymamb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fef9ee"/><stop offset="100%" stop-color="#fdfaf4"/></linearGradient>
-          <marker id="ymeng" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#0393b6" opacity=".5"/></marker>
+          <marker id="ymeng" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#1e3a8a" opacity=".5"/></marker>
         </defs>
         <!-- Query flows right → -->
         <text x="14" y="100" font-size="10" fill="#8298b3" font-family="Figtree,sans-serif">Query →</text>
 
         <!-- Layer 1: Vector Search -->
-        <rect x="64" y="20" width="234" height="148" rx="16" fill="url(#ymcyan)" stroke="#00d4ff" stroke-width="1.5"/>
-        <rect x="64" y="20" width="234" height="4" rx="2" fill="#00d4ff" opacity=".6"/>
-        <g transform="translate(96,53)" stroke="#00d4ff" stroke-width="1.8" fill="none" stroke-linecap="round"><circle cx="-2" cy="-2" r="6"/><line x1="2.5" y1="2.5" x2="7" y2="7"/></g>
+        <rect x="64" y="20" width="234" height="148" rx="16" fill="url(#ymcyan)" stroke="#1e3a8a" stroke-width="1.5"/>
+        <rect x="64" y="20" width="234" height="4" rx="2" fill="#1e3a8a" opacity=".6"/>
+        <g transform="translate(96,53)" stroke="#1e3a8a" stroke-width="1.8" fill="none" stroke-linecap="round"><circle cx="-2" cy="-2" r="6"/><line x1="2.5" y1="2.5" x2="7" y2="7"/></g>
         <text x="116" y="58" font-size="13" fill="#0a192f" font-family="Figtree,sans-serif" font-weight="700">Vector Search</text>
         <text x="84" y="87" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Dense + BM25 hybrid</text>
         <text x="84" y="104" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Semantic similarity</text>
         <text x="84" y="121" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Top-K candidates</text>
-        <text x="84" y="155" font-size="10" fill="#00d4ff" font-family="JetBrains Mono,monospace">score ≥ 0.72</text>
+        <text x="84" y="155" font-size="10" fill="#1e3a8a" font-family="JetBrains Mono,monospace">score ≥ 0.72</text>
 
         <!-- Connector 1→2 -->
-        <line x1="300" y1="94" x2="370" y2="94" stroke="#0393b6" stroke-width="1.5" stroke-dasharray="5 3" opacity=".5" marker-end="url(#ymeng)"><animate attributeName="stroke-dashoffset" from="0" to="-16" dur="1s" repeatCount="indefinite"/></line>
+        <line x1="300" y1="94" x2="370" y2="94" stroke="#1e3a8a" stroke-width="1.5" stroke-dasharray="5 3" opacity=".5" marker-end="url(#ymeng)"><animate attributeName="stroke-dashoffset" from="0" to="-16" dur="1s" repeatCount="indefinite"/></line>
         <text x="314" y="88" font-size="9" fill="#8298b3" font-family="Figtree,sans-serif">expand</text>
 
         <!-- Layer 2: Entity Graph -->
-        <rect x="374" y="20" width="234" height="148" rx="16" fill="url(#ymteal)" stroke="#0393b6" stroke-width="1.5"/>
-        <rect x="374" y="20" width="234" height="4" rx="2" fill="#0393b6" opacity=".6"/>
-        <g transform="translate(404,53)" stroke="#0393b6" stroke-width="1.6"><line x1="-6" y1="-4" x2="6" y2="-5"/><line x1="6" y1="-5" x2="-1" y2="6"/><line x1="-6" y1="-4" x2="-1" y2="6"/><circle cx="-6" cy="-4" r="2.6" fill="#0393b6" stroke="none"/><circle cx="6" cy="-5" r="2.6" fill="#0393b6" stroke="none"/><circle cx="-1" cy="6" r="2.6" fill="#0393b6" stroke="none"/></g>
+        <rect x="374" y="20" width="234" height="148" rx="16" fill="url(#ymteal)" stroke="#1e3a8a" stroke-width="1.5"/>
+        <rect x="374" y="20" width="234" height="4" rx="2" fill="#1e3a8a" opacity=".6"/>
+        <g transform="translate(404,53)" stroke="#1e3a8a" stroke-width="1.6"><line x1="-6" y1="-4" x2="6" y2="-5"/><line x1="6" y1="-5" x2="-1" y2="6"/><line x1="-6" y1="-4" x2="-1" y2="6"/><circle cx="-6" cy="-4" r="2.6" fill="#1e3a8a" stroke="none"/><circle cx="6" cy="-5" r="2.6" fill="#1e3a8a" stroke="none"/><circle cx="-1" cy="6" r="2.6" fill="#1e3a8a" stroke="none"/></g>
         <text x="422" y="58" font-size="13" fill="#0a192f" font-family="Figtree,sans-serif" font-weight="700">Entity Graph</text>
         <text x="394" y="87" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Node expansion</text>
         <text x="394" y="104" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Related memory hops</text>
         <text x="394" y="121" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Temporal reasoning</text>
-        <text x="394" y="155" font-size="10" fill="#0393b6" font-family="JetBrains Mono,monospace">depth ≤ 2 hops</text>
+        <text x="394" y="155" font-size="10" fill="#1e3a8a" font-family="JetBrains Mono,monospace">depth ≤ 2 hops</text>
 
         <!-- Connector 2→3 -->
         <line x1="610" y1="94" x2="680" y2="94" stroke="#b8690a" stroke-width="1.5" stroke-dasharray="5 3" opacity=".5" marker-end="url(#ymeng)"><animate attributeName="stroke-dashoffset" from="0" to="-16" dur="1.2s" repeatCount="indefinite"/></line>
@@ -298,13 +298,13 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 22px; margin-top: 56px;">
       <sc-for list="{{ layers }}" as="layer" hint-placeholder-count="3">
         <div style="padding: 30px; border-radius: 20px; background: rgba(10,37,64,0.03); border: 1px solid rgba(10,37,64,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-6px); border-color: rgba(94,234,212,0.35);">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 1px; color: #0393b6; text-transform: uppercase;">{{ layer.tag }}</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 1px; color: #1e3a8a; text-transform: uppercase;">{{ layer.tag }}</div>
           <h3 style="margin: 12px 0 12px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 23px; letter-spacing: -0.4px;">{{ layer.title }}</h3>
           <p style="margin: 0 0 20px; font-size: 15px; line-height: 1.6; color: #5b6b80;">{{ layer.desc }}</p>
           <div style="display: flex; flex-direction: column; gap: 10px;">
             <sc-for list="{{ layer.points }}" as="pt" hint-placeholder-count="3">
               <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #37485c;">
-                <span style="width: 6px; height: 6px; border-radius: 50%; background: #0393b6; flex: none;"></span>{{ pt }}
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: #1e3a8a; flex: none;"></span>{{ pt }}
               </div>
             </sc-for>
           </div>
@@ -319,7 +319,7 @@
       <div>
         <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #b8690a; text-transform: uppercase; margin-bottom: 16px;">The forgetting curve</div>
         <h2 style="margin: 0 0 16px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(30px, 4vw, 54px); letter-spacing: -1.4px; line-height: 1.03;">Watch memory fade.</h2>
-        <p style="margin: 0 0 28px; font-size: 17px; line-height: 1.6; color: #566375;">Every memory carries a strength score <span style="font-family: 'JetBrains Mono', monospace; color: #0393b6;">S(t) = e<sup>−λt</sup></span>. Different categories age at different rates. Drag to set the half-life — when strength drops below the prune line, the memory fades from retrieval.</p>
+        <p style="margin: 0 0 28px; font-size: 17px; line-height: 1.6; color: #566375;">Every memory carries a strength score <span style="font-family: 'JetBrains Mono', monospace; color: #1e3a8a;">S(t) = e<sup>−λt</sup></span>. Different categories age at different rates. Drag to set the half-life — when strength drops below the prune line, the memory fades from retrieval.</p>
 
         <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 26px;">
           <sc-for list="{{ presets }}" as="p" hint-placeholder-count="3">
@@ -328,7 +328,7 @@
         </div>
 
         <div style="font-size: 13px; color: #6b7d92; margin-bottom: 8px; display: flex; justify-content: space-between;"><span>Half-life</span><span style="font-family: 'JetBrains Mono', monospace; color: #0a192f;">{{ halfLifeLabel }}</span></div>
-        <input type="range" min="3" max="60" step="1" value="{{ halfLife }}" onInput="{{ onHalfLife }}" style="width: 100%; accent-color: #0393b6; cursor: pointer;">
+        <input type="range" min="3" max="60" step="1" value="{{ halfLife }}" onInput="{{ onHalfLife }}" style="width: 100%; accent-color: #1e3a8a; cursor: pointer;">
 
         <div style="margin-top: 26px; display: flex; gap: 26px;">
           <div>
@@ -350,7 +350,7 @@
 
   <!-- BENCHMARKS -->
   <section id="benchmarks" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
-    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0393b6; text-transform: uppercase; margin-bottom: 16px;">Measured, not claimed</div>
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 16px;">Measured, not claimed</div>
     <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">Benchmark results.</h2>
     <p style="margin: 0 0 40px; max-width: 580px; font-size: 18px; color: #566375; line-height: 1.5;">Evaluated on three public datasets. Every number independently reproducible — benchmark code lives in the repo.</p>
 
@@ -362,7 +362,7 @@
 
     <div style="display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr); gap: clamp(24px, 4vw, 60px); align-items: start;">
       <div>
-        <div style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: clamp(56px, 8vw, 104px); line-height: 0.9; background: linear-gradient(130deg, #00d4ff, #0393b6); -webkit-background-clip: text; background-clip: text; color: transparent;">{{ bigNum }}</div>
+        <div style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: clamp(56px, 8vw, 104px); line-height: 0.9; background: linear-gradient(130deg, #1e3a8a, #0a192f); -webkit-background-clip: text; background-clip: text; color: transparent;">{{ bigNum }}</div>
         <div style="font-size: 16px; font-weight: 600; color: #0a192f; margin-top: 12px;">{{ bigLabel }}</div>
         <p style="margin: 14px 0 0; font-size: 15px; line-height: 1.6; color: #5b6b80; max-width: 320px;">{{ bigDesc }}</p>
       </div>
@@ -385,35 +385,35 @@
 
   <!-- YOUR NUMBERS / SAVINGS CALCULATOR -->
   <section id="savings" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
-    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0393b6; text-transform: uppercase; margin-bottom: 16px;">Your numbers</div>
-    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">How much would <span style="background: linear-gradient(120deg,#00d4ff,#0393b6); -webkit-background-clip:text; background-clip:text; color:transparent;">you</span> save?</h2>
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 16px;">Your numbers</div>
+    <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">How much would <span style="background: linear-gradient(120deg,#1e3a8a,#0a192f); -webkit-background-clip:text; background-clip:text; color:transparent;">you</span> save?</h2>
     <p style="margin: 0 0 40px; max-width: 580px; font-size: 18px; color: #566375; line-height: 1.5;">Two ways to find out — a 30-second check inside your AI, or a full breakdown from your own history.</p>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px,1fr)); gap: 22px;">
       <!-- Instant audit -->
       <div style="padding: 28px; border-radius: 22px; background: rgba(10,37,64,0.03); border: 1px solid rgba(10,37,64,0.1); display:flex; flex-direction:column;">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px;">
-          <span style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#0393b6;">Instant audit</span>
-          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#0393b6; background:rgba(15,181,168,0.1); border:1px solid rgba(15,181,168,0.25); padding:4px 10px; border-radius:999px;">30 sec</span>
+          <span style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#1e3a8a;">Instant audit</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#1e3a8a; background:rgba(15,181,168,0.1); border:1px solid rgba(15,181,168,0.25); padding:4px 10px; border-radius:999px;">30 sec</span>
         </div>
         <p style="margin:0 0 16px; font-size:14.5px; line-height:1.6; color:#5b6b80;">Paste this at the end of any session — <strong style="color:#37485c;">Claude, ChatGPT, Gemini, Cursor, Copilot</strong>. It needs no knowledge of YourMemory; your AI measures and compresses the conversation itself.</p>
-        <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; color:#0393b6; background:rgba(234,242,251,0.95); border:1px solid rgba(10,37,64,0.09); border-radius:12px; padding:14px 16px; white-space:pre-wrap; flex:1;">{{ auditPrompt }}</div>
-        <button onClick="{{ copyAudit }}" style="cursor:pointer; margin-top:14px; align-self:flex-start; font-family:'Google Sans','Figtree',sans-serif; font-size:14px; font-weight:600; color:#ffffff; background:#00d4ff; border:none; padding:11px 20px; border-radius:999px; transition:transform .2s;" style-hover="transform:translateY(-1px);">{{ copyAuditLabel }}</button>
-        <div style="margin-top:14px; font-size:12.5px; color:#6b829c; line-height:1.6;">Your AI replies with: <span style="font-family:'JetBrains Mono',monospace; color:#0393b6;">Full ~X,XXX · Memory ~XXX · Savings XX%</span></div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; color:#1e3a8a; background:rgba(234,242,251,0.95); border:1px solid rgba(10,37,64,0.09); border-radius:12px; padding:14px 16px; white-space:pre-wrap; flex:1;">{{ auditPrompt }}</div>
+        <button onClick="{{ copyAudit }}" style="cursor:pointer; margin-top:14px; align-self:flex-start; font-family:'Google Sans','Figtree',sans-serif; font-size:14px; font-weight:600; color:#ffffff; background:#1e3a8a; border:none; padding:11px 20px; border-radius:999px; transition:transform .2s;" style-hover="transform:translateY(-1px);">{{ copyAuditLabel }}</button>
+        <div style="margin-top:14px; font-size:12.5px; color:#6b829c; line-height:1.6;">Your AI replies with: <span style="font-family:'JetBrains Mono',monospace; color:#1e3a8a;">Full ~X,XXX · Memory ~XXX · Savings XX%</span></div>
       </div>
 
       <!-- Calculator -->
-      <div style="padding: 28px; border-radius: 22px; background: rgba(0,212,255,0.05); border: 1px solid rgba(0,212,255,0.24); display:flex; flex-direction:column;">
+      <div style="padding: 28px; border-radius: 22px; background: rgba(30,58,138,0.05); border: 1px solid rgba(30,58,138,0.24); display:flex; flex-direction:column;">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px;">
-          <span style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#0393b6;">Calculate from your history</span>
-          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#0393b6; background:rgba(0,212,255,0.12); border:1px solid rgba(0,212,255,0.3); padding:4px 10px; border-radius:999px;">local · private</span>
+          <span style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#1e3a8a;">Calculate from your history</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#1e3a8a; background:rgba(30,58,138,0.12); border:1px solid rgba(30,58,138,0.3); padding:4px 10px; border-radius:999px;">local · private</span>
         </div>
         <p style="margin:0 0 14px; font-size:14.5px; line-height:1.6; color:#5b6b80;">Export any AI chat and paste it below. Tokenized in your browser — nothing is sent anywhere.</p>
         <textarea placeholder="Paste your conversation history…" value="{{ calcHistory }}" onInput="{{ onCalcHistory }}" style="width:100%; min-height:96px; resize:vertical; font-family:'Google Sans','Figtree',sans-serif; font-size:14px; line-height:1.5; color:#0a192f; background:rgba(255,255,255,0.7); border:1px solid rgba(10,37,64,0.16); border-radius:12px; padding:12px 14px; outline:none; box-sizing:border-box;"></textarea>
-        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:8px; font-size:12.5px; color:#6b829c;"><span style="font-family:'JetBrains Mono',monospace; color:#0393b6;">{{ calcTokensFmt }} tokens</span><span>~0.75 words per token</span></div>
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:8px; font-size:12.5px; color:#6b829c;"><span style="font-family:'JetBrains Mono',monospace; color:#1e3a8a;">{{ calcTokensFmt }} tokens</span><span>~0.75 words per token</span></div>
 
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin:18px 0 6px; font-size:13px; color:#6b7d92;"><span>Sessions this spans</span><span style="font-family:'JetBrains Mono',monospace; color:#0a192f;">{{ calcSessions }}</span></div>
-        <input type="range" min="2" max="300" step="1" value="{{ calcSessions }}" onInput="{{ onCalcSessions }}" style="width:100%; accent-color:#0393b6; cursor:pointer;">
+        <input type="range" min="2" max="300" step="1" value="{{ calcSessions }}" onInput="{{ onCalcSessions }}" style="width:100%; accent-color:#1e3a8a; cursor:pointer;">
 
         <div style="margin-top:18px; display:flex; gap:8px; flex-wrap:wrap;">
           <sc-for list="{{ modelOpts }}" as="mo" hint-placeholder-count="4">
@@ -431,15 +431,15 @@
         <div style="font-size:13px; color:#6b7d92; margin-top:8px;">tokens · {{ calcBaseCostFmt }} on {{ calcModelLabel }}</div>
         <p style="margin:14px 0 0; font-size:13.5px; line-height:1.6; color:#5b6b80;">Context compounds — by session {{ calcSessions }} you re-send <span style="color:#e11d48; font-weight:600;">{{ calcCtxPerSessFmt }}</span> tokens of history every time.</p>
       </div>
-      <div style="padding:26px; border-radius:20px; background:rgba(0,212,255,0.06); border:1px solid rgba(0,212,255,0.28);">
-        <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#0393b6; margin-bottom:14px;">With YourMemory</div>
-        <div style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:clamp(30px,4vw,44px); color:#0393b6; line-height:1;">{{ calcYmTokFmt }}</div>
+      <div style="padding:26px; border-radius:20px; background:rgba(30,58,138,0.06); border:1px solid rgba(30,58,138,0.28);">
+        <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#1e3a8a; margin-bottom:14px;">With YourMemory</div>
+        <div style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:clamp(30px,4vw,44px); color:#1e3a8a; line-height:1;">{{ calcYmTokFmt }}</div>
         <div style="font-size:13px; color:#6b7d92; margin-top:8px;">tokens · {{ calcYmCostFmt }} on {{ calcModelLabel }}</div>
-        <p style="margin:14px 0 0; font-size:13.5px; line-height:1.6; color:#5b6b80;"><span style="color:#0393b6; font-weight:600;">~{{ calcYmPerSessFmt }}</span> recalled tokens injected per session — flat, never growing.</p>
+        <p style="margin:14px 0 0; font-size:13.5px; line-height:1.6; color:#5b6b80;"><span style="color:#1e3a8a; font-weight:600;">~{{ calcYmPerSessFmt }}</span> recalled tokens injected per session — flat, never growing.</p>
       </div>
-      <div style="padding:26px; border-radius:20px; background:linear-gradient(135deg,rgba(0,212,255,0.12),rgba(15,181,168,0.08)); border:1px solid rgba(15,181,168,0.3);">
-        <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#0393b6; margin-bottom:14px;">You save</div>
-        <div style="font-family:'Montserrat',sans-serif; font-weight:800; font-size:clamp(36px,5vw,56px); line-height:1; background:linear-gradient(120deg,#00d4ff,#0393b6); -webkit-background-clip:text; background-clip:text; color:transparent;">{{ calcSavePct }}%</div>
+      <div style="padding:26px; border-radius:20px; background:linear-gradient(135deg,rgba(30,58,138,0.12),rgba(15,181,168,0.08)); border:1px solid rgba(15,181,168,0.3);">
+        <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#1e3a8a; margin-bottom:14px;">You save</div>
+        <div style="font-family:'Montserrat',sans-serif; font-weight:800; font-size:clamp(36px,5vw,56px); line-height:1; background:linear-gradient(120deg,#1e3a8a,#0a192f); -webkit-background-clip:text; background-clip:text; color:transparent;">{{ calcSavePct }}%</div>
         <div style="font-size:13px; color:#6b7d92; margin-top:8px;">{{ calcSaveTokFmt }} tokens · {{ calcSaveCostFmt }} saved</div>
       </div>
     </div>
@@ -447,7 +447,7 @@
 
   <!-- COMPARISON -->
   <section id="compare" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
-    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0393b6; text-transform: uppercase; margin-bottom: 16px;">Comparison</div>
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 16px;">Comparison</div>
     <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">Not a vector database.</h2>
     <p style="margin: 0 0 40px; max-width: 600px; font-size: 18px; color: #566375; line-height: 1.5;">Vector stores hoard chunks and never forget. YourMemory keeps memory that strengthens, fades, and connects — like yours.</p>
 
@@ -461,12 +461,12 @@
           </sc-for>
         </div>
       </div>
-      <div style="padding:28px; border-radius:20px; background:rgba(0,212,255,0.06); border:1px solid rgba(0,212,255,0.28);">
-        <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#0393b6; margin-bottom:14px;">YourMemory</div>
+      <div style="padding:28px; border-radius:20px; background:rgba(30,58,138,0.06); border:1px solid rgba(30,58,138,0.28);">
+        <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#1e3a8a; margin-bottom:14px;">YourMemory</div>
         <p style="margin:0 0 18px; font-size:15px; line-height:1.6; color:#37485c;">Facts that evolve. Knowledge that merges, decays, and connects across every session — so only what matters survives.</p>
         <div style="display:flex; flex-direction:column; gap:11px;">
           <sc-for list="{{ ymPoints }}" as="pt" hint-placeholder-count="4">
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:14px; color:#37485c;"><span style="flex:none; width:18px; height:18px; border-radius:50%; background:rgba(15,181,168,0.16); color:#0393b6; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">✓</span>{{ pt }}</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:14px; color:#37485c;"><span style="flex:none; width:18px; height:18px; border-radius:50%; background:rgba(15,181,168,0.16); color:#1e3a8a; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">✓</span>{{ pt }}</div>
           </sc-for>
         </div>
       </div>
@@ -475,7 +475,7 @@
     <div style="margin-top:22px; border-radius:20px; border:1px solid rgba(10,37,64,0.1); overflow:hidden; background:rgba(10,37,64,0.02);">
       <div style="display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; align-items:center; padding:16px 22px; background:rgba(10,37,64,0.04); font-size:12.5px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; color:#6b7d92;">
         <span>Feature</span>
-        <span style="text-align:center; color:#0393b6;">YourMemory</span>
+        <span style="text-align:center; color:#1e3a8a;">YourMemory</span>
         <span style="text-align:center;">Mem0</span>
         <span style="text-align:center;">Zep</span>
       </div>
@@ -492,7 +492,7 @@
 
   <!-- ENTERPRISE -->
   <section id="enterprise" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
-    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0393b6; text-transform: uppercase; margin-bottom: 16px;">Enterprise</div>
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 16px;">Enterprise</div>
     <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(32px, 4.4vw, 58px); letter-spacing: -1px; line-height: 1.04; max-width: 14ch;">Memory that works across your whole team.</h2>
     <p style="margin: 0; max-width: 620px; font-size: 18px; color: #566375; line-height: 1.5;">Your team accumulates deep knowledge every day — customer quirks, solved problems, architectural decisions. Right now it evaporates when the session closes. Enterprise gives it a permanent home.</p>
 
@@ -500,90 +500,90 @@
 
     <!-- ✦ TEAM MEMORY NETWORK -->
     <div style="margin: 44px 0 32px; padding: 28px 32px; border-radius: 24px; background: linear-gradient(135deg, #f0f8ff 0%, #e8f5fc 55%, #f4fefd 100%); border: 1px solid rgba(13,143,214,0.12); display: flex; flex-direction: column; align-items: center; gap: 12px;">
-      <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #0393b6; align-self: flex-start;">Team memory sharing</div>
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #1e3a8a; align-self: flex-start;">Team memory sharing</div>
       <svg width="100%" viewBox="0 0 820 300" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <radialGradient id="ymhub" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00d4ff" stop-opacity=".22"/><stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/></radialGradient>
-          <radialGradient id="ymnode" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0393b6" stop-opacity=".12"/><stop offset="100%" stop-color="#0393b6" stop-opacity="0"/></radialGradient>
-          <radialGradient id="ympriv" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0393b6" stop-opacity=".12"/><stop offset="100%" stop-color="#0393b6" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ymhub" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1e3a8a" stop-opacity=".22"/><stop offset="100%" stop-color="#1e3a8a" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ymnode" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1e3a8a" stop-opacity=".12"/><stop offset="100%" stop-color="#1e3a8a" stop-opacity="0"/></radialGradient>
+          <radialGradient id="ympriv" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1e3a8a" stop-opacity=".12"/><stop offset="100%" stop-color="#1e3a8a" stop-opacity="0"/></radialGradient>
         </defs>
 
         <!-- Hub glow -->
         <ellipse cx="410" cy="150" rx="80" ry="80" fill="url(#ymhub)"/>
 
         <!-- Shared memory edges (solid cyan) -->
-        <line x1="410" y1="150" x2="620" y2="90" stroke="#00d4ff" stroke-width="1.8" opacity=".6"><animate attributeName="opacity" values=".6;1;.6" dur="2s" repeatCount="indefinite"/></line>
-        <line x1="410" y1="150" x2="640" y2="210" stroke="#00d4ff" stroke-width="1.8" opacity=".5"><animate attributeName="opacity" values=".5;.9;.5" dur="2.4s" repeatCount="indefinite"/></line>
-        <line x1="410" y1="150" x2="200" y2="80" stroke="#00d4ff" stroke-width="1.8" opacity=".6"><animate attributeName="opacity" values=".6;1;.6" dur="1.8s" repeatCount="indefinite"/></line>
-        <line x1="410" y1="150" x2="180" y2="220" stroke="#00d4ff" stroke-width="1.8" opacity=".5"><animate attributeName="opacity" values=".5;.9;.5" dur="2.6s" repeatCount="indefinite"/></line>
+        <line x1="410" y1="150" x2="620" y2="90" stroke="#1e3a8a" stroke-width="1.8" opacity=".6"><animate attributeName="opacity" values=".6;1;.6" dur="2s" repeatCount="indefinite"/></line>
+        <line x1="410" y1="150" x2="640" y2="210" stroke="#1e3a8a" stroke-width="1.8" opacity=".5"><animate attributeName="opacity" values=".5;.9;.5" dur="2.4s" repeatCount="indefinite"/></line>
+        <line x1="410" y1="150" x2="200" y2="80" stroke="#1e3a8a" stroke-width="1.8" opacity=".6"><animate attributeName="opacity" values=".6;1;.6" dur="1.8s" repeatCount="indefinite"/></line>
+        <line x1="410" y1="150" x2="180" y2="220" stroke="#1e3a8a" stroke-width="1.8" opacity=".5"><animate attributeName="opacity" values=".5;.9;.5" dur="2.6s" repeatCount="indefinite"/></line>
 
         <!-- Private memory edges (dashed teal) -->
-        <line x1="410" y1="150" x2="410" y2="30" stroke="#0393b6" stroke-width="1.5" stroke-dasharray="5 4" opacity=".5"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur="1.2s" repeatCount="indefinite"/></line>
-        <line x1="410" y1="150" x2="410" y2="270" stroke="#0393b6" stroke-width="1.5" stroke-dasharray="5 4" opacity=".5"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur="1.4s" repeatCount="indefinite"/></line>
+        <line x1="410" y1="150" x2="410" y2="30" stroke="#1e3a8a" stroke-width="1.5" stroke-dasharray="5 4" opacity=".5"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur="1.2s" repeatCount="indefinite"/></line>
+        <line x1="410" y1="150" x2="410" y2="270" stroke="#1e3a8a" stroke-width="1.5" stroke-dasharray="5 4" opacity=".5"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur="1.4s" repeatCount="indefinite"/></line>
 
         <!-- Moving memory packet dots on shared edges -->
-        <circle r="5" fill="#00d4ff" opacity=".85"><animateMotion dur="2s" repeatCount="indefinite" path="M410,150 L620,90"/></circle>
-        <circle r="5" fill="#00d4ff" opacity=".85"><animateMotion dur="2.4s" repeatCount="indefinite" begin="0.8s" path="M410,150 L200,80"/></circle>
-        <circle r="4" fill="#0393b6" opacity=".75"><animateMotion dur="1.8s" repeatCount="indefinite" begin="0.4s" path="M410,150 L410,30"/></circle>
+        <circle r="5" fill="#1e3a8a" opacity=".85"><animateMotion dur="2s" repeatCount="indefinite" path="M410,150 L620,90"/></circle>
+        <circle r="5" fill="#1e3a8a" opacity=".85"><animateMotion dur="2.4s" repeatCount="indefinite" begin="0.8s" path="M410,150 L200,80"/></circle>
+        <circle r="4" fill="#1e3a8a" opacity=".75"><animateMotion dur="1.8s" repeatCount="indefinite" begin="0.4s" path="M410,150 L410,30"/></circle>
 
         <!-- Hub -->
-        <circle cx="410" cy="150" r="46" fill="white" stroke="#00d4ff" stroke-width="2"/>
-        <circle cx="410" cy="150" r="38" fill="none" stroke="#00d4ff" stroke-width="1" stroke-dasharray="4 3" opacity=".4"><animateTransform attributeName="transform" type="rotate" from="0 410 150" to="360 410 150" dur="12s" repeatCount="indefinite"/></circle>
-        <text x="410" y="145" text-anchor="middle" font-size="11" fill="#0393b6" font-family="Figtree,sans-serif" font-weight="700">Your</text>
-        <text x="410" y="161" text-anchor="middle" font-size="11" fill="#0393b6" font-family="Figtree,sans-serif" font-weight="700">Memory</text>
+        <circle cx="410" cy="150" r="46" fill="white" stroke="#1e3a8a" stroke-width="2"/>
+        <circle cx="410" cy="150" r="38" fill="none" stroke="#1e3a8a" stroke-width="1" stroke-dasharray="4 3" opacity=".4"><animateTransform attributeName="transform" type="rotate" from="0 410 150" to="360 410 150" dur="12s" repeatCount="indefinite"/></circle>
+        <text x="410" y="145" text-anchor="middle" font-size="11" fill="#1e3a8a" font-family="Figtree,sans-serif" font-weight="700">Your</text>
+        <text x="410" y="161" text-anchor="middle" font-size="11" fill="#1e3a8a" font-family="Figtree,sans-serif" font-weight="700">Memory</text>
 
         <!-- Node: Alice (top-right) -->
         <ellipse cx="620" cy="90" rx="38" ry="38" fill="url(#ymnode)"/>
-        <circle cx="620" cy="90" r="28" fill="white" stroke="#0393b6" stroke-width="1.5"/>
-        <text x="620" y="95" text-anchor="middle" font-size="16" fill="#0393b6">A</text>
+        <circle cx="620" cy="90" r="28" fill="white" stroke="#1e3a8a" stroke-width="1.5"/>
+        <text x="620" y="95" text-anchor="middle" font-size="16" fill="#1e3a8a">A</text>
         <text x="620" y="133" text-anchor="middle" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Alice</text>
-        <rect x="590" y="60" width="60" height="14" rx="7" fill="rgba(0,212,255,.12)" stroke="rgba(0,212,255,.3)" stroke-width="1"/>
-        <text x="620" y="71" text-anchor="middle" font-size="8" fill="#0393b6" font-family="JetBrains Mono,monospace">shared</text>
+        <rect x="590" y="60" width="60" height="14" rx="7" fill="rgba(30,58,138,.12)" stroke="rgba(30,58,138,.3)" stroke-width="1"/>
+        <text x="620" y="71" text-anchor="middle" font-size="8" fill="#1e3a8a" font-family="JetBrains Mono,monospace">shared</text>
 
         <!-- Node: Bob (bottom-right) -->
         <ellipse cx="640" cy="210" rx="38" ry="38" fill="url(#ymnode)"/>
-        <circle cx="640" cy="210" r="28" fill="white" stroke="#0393b6" stroke-width="1.5"/>
-        <text x="640" y="215" text-anchor="middle" font-size="16" fill="#0393b6">B</text>
+        <circle cx="640" cy="210" r="28" fill="white" stroke="#1e3a8a" stroke-width="1.5"/>
+        <text x="640" y="215" text-anchor="middle" font-size="16" fill="#1e3a8a">B</text>
         <text x="640" y="253" text-anchor="middle" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Bob</text>
-        <rect x="610" y="180" width="60" height="14" rx="7" fill="rgba(0,212,255,.12)" stroke="rgba(0,212,255,.3)" stroke-width="1"/>
-        <text x="640" y="191" text-anchor="middle" font-size="8" fill="#0393b6" font-family="JetBrains Mono,monospace">shared</text>
+        <rect x="610" y="180" width="60" height="14" rx="7" fill="rgba(30,58,138,.12)" stroke="rgba(30,58,138,.3)" stroke-width="1"/>
+        <text x="640" y="191" text-anchor="middle" font-size="8" fill="#1e3a8a" font-family="JetBrains Mono,monospace">shared</text>
 
         <!-- Node: Carol (top-left) -->
         <ellipse cx="200" cy="80" rx="38" ry="38" fill="url(#ymnode)"/>
-        <circle cx="200" cy="80" r="28" fill="white" stroke="#0393b6" stroke-width="1.5"/>
-        <text x="200" y="85" text-anchor="middle" font-size="16" fill="#0393b6">C</text>
+        <circle cx="200" cy="80" r="28" fill="white" stroke="#1e3a8a" stroke-width="1.5"/>
+        <text x="200" y="85" text-anchor="middle" font-size="16" fill="#1e3a8a">C</text>
         <text x="200" y="123" text-anchor="middle" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Carol</text>
-        <rect x="170" y="50" width="60" height="14" rx="7" fill="rgba(0,212,255,.12)" stroke="rgba(0,212,255,.3)" stroke-width="1"/>
-        <text x="200" y="61" text-anchor="middle" font-size="8" fill="#0393b6" font-family="JetBrains Mono,monospace">shared</text>
+        <rect x="170" y="50" width="60" height="14" rx="7" fill="rgba(30,58,138,.12)" stroke="rgba(30,58,138,.3)" stroke-width="1"/>
+        <text x="200" y="61" text-anchor="middle" font-size="8" fill="#1e3a8a" font-family="JetBrains Mono,monospace">shared</text>
 
         <!-- Node: Dan (bottom-left) -->
         <ellipse cx="180" cy="220" rx="38" ry="38" fill="url(#ymnode)"/>
-        <circle cx="180" cy="220" r="28" fill="white" stroke="#0393b6" stroke-width="1.5"/>
-        <text x="180" y="225" text-anchor="middle" font-size="16" fill="#0393b6">D</text>
+        <circle cx="180" cy="220" r="28" fill="white" stroke="#1e3a8a" stroke-width="1.5"/>
+        <text x="180" y="225" text-anchor="middle" font-size="16" fill="#1e3a8a">D</text>
         <text x="180" y="263" text-anchor="middle" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Dan</text>
-        <rect x="150" y="190" width="60" height="14" rx="7" fill="rgba(0,212,255,.12)" stroke="rgba(0,212,255,.3)" stroke-width="1"/>
-        <text x="180" y="201" text-anchor="middle" font-size="8" fill="#0393b6" font-family="JetBrains Mono,monospace">shared</text>
+        <rect x="150" y="190" width="60" height="14" rx="7" fill="rgba(30,58,138,.12)" stroke="rgba(30,58,138,.3)" stroke-width="1"/>
+        <text x="180" y="201" text-anchor="middle" font-size="8" fill="#1e3a8a" font-family="JetBrains Mono,monospace">shared</text>
 
         <!-- Node: Eve (top-center, private) -->
         <ellipse cx="410" cy="30" rx="32" ry="32" fill="url(#ympriv)"/>
-        <circle cx="410" cy="30" r="24" fill="white" stroke="#0393b6" stroke-width="1.5" stroke-dasharray="4 3"/>
-        <text x="410" y="35" text-anchor="middle" font-size="14" fill="#0393b6">E</text>
+        <circle cx="410" cy="30" r="24" fill="white" stroke="#1e3a8a" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="410" y="35" text-anchor="middle" font-size="14" fill="#1e3a8a">E</text>
         <rect x="376" y="2" width="68" height="14" rx="7" fill="rgba(15,181,168,.12)" stroke="rgba(15,181,168,.3)" stroke-width="1"/>
-        <text x="410" y="13" text-anchor="middle" font-size="8" fill="#0393b6" font-family="JetBrains Mono,monospace">private</text>
+        <text x="410" y="13" text-anchor="middle" font-size="8" fill="#1e3a8a" font-family="JetBrains Mono,monospace">private</text>
         <text x="410" y="63" text-anchor="middle" font-size="11" fill="#5b6b80" font-family="Figtree,sans-serif">Eve</text>
 
         <!-- Node: Frank (bottom-center, private) -->
         <ellipse cx="410" cy="270" rx="32" ry="32" fill="url(#ympriv)"/>
-        <circle cx="410" cy="270" r="24" fill="white" stroke="#0393b6" stroke-width="1.5" stroke-dasharray="4 3"/>
-        <text x="410" y="275" text-anchor="middle" font-size="14" fill="#0393b6">F</text>
+        <circle cx="410" cy="270" r="24" fill="white" stroke="#1e3a8a" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="410" y="275" text-anchor="middle" font-size="14" fill="#1e3a8a">F</text>
         <rect x="376" y="286" width="68" height="14" rx="7" fill="rgba(15,181,168,.12)" stroke="rgba(15,181,168,.3)" stroke-width="1"/>
-        <text x="410" y="297" text-anchor="middle" font-size="8" fill="#0393b6" font-family="JetBrains Mono,monospace">private</text>
+        <text x="410" y="297" text-anchor="middle" font-size="8" fill="#1e3a8a" font-family="JetBrains Mono,monospace">private</text>
 
         <!-- Legend -->
-        <line x1="680" y1="100" x2="710" y2="100" stroke="#00d4ff" stroke-width="2"/>
-        <circle cx="720" cy="100" r="4" fill="#00d4ff"/>
+        <line x1="680" y1="100" x2="710" y2="100" stroke="#1e3a8a" stroke-width="2"/>
+        <circle cx="720" cy="100" r="4" fill="#1e3a8a"/>
         <text x="730" y="104" font-size="10" fill="#5b6b80" font-family="Figtree,sans-serif">Shared memory</text>
-        <line x1="680" y1="122" x2="710" y2="122" stroke="#0393b6" stroke-width="2" stroke-dasharray="4 3"/>
+        <line x1="680" y1="122" x2="710" y2="122" stroke="#1e3a8a" stroke-width="2" stroke-dasharray="4 3"/>
         <text x="730" y="126" font-size="10" fill="#5b6b80" font-family="Figtree,sans-serif">Private memory</text>
       </svg>
     </div>
@@ -596,10 +596,10 @@ context        = null
 customer_hist  = null
 team_knowledge = null</div>
       </div>
-      <div style="padding: 28px; border-radius: 20px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.28);">
-        <div style="font-size: 12.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #0393b6; margin-bottom: 18px;">With YourMemory Enterprise</div>
+      <div style="padding: 28px; border-radius: 20px; background: rgba(30,58,138,0.06); border: 1px solid rgba(30,58,138,0.28);">
+        <div style="font-size: 12.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #1e3a8a; margin-bottom: 18px;">With YourMemory Enterprise</div>
         <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.6; color: #37485c;">Engineer A solves it once. The memory persists, shared with the org, and surfaces automatically when Engineer B opens a session — solved in minutes.</p>
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #0393b6; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre;">// Session opened
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #1e3a8a; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre;">// Session opened
 recall("customer edge case")
 → 3 relevant memories surfaced
 → last solved: 6 days ago by alice</div>
@@ -615,21 +615,21 @@ recall("customer edge case")
       </sc-for>
     </div>
 
-    <div style="margin-top: 26px; padding: 36px; border-radius: 22px; text-align: center; background: linear-gradient(120deg, rgba(0,212,255,0.1), rgba(94,234,212,0.06)); border: 1px solid rgba(0,212,255,0.2);">
+    <div style="margin-top: 26px; padding: 36px; border-radius: 22px; text-align: center; background: linear-gradient(120deg, rgba(30,58,138,0.1), rgba(94,234,212,0.06)); border: 1px solid rgba(30,58,138,0.2);">
       <h3 style="margin: 0 0 8px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(22px, 2.6vw, 32px); letter-spacing: -0.4px;">Ready to give your team a shared brain?</h3>
       <p style="margin: 0 0 22px; font-size: 16px; color: #566375;">Enterprise is distributed as a private build. Reach out to get started.</p>
-      <a href="mailto:mishrasachit1@gmail.com?subject=YourMemory%20Enterprise%20Pilot" style="display: inline-block; font-size: 16px; font-weight: 600; color: #ffffff; background: #00d4ff; padding: 14px 28px; border-radius: 999px; box-shadow: 0 8px 30px rgba(0,212,255,0.3); transition: transform .2s;" style-hover="transform: translateY(-2px);">Talk to us about a pilot</a>
+      <a href="mailto:mishrasachit1@gmail.com?subject=YourMemory%20Enterprise%20Pilot" style="display: inline-block; font-size: 16px; font-weight: 600; color: #ffffff; background: #1e3a8a; padding: 14px 28px; border-radius: 999px; box-shadow: 0 8px 30px rgba(30,58,138,0.3); transition: transform .2s;" style-hover="transform: translateY(-2px);">Talk to us about a pilot</a>
     </div>
   </section>
 
   <!-- AUDIT TRAIL -->
   <section id="audit" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
-    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0393b6; text-transform: uppercase; margin-bottom: 16px;">Memory Browser · Audit Trail</div>
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 16px;">Memory Browser · Audit Trail</div>
     <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">Every memory, on the record.</h2>
     <p style="margin: 0 0 18px; max-width: 640px; font-size: 18px; color: #566375; line-height: 1.5;">A built-in Memory Browser shows every stored memory with its live strength, category, and recall history — and an <strong style="color:#37485c;">Audit</strong> tab logs every read, write, and delete to a tamper-evident hash chain. Switch tabs in the panel to explore both.</p>
 
     <!-- browser-framed dark dashboard promo -->
-    <div style="margin: 40px 0 0; border-radius: 18px; overflow: hidden; border: 1px solid rgba(10,37,64,0.14); box-shadow: 0 40px 90px rgba(10,37,64,0.22), 0 0 0 1px rgba(0,212,255,0.06);">
+    <div style="margin: 40px 0 0; border-radius: 18px; overflow: hidden; border: 1px solid rgba(10,37,64,0.14); box-shadow: 0 40px 90px rgba(10,37,64,0.22), 0 0 0 1px rgba(30,58,138,0.06);">
       <!-- chrome -->
       <div style="display: flex; align-items: center; gap: 14px; padding: 13px 18px; background: #161e2c; border-bottom: 1px solid rgba(255,255,255,0.06);">
         <div style="display: flex; gap: 8px;">
@@ -646,7 +646,7 @@ recall("customer edge case")
         <!-- top bar -->
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 26px;">
           <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-            <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px; color: #ffffff; letter-spacing: -0.4px;">Your<span style="color: #00d4ff;">Memory</span></span>
+            <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px; color: #ffffff; letter-spacing: -0.4px;">Your<span style="color: #1e3a8a;">Memory</span></span>
             <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #6b7d92; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 5px 11px;">Memory Browser</span>
             <div style="display: flex; gap: 4px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 3px;">
               <button onClick="{{ showMem }}" style="cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: {{ memTab.fw }}; color: {{ memTab.fg }}; background: {{ memTab.bg }}; border: 1px solid {{ memTab.bd }}; padding: 5px 12px; border-radius: 7px; transition: all .2s;">Memories</button>
@@ -661,7 +661,7 @@ recall("customer edge case")
             <sc-if value="{{ isMemTab }}" hint-placeholder-val="{{ true }}">
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8b9bb0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 9px; padding: 8px 14px;">Sort: strength ⌄</span>
             </sc-if>
-            <span style="font-family: 'Google Sans','Figtree',sans-serif; font-size: 13px; font-weight: 700; color: #052230; background: #00d4ff; border-radius: 9px; padding: 8px 18px;">Load</span>
+            <span style="font-family: 'Google Sans','Figtree',sans-serif; font-size: 13px; font-weight: 700; color: #052230; background: #1e3a8a; border-radius: 9px; padding: 8px 18px;">Load</span>
           </div>
         </div>
 
@@ -684,7 +684,7 @@ recall("customer edge case")
             </div>
             <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; color: #5e6e84; text-transform: uppercase; margin-bottom: 12px;">View</div>
             <div style="display: flex; gap: 10px; margin-bottom: 22px;">
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: #00d4ff; background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3); border-radius: 10px; padding: 8px 16px;">🧠 All</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: #1e3a8a; background: rgba(30,58,138,0.1); border: 1px solid rgba(30,58,138,0.3); border-radius: 10px; padding: 8px 16px;">🧠 All</span>
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #8b9bb0; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 8px 16px;">👤 User</span>
             </div>
             <div style="display: flex; flex-direction: column; gap: 14px;">
@@ -746,7 +746,7 @@ recall("customer edge case")
     <!-- feature strip -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; margin-top: 22px;">
       <sc-for list="{{ auditFeatures }}" as="f" hint-placeholder-count="3">
-        <div style="padding: 26px; border-radius: 20px; background: rgba(10,37,64,0.03); border: 1px solid rgba(10,37,64,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-5px); border-color: rgba(0,212,255,0.3);">
+        <div style="padding: 26px; border-radius: 20px; background: rgba(10,37,64,0.03); border: 1px solid rgba(10,37,64,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-5px); border-color: rgba(30,58,138,0.3);">
           <h3 style="margin: 0 0 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 21px; letter-spacing: -0.2px;">{{ f.title }}</h3>
           <p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #5b6b80;">{{ f.desc }}</p>
         </div>
@@ -756,15 +756,15 @@ recall("customer edge case")
 
   <!-- WRITTEN ABOUT -->
   <section id="press" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
-    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0393b6; text-transform: uppercase; margin-bottom: 16px;">Read the thinking behind it</div>
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 16px;">Read the thinking behind it</div>
     <h2 style="margin: 0 0 40px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(32px, 4.4vw, 58px); letter-spacing: -1px; line-height: 1.02;">Written about YourMemory.</h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px;">
       <sc-for list="{{ press }}" as="a" hint-placeholder-count="6">
-        <a href="{{ a.url }}" style="display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: 18px; background: rgba(10,37,64,0.03); border: 1px solid rgba(10,37,64,0.1); transition: transform .25s, border-color .25s, background .25s;" style-hover="transform: translateY(-5px); border-color: rgba(0,212,255,0.35); background: rgba(0,212,255,0.04);">
-          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.5px; text-transform: uppercase; color: #0393b6;">{{ a.source }}</span>
+        <a href="{{ a.url }}" style="display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: 18px; background: rgba(10,37,64,0.03); border: 1px solid rgba(10,37,64,0.1); transition: transform .25s, border-color .25s, background .25s;" style-hover="transform: translateY(-5px); border-color: rgba(30,58,138,0.35); background: rgba(30,58,138,0.04);">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.5px; text-transform: uppercase; color: #1e3a8a;">{{ a.source }}</span>
           <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 18px; line-height: 1.25; letter-spacing: -0.2px; color: #0a192f;">{{ a.title }}</span>
           <span style="font-size: 14px; color: #5b6b80; line-height: 1.5;">{{ a.desc }}</span>
-          <span style="margin-top: 2px; font-size: 13.5px; font-weight: 600; color: #0393b6;">Read →</span>
+          <span style="margin-top: 2px; font-size: 13.5px; font-weight: 600; color: #1e3a8a;">Read →</span>
         </a>
       </sc-for>
     </div>
@@ -772,14 +772,14 @@ recall("customer edge case")
 
   <!-- FAQ -->
   <section id="faq" style="position: relative; padding: clamp(60px, 8vw, 110px) clamp(20px, 5vw, 72px); max-width: 920px; margin: 0 auto;">
-    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0393b6; text-transform: uppercase; margin-bottom: 16px;">Frequently asked</div>
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 16px;">Frequently asked</div>
     <h2 style="margin: 0 0 40px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 56px); letter-spacing: -1.2px; line-height: 1.02;">The fine print, in plain English.</h2>
     <div style="display:flex; flex-direction:column; gap:12px;">
       <sc-for list="{{ faqs }}" as="item" hint-placeholder-count="5">
         <div style="border-radius:16px; border:1px solid {{ item.bd }}; background:{{ item.bg }}; overflow:hidden; transition:border-color .2s, background .2s;">
           <button onClick="{{ item.onClick }}" style="cursor:pointer; width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px; text-align:left; background:none; border:none; padding:20px 24px; font-family:'Montserrat',sans-serif; font-weight:600; font-size:17px; color:#0a192f;">
             <span>{{ item.q }}</span>
-            <span style="flex:none; font-family:'Figtree',sans-serif; font-size:24px; font-weight:400; line-height:1; color:#0393b6; transition:transform .2s; transform:{{ item.iconRot }};">+</span>
+            <span style="flex:none; font-family:'Figtree',sans-serif; font-size:24px; font-weight:400; line-height:1; color:#1e3a8a; transition:transform .2s; transform:{{ item.iconRot }};">+</span>
           </button>
           <sc-if value="{{ item.open }}" hint-placeholder-val="{{ false }}">
             <p style="margin:0; padding:0 24px 22px; font-size:15px; line-height:1.65; color:#5b6b80;">{{ item.a }}</p>
@@ -792,8 +792,8 @@ recall("customer edge case")
   <!-- START / ACTIVATION -->
   <section id="start" style="position: relative; padding: clamp(70px, 9vw, 130px) clamp(20px, 5vw, 72px); text-align: center;">
     <div style="max-width: 780px; margin: 0 auto;">
-      <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #0393b6; text-transform: uppercase; margin-bottom: 16px;">Free activation</div>
-      <h2 style="margin: 0 0 18px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(34px, 5vw, 64px); letter-spacing: -1px; line-height: 1.02;">Start in under <span style="color: #0393b6;">2 minutes.</span></h2>
+      <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 16px;">Free activation</div>
+      <h2 style="margin: 0 0 18px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(34px, 5vw, 64px); letter-spacing: -1px; line-height: 1.02;">Start in under <span style="color: #1e3a8a;">2 minutes.</span></h2>
       <p style="margin: 0 auto 38px; max-width: 520px; font-size: 18px; color: #566375; line-height: 1.55;">Free, open source, runs entirely on your machine. No API key. No data leaves your system.</p>
 
       <div style="max-width: 540px; margin: 0 auto 28px; text-align: left; padding: 28px; border-radius: 18px; background: linear-gradient(180deg, rgba(10,37,64,0.05), rgba(10,37,64,0.02)); border: 1px solid rgba(10,37,64,0.12);">
@@ -803,7 +803,7 @@ recall("customer edge case")
             <p style="margin: 0 0 18px; font-size: 14.5px; color: #5b6b80;">Enter your email — we'll send a 6-digit code to verify.</p>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
               <input type="email" placeholder="you@company.com" value="{{ email }}" onInput="{{ onEmail }}" style="flex: 1; min-width: 200px; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; color: #0a192f; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
-              <button onClick="{{ sendCode }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; background: #00d4ff; border: none; padding: 13px 22px; border-radius: 12px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Send code</button>
+              <button onClick="{{ sendCode }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; background: #1e3a8a; border: none; padding: 13px 22px; border-radius: 12px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Send code</button>
             </div>
             <sc-if value="{{ sendError }}" hint-placeholder-val="{{ false }}"><div style="margin-top: 10px; font-size: 13px; color: #e0475c;">{{ sendError }}</div></sc-if>
             <div style="margin-top: 12px; font-size: 12.5px; color: #6b829c;">No password stored · takes 30 seconds</div>
@@ -812,35 +812,35 @@ recall("customer edge case")
         <sc-if value="{{ isCodeStep }}" hint-placeholder-val="{{ false }}">
           <div>
             <h3 style="margin: 0 0 6px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.3px;">Enter the code.</h3>
-            <p style="margin: 0 0 18px; font-size: 14.5px; color: #5b6b80;">We sent a code to <span style="color: #0393b6;">{{ maskedEmail }}</span> — expires in 10 minutes.</p>
+            <p style="margin: 0 0 18px; font-size: 14.5px; color: #5b6b80;">We sent a code to <span style="color: #1e3a8a;">{{ maskedEmail }}</span> — expires in 10 minutes.</p>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
               <input type="text" inputmode="numeric" maxlength="6" placeholder="000000" value="{{ code }}" onInput="{{ onCode }}" style="flex: 1; min-width: 200px; font-family: 'JetBrains Mono', monospace; letter-spacing: 6px; font-size: 18px; color: #0a192f; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.16); border-radius: 12px; padding: 13px 16px; outline: none;">
-              <button onClick="{{ verifyCode }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; background: #00d4ff; border: none; padding: 13px 22px; border-radius: 12px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Verify</button>
+              <button onClick="{{ verifyCode }}" style="cursor: pointer; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; background: #1e3a8a; border: none; padding: 13px 22px; border-radius: 12px; transition: transform .2s;" style-hover="transform: translateY(-1px);">Verify</button>
             </div>
             <sc-if value="{{ verifyError }}" hint-placeholder-val="{{ false }}"><div style="margin-top: 10px; font-size: 13px; color: #e0475c;">{{ verifyError }}</div></sc-if>
-            <button onClick="{{ backToEmail }}" style="cursor: pointer; margin-top: 14px; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 13.5px; font-weight: 500; color: #5b6b80; background: none; border: none; padding: 0;" style-hover="color: #0393b6;">← Back</button>
+            <button onClick="{{ backToEmail }}" style="cursor: pointer; margin-top: 14px; font-family: 'Google Sans', 'Figtree', sans-serif; font-size: 13.5px; font-weight: 500; color: #5b6b80; background: none; border: none; padding: 0;" style-hover="color: #1e3a8a;">← Back</button>
           </div>
         </sc-if>
         <sc-if value="{{ isDoneStep }}" hint-placeholder-val="{{ false }}">
           <div>
             <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 14px;">
-              <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: #0393b6; color: #ffffff; font-weight: 700; font-size: 14px;">✓</span>
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: #1e3a8a; color: #ffffff; font-weight: 700; font-size: 14px;">✓</span>
               <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 21px;">Verified — token ready</span>
             </div>
             <p style="margin: 0 0 12px; font-size: 14.5px; color: #5b6b80;">Run this command to activate:</p>
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #0393b6; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.1); border-radius: 12px; padding: 14px 16px; word-break: break-all;"><span style="color: #0393b6;">yourmemory-register</span> {{ token }}</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #1e3a8a; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.1); border-radius: 12px; padding: 14px 16px; word-break: break-all;"><span style="color: #1e3a8a;">yourmemory-register</span> {{ token }}</div>
             <p style="margin: 12px 0 0; font-size: 12.5px; color: #6b829c;">Token also sent to your email as a backup.</p>
           </div>
         </sc-if>
       </div>
 
       <div style="display: inline-flex; flex-direction: column; gap: 10px; padding: 20px 22px; border-radius: 16px; background: rgba(234,242,251,0.95); border: 1px solid rgba(10,37,64,0.12); font-family: 'JetBrains Mono', monospace; font-size: 14.5px; text-align: left; margin-bottom: 32px;">
-        <div style="color: #0393b6;"><span style="color: #6b829c;">$</span> <span style="color: #0393b6;">pip install</span> yourmemory</div>
-        <div style="color: #0393b6;"><span style="color: #0393b6;">yourmemory-register</span> &lt;token&gt;</div>
-        <div style="color: #0393b6;"><span style="color: #0393b6;">yourmemory-setup</span><span style="display: inline-block; width: 9px; height: 17px; background: #00d4ff; margin-left: 4px; vertical-align: middle; animation: ymBlink 1.1s steps(1) infinite;"></span></div>
+        <div style="color: #1e3a8a;"><span style="color: #6b829c;">$</span> <span style="color: #1e3a8a;">pip install</span> yourmemory</div>
+        <div style="color: #1e3a8a;"><span style="color: #1e3a8a;">yourmemory-register</span> &lt;token&gt;</div>
+        <div style="color: #1e3a8a;"><span style="color: #1e3a8a;">yourmemory-setup</span><span style="display: inline-block; width: 9px; height: 17px; background: #1e3a8a; margin-left: 4px; vertical-align: middle; animation: ymBlink 1.1s steps(1) infinite;"></span></div>
       </div>
       <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-        <a href="https://github.com/sachitrafa/YourMemory" style="font-size: 16px; font-weight: 600; color: #ffffff; background: #00d4ff; padding: 14px 28px; border-radius: 999px; box-shadow: 0 8px 30px rgba(0,212,255,0.35); transition: transform .2s;" style-hover="transform: translateY(-2px);">View on GitHub</a>
+        <a href="https://github.com/sachitrafa/YourMemory" style="font-size: 16px; font-weight: 600; color: #ffffff; background: #1e3a8a; padding: 14px 28px; border-radius: 999px; box-shadow: 0 8px 30px rgba(30,58,138,0.35); transition: transform .2s;" style-hover="transform: translateY(-2px);">View on GitHub</a>
         <a href="https://discord.gg/TWCKjEThe" style="font-size: 16px; font-weight: 600; color: #0a192f; background: rgba(10,37,64,0.09); border: 1px solid rgba(10,37,64,0.16); padding: 14px 28px; border-radius: 999px;" style-hover="background: rgba(10,37,64,0.12);">Join Discord</a>
       </div>
     </div>
@@ -853,8 +853,8 @@ recall("customer edge case")
       <span style="font-size: 14px; color: #6b7d92;">Infrastructure for the Agentic Era.</span>
     </div>
     <div style="display: flex; gap: 22px; font-size: 14px; color: #6b7d92;">
-      <a href="https://github.com/sachitrafa/YourMemory" style-hover="color: #0393b6;">GitHub</a>
-      <a href="https://discord.gg/TWCKjEThe" style-hover="color: #0393b6;">Discord</a>
+      <a href="https://github.com/sachitrafa/YourMemory" style-hover="color: #1e3a8a;">GitHub</a>
+      <a href="https://discord.gg/TWCKjEThe" style-hover="color: #1e3a8a;">Discord</a>
       <span>© 2026 Sachit Misra</span>
     </div>
   </footer>
@@ -881,7 +881,7 @@ class Component extends DCLogic {
     if (!canvas || this._running) return;
     this._running = true;
     const ctx = canvas.getContext('2d');
-    const CYAN = [13, 135, 204], MINT = [15, 165, 170], AMBER = [120, 145, 175];
+    const CYAN = [30, 58, 138], MINT = [60, 100, 175], AMBER = [120, 145, 175];
     let W = 0, H = 0, dpr = 1, nodes = [], edges = [];
     const build = () => {
       const r = canvas.getBoundingClientRect();
@@ -1015,16 +1015,16 @@ class Component extends DCLogic {
     ctx.fillStyle = '#fbbf73'; ctx.fillText('prune  S<0.05', x1 - 96, sy(0.05) - 7);
     // area + curve
     const grad = ctx.createLinearGradient(0, y0, 0, y1);
-    grad.addColorStop(0, 'rgba(0,212,255,0.32)');
-    grad.addColorStop(1, 'rgba(0,212,255,0)');
+    grad.addColorStop(0, 'rgba(30,58,138,0.32)');
+    grad.addColorStop(1, 'rgba(30,58,138,0)');
     ctx.beginPath(); ctx.moveTo(sx(0), sy(1));
     for (let d = 0; d <= DAYS; d += 0.5) ctx.lineTo(sx(d), sy(Math.exp(-lambda * d)));
     ctx.lineTo(sx(DAYS), y1); ctx.lineTo(sx(0), y1); ctx.closePath();
     ctx.fillStyle = grad; ctx.fill();
     ctx.beginPath();
     for (let d = 0; d <= DAYS; d += 0.5) { const X = sx(d), Y = sy(Math.exp(-lambda * d)); d === 0 ? ctx.moveTo(X, Y) : ctx.lineTo(X, Y); }
-    ctx.strokeStyle = '#00d4ff'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
-    ctx.shadowColor = 'rgba(0,212,255,0.6)'; ctx.shadowBlur = 12; ctx.stroke(); ctx.shadowBlur = 0;
+    ctx.strokeStyle = '#1e3a8a'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(30,58,138,0.6)'; ctx.shadowBlur = 12; ctx.stroke(); ctx.shadowBlur = 0;
     // marker at 14 days
     const md = 14, ms = Math.exp(-lambda * md);
     ctx.fillStyle = '#fbbf73';
@@ -1060,13 +1060,13 @@ class Component extends DCLogic {
       l: row.l,
       valLabel: (cur.num.includes('%') ? row.v + '%' : row.v.toFixed(1)),
       width: (row.v / cur.max * 100).toFixed(1) + '%',
-      fill: row.us ? 'linear-gradient(90deg, #00d4ff, #0393b6)' : 'rgba(10,37,64,0.16)',
-      labelColor: row.us ? '#00d4ff' : '#5b6b80'
+      fill: row.us ? 'linear-gradient(90deg, #1e3a8a, #0a192f)' : 'rgba(10,37,64,0.16)',
+      labelColor: row.us ? '#1e3a8a' : '#5b6b80'
     }));
     const mkTab = (id, label) => ({
       label, onClick: () => this.setState({ tab: id }),
       fg: tab === id ? '#ffffff' : '#44566e',
-      bg: tab === id ? '#00d4ff' : 'transparent'
+      bg: tab === id ? '#1e3a8a' : 'transparent'
     });
     const mkPreset = (label, days) => {
       const active = hl === days;
@@ -1090,11 +1090,11 @@ class Component extends DCLogic {
     const savePct = baseTotal ? Math.round(saveTok / baseTotal * 100) : 0;
     const fmt = (n) => Math.round(n).toLocaleString('en-US');
     const cost = (t) => '$' + (t / 1e6 * mdl.price).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
-    const mkModel = (id) => ({ label: MODELS[id].label.replace('Claude ', ''), onClick: () => this.setState({ calcModel: id }), fg: calcModel === id ? '#ffffff' : '#37485c', bg: calcModel === id ? '#0393b6' : 'rgba(10,37,64,0.05)', bd: calcModel === id ? '#0393b6' : 'rgba(10,37,64,0.16)' });
+    const mkModel = (id) => ({ label: MODELS[id].label.replace('Claude ', ''), onClick: () => this.setState({ calcModel: id }), fg: calcModel === id ? '#ffffff' : '#37485c', bg: calcModel === id ? '#1e3a8a' : 'rgba(10,37,64,0.05)', bd: calcModel === id ? '#1e3a8a' : 'rgba(10,37,64,0.16)' });
     const auditPrompt = 'Estimate three things from our conversation so far and report only the numbers:\n1. Total tokens in our full conversation.\n2. Tokens if you compressed it to a memory note you\u2019d actually reuse.\n3. The percentage saved.\nReply in one line: "Full ~X \u00b7 Memory ~Y \u00b7 Savings Z%". No explanation.';
 
     // ---------- comparison ----------
-    const YES = { g: '\u2713', c: '#0393b6' }, NO = { g: '\u2715', c: '#c2cfdd' }, PART = { g: '~', c: '#fbbf73' };
+    const YES = { g: '\u2713', c: '#1e3a8a' }, NO = { g: '\u2715', c: '#c2cfdd' }, PART = { g: '~', c: '#fbbf73' };
     const mkRow = (f, a, b, c) => ({ f, ymG: a.g, ymC: a.c, mem0G: b.g, mem0C: b.c, zepG: c.g, zepC: c.c });
 
     // ---------- faq ----------
@@ -1107,7 +1107,7 @@ class Component extends DCLogic {
       { q: 'How is this different from a vector database?', a: 'A vector DB stores and returns raw chunks and never forgets. YourMemory stores facts that merge, strengthen, decay, and connect through an entity graph — so retrieval surfaces synthesized memory, not a pile of chunks.' },
       { q: 'Can I use it for my whole team?', a: 'Yes — Enterprise is a private build with shared org memory, per-member private memories, and an admin portal for full visibility. Reach out for a pilot.' }
     ];
-    const faqs = faqData.map((it, i) => ({ q: it.q, a: it.a, open: this.state.faqOpen === i, onClick: () => this.setState((s) => ({ faqOpen: s.faqOpen === i ? -1 : i })), iconRot: this.state.faqOpen === i ? 'rotate(45deg)' : 'rotate(0deg)', bd: this.state.faqOpen === i ? 'rgba(0,212,255,0.35)' : 'rgba(10,37,64,0.1)', bg: this.state.faqOpen === i ? 'rgba(0,212,255,0.04)' : 'rgba(10,37,64,0.02)' }));
+    const faqs = faqData.map((it, i) => ({ q: it.q, a: it.a, open: this.state.faqOpen === i, onClick: () => this.setState((s) => ({ faqOpen: s.faqOpen === i ? -1 : i })), iconRot: this.state.faqOpen === i ? 'rotate(45deg)' : 'rotate(0deg)', bd: this.state.faqOpen === i ? 'rgba(30,58,138,0.35)' : 'rgba(10,37,64,0.1)', bg: this.state.faqOpen === i ? 'rgba(30,58,138,0.04)' : 'rgba(10,37,64,0.02)' }));
 
     return {
       menuOpen: this.state.menuOpen,
@@ -1128,24 +1128,24 @@ class Component extends DCLogic {
       isAuditTab: true,
       showMem: () => {},
       showAudit: () => {},
-      memTab: { fg: '#00d4ff', bg: 'rgba(0,212,255,0.12)', bd: 'rgba(0,212,255,0.25)', fw: '600' },
-      audTab: { fg: '#00d4ff', bg: 'rgba(0,212,255,0.12)', bd: 'rgba(0,212,255,0.25)', fw: '600' },
+      memTab: { fg: '#1e3a8a', bg: 'rgba(30,58,138,0.12)', bd: 'rgba(30,58,138,0.25)', fw: '600' },
+      audTab: { fg: '#1e3a8a', bg: 'rgba(30,58,138,0.12)', bd: 'rgba(30,58,138,0.25)', fw: '600' },
       memoryCards: [
-        { text: 'Mira prefers TypeScript with strict mode and uses pnpm — never run npm install in this repo.', pct: '94%', cat: 'preference', catFg: '#0393b6', catBg: 'rgba(15,181,168,0.14)', catBd: 'rgba(15,181,168,0.4)', barW: '94%', id: '2041', importance: '0.78', recalls: '16', last: '2026-06-26 18:02:11' },
+        { text: 'Mira prefers TypeScript with strict mode and uses pnpm — never run npm install in this repo.', pct: '94%', cat: 'preference', catFg: '#1e3a8a', catBg: 'rgba(15,181,168,0.14)', catBd: 'rgba(15,181,168,0.4)', barW: '94%', id: '2041', importance: '0.78', recalls: '16', last: '2026-06-26 18:02:11' },
         { text: 'Deciding between Vercel and self-hosted Fly.io for the staging deploy — pending a cost review next sprint.', pct: '72%', cat: 'assumption', catFg: '#fbbf24', catBg: 'rgba(251,191,36,0.14)', catBd: 'rgba(251,191,36,0.4)', barW: '72%', id: '1987', importance: '0.61', recalls: '9', last: '2026-06-26 16:48:03' },
         { text: 'The CI pipeline posts a Slack alert to #eng-alerts on every failed run; releases ship on Fridays.', pct: '100%', cat: 'fact', catFg: '#818cf8', catBg: 'rgba(99,102,241,0.16)', catBd: 'rgba(99,102,241,0.4)', barW: '100%', id: '2106', importance: '0.85', recalls: '4', last: '2026-06-26 15:25:25' }
       ],
       auditStats: [
-        { n: '321', l: 'Total memories', c: '#00d4ff', bd: 'rgba(0,212,255,0.18)' },
+        { n: '321', l: 'Total memories', c: '#1e3a8a', bd: 'rgba(30,58,138,0.18)' },
         { n: '248', l: 'Strong (≥ 0.5)', c: '#34d399', bd: 'rgba(52,211,153,0.18)' },
         { n: '73', l: 'Fading (0.05–0.5)', c: '#fbbf24', bd: 'rgba(251,191,36,0.18)' },
         { n: '0', l: 'Near prune (< 0.1)', c: '#fb7185', bd: 'rgba(251,113,133,0.18)' }
       ],
       auditRows: [
         { time: '12:31:46', badge: 'read', fg: '#818cf8', bg: 'rgba(99,102,241,0.16)', bd: 'rgba(99,102,241,0.4)', op: 'list', tgt: '#2026 #1905 #2023 #2022 #2021 #2020 #2019', tgtColor: '#818cf8' },
-        { time: '12:25:52', badge: 'write', fg: '#34d399', bg: 'rgba(52,211,153,0.16)', bd: 'rgba(52,211,153,0.4)', op: 'store', tgt: '#2026', tgtColor: '#00d4ff' },
-        { time: '12:16:35', badge: 'read', fg: '#818cf8', bg: 'rgba(99,102,241,0.16)', bd: 'rgba(99,102,241,0.4)', op: 'retrieve', tgt: '#1762 #1999 #1763 #365 #2020 #75 #1865', tgtColor: '#00d4ff' },
-        { time: '12:14:57', badge: 'write', fg: '#34d399', bg: 'rgba(52,211,153,0.16)', bd: 'rgba(52,211,153,0.4)', op: 'store', tgt: '#2023', tgtColor: '#00d4ff' },
+        { time: '12:25:52', badge: 'write', fg: '#34d399', bg: 'rgba(52,211,153,0.16)', bd: 'rgba(52,211,153,0.4)', op: 'store', tgt: '#2026', tgtColor: '#1e3a8a' },
+        { time: '12:16:35', badge: 'read', fg: '#818cf8', bg: 'rgba(99,102,241,0.16)', bd: 'rgba(99,102,241,0.4)', op: 'retrieve', tgt: '#1762 #1999 #1763 #365 #2020 #75 #1865', tgtColor: '#1e3a8a' },
+        { time: '12:14:57', badge: 'write', fg: '#34d399', bg: 'rgba(52,211,153,0.16)', bd: 'rgba(52,211,153,0.4)', op: 'store', tgt: '#2023', tgtColor: '#1e3a8a' },
         { time: '12:12:09', badge: 'delete', fg: '#fb7185', bg: 'rgba(251,113,133,0.16)', bd: 'rgba(251,113,133,0.4)', op: 'delete', tgt: '#2012', tgtColor: '#fb7185' }
       ],
       auditFeatures: [
