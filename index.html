@@ -146,7 +146,7 @@
     <p style="margin: 0; max-width: 560px; font-size: 18px; color: #cdd9e8; line-height: 1.5;">Three steps. Your agent learns, remembers, and naturally forgets what it no longer needs.</p>
 
     <!-- ✦ MEMORY LIFECYCLE GRAPHIC -->
-    <div style="margin: 44px 0 0; padding: 28px 32px 22px; border-radius: 24px; background: linear-gradient(135deg, #0a1424 0%, #0c1a30 55%, #0a1424 100%); border: 1px solid rgba(13,143,214,0.13); overflow: hidden;">
+    <div style="margin: 44px 0 0; padding: 34px 32px 22px; border-radius: 24px; background: linear-gradient(135deg, #0a1424 0%, #0c1a30 55%, #0a1424 100%); border: 1px solid rgba(13,143,214,0.13); overflow: hidden;">
       <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #19cdff; margin-bottom: 18px;">Memory lifecycle</div>
       <svg width="100%" viewBox="0 0 900 138" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -223,9 +223,9 @@
     </div>
 
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 22px; margin-top: 56px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 30px; margin-top: 56px;">
       <sc-for list="{{ steps }}" as="step" hint-placeholder-count="3">
-        <div style="position: relative; padding: 30px; border-radius: 20px; background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.1); transition: transform .25s, border-color .25s, box-shadow .25s;" style-hover="transform: translateY(-6px); border-color: rgba(25,205,255,0.35); box-shadow: 0 18px 50px rgba(0,0,0,0.4);">
+        <div style="position: relative; padding: 36px; border-radius: 20px; background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.1); transition: transform .25s, border-color .25s, box-shadow .25s;" style-hover="transform: translateY(-6px); border-color: rgba(25,205,255,0.35); box-shadow: 0 18px 50px rgba(0,0,0,0.4);">
           <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(25,205,255,0.12); border: 1px solid rgba(25,205,255,0.3); font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 19px; color: #19cdff;">{{ step.n }}</div>
           <h3 style="margin: 22px 0 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.4px;">{{ step.title }}</h3>
           <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.55; color: #cdd9e8;">{{ step.desc }}</p>
@@ -242,7 +242,7 @@
     <p style="margin: 0; max-width: 620px; font-size: 18px; color: #cdd9e8; line-height: 1.5;">Vector search finds what you asked for. The graph finds what you forgot to ask for. Ebbinghaus decides what survives.</p>
 
     <!-- ✦ ARCHITECTURE DIAGRAM -->
-    <div style="margin: 44px 0 0; padding: 28px 32px 28px; border-radius: 24px; background: linear-gradient(135deg, #0c1a30 0%, #0a1424 60%, #0c1a30 100%); border: 1px solid rgba(15,181,168,0.15); overflow: hidden;">
+    <div style="margin: 44px 0 0; padding: 34px 32px 28px; border-radius: 24px; background: linear-gradient(135deg, #0c1a30 0%, #0a1424 60%, #0c1a30 100%); border: 1px solid rgba(15,181,168,0.15); overflow: hidden;">
       <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #19cdff; margin-bottom: 20px;">How the engine works</div>
       <svg width="100%" viewBox="0 0 900 188" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -295,9 +295,9 @@
     </div>
 
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 22px; margin-top: 56px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 30px; margin-top: 56px;">
       <sc-for list="{{ layers }}" as="layer" hint-placeholder-count="3">
-        <div style="padding: 30px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-6px); border-color: rgba(94,234,212,0.35);">
+        <div style="padding: 36px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-6px); border-color: rgba(94,234,212,0.35);">
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 1px; color: #19cdff; text-transform: uppercase;">{{ layer.tag }}</div>
           <h3 style="margin: 12px 0 12px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 23px; letter-spacing: -0.4px;">{{ layer.title }}</h3>
           <p style="margin: 0 0 20px; font-size: 15px; line-height: 1.6; color: #cdd9e8;">{{ layer.desc }}</p>
@@ -367,7 +367,7 @@
         <p style="margin: 14px 0 0; font-size: 15px; line-height: 1.6; color: #cdd9e8; max-width: 320px;">{{ bigDesc }}</p>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-direction: column; gap: 24px;">
         <sc-for list="{{ bars }}" as="bar" hint-placeholder-count="4">
           <div>
             <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
@@ -389,9 +389,9 @@
     <h2 style="margin: 0 0 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: -1.4px; line-height: 1.02;">How much would <span style="background: linear-gradient(120deg,#19cdff,#5eead4); -webkit-background-clip:text; background-clip:text; color:transparent;">you</span> save?</h2>
     <p style="margin: 0 0 40px; max-width: 580px; font-size: 18px; color: #cdd9e8; line-height: 1.5;">Two ways to find out — a 30-second check inside your AI, or a full breakdown from your own history.</p>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px,1fr)); gap: 22px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px,1fr)); gap: 30px;">
       <!-- Instant audit -->
-      <div style="padding: 28px; border-radius: 22px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column;">
+      <div style="padding: 34px; border-radius: 22px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column;">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px;">
           <span style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#19cdff;">Instant audit</span>
           <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#19cdff; background:rgba(15,181,168,0.1); border:1px solid rgba(15,181,168,0.25); padding:4px 10px; border-radius:999px;">30 sec</span>
@@ -403,7 +403,7 @@
       </div>
 
       <!-- Calculator -->
-      <div style="padding: 28px; border-radius: 22px; background: rgba(25,205,255,0.05); border: 1px solid rgba(25,205,255,0.24); display:flex; flex-direction:column;">
+      <div style="padding: 34px; border-radius: 22px; background: rgba(25,205,255,0.05); border: 1px solid rgba(25,205,255,0.24); display:flex; flex-direction:column;">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px;">
           <span style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#19cdff;">Calculate from your history</span>
           <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#19cdff; background:rgba(25,205,255,0.12); border:1px solid rgba(25,205,255,0.3); padding:4px 10px; border-radius:999px;">local · private</span>
@@ -425,19 +425,19 @@
 
     <!-- Results -->
     <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; margin-top:22px;">
-      <div style="padding:26px; border-radius:20px; background:rgba(251,113,133,0.05); border:1px solid rgba(251,113,133,0.2);">
+      <div style="padding:32px; border-radius:20px; background:rgba(251,113,133,0.05); border:1px solid rgba(251,113,133,0.2);">
         <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#fb7185; margin-bottom:14px;">Without YourMemory</div>
         <div style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:clamp(30px,4vw,44px); color:#e11d48; line-height:1;">{{ calcBaseTokFmt }}</div>
         <div style="font-size:13px; color:#cdd9e8; margin-top:8px;">tokens · {{ calcBaseCostFmt }} on {{ calcModelLabel }}</div>
         <p style="margin:14px 0 0; font-size:13.5px; line-height:1.6; color:#cdd9e8;">Context compounds — by session {{ calcSessions }} you re-send <span style="color:#e11d48; font-weight:600;">{{ calcCtxPerSessFmt }}</span> tokens of history every time.</p>
       </div>
-      <div style="padding:26px; border-radius:20px; background:rgba(25,205,255,0.06); border:1px solid rgba(25,205,255,0.28);">
+      <div style="padding:32px; border-radius:20px; background:rgba(25,205,255,0.06); border:1px solid rgba(25,205,255,0.28);">
         <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#19cdff; margin-bottom:14px;">With YourMemory</div>
         <div style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:clamp(30px,4vw,44px); color:#19cdff; line-height:1;">{{ calcYmTokFmt }}</div>
         <div style="font-size:13px; color:#cdd9e8; margin-top:8px;">tokens · {{ calcYmCostFmt }} on {{ calcModelLabel }}</div>
         <p style="margin:14px 0 0; font-size:13.5px; line-height:1.6; color:#cdd9e8;"><span style="color:#19cdff; font-weight:600;">~{{ calcYmPerSessFmt }}</span> recalled tokens injected per session — flat, never growing.</p>
       </div>
-      <div style="padding:26px; border-radius:20px; background:linear-gradient(135deg,rgba(25,205,255,0.12),rgba(15,181,168,0.08)); border:1px solid rgba(15,181,168,0.3);">
+      <div style="padding:32px; border-radius:20px; background:linear-gradient(135deg,rgba(25,205,255,0.12),rgba(15,181,168,0.08)); border:1px solid rgba(15,181,168,0.3);">
         <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#19cdff; margin-bottom:14px;">You save</div>
         <div style="font-family:'Montserrat',sans-serif; font-weight:800; font-size:clamp(36px,5vw,56px); line-height:1; background:linear-gradient(120deg,#19cdff,#5eead4); -webkit-background-clip:text; background-clip:text; color:transparent;">{{ calcSavePct }}%</div>
         <div style="font-size:13px; color:#cdd9e8; margin-top:8px;">{{ calcSaveTokFmt }} tokens · {{ calcSaveCostFmt }} saved</div>
@@ -452,7 +452,7 @@
     <p style="margin: 0 0 40px; max-width: 600px; font-size: 18px; color: #cdd9e8; line-height: 1.5;">Vector stores hoard chunks and never forget. YourMemory keeps memory that strengthens, fades, and connects — like yours.</p>
 
     <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:22px;">
-      <div style="padding:28px; border-radius:20px; background:rgba(251,113,133,0.05); border:1px solid rgba(251,113,133,0.2);">
+      <div style="padding:34px; border-radius:20px; background:rgba(251,113,133,0.05); border:1px solid rgba(251,113,133,0.2);">
         <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#fb7185; margin-bottom:14px;">Legacy · vector DB</div>
         <p style="margin:0 0 18px; font-size:15px; line-height:1.6; color:#cdd9e8;">Stores chunks. Returns chunks. Each session starts from zero — and nothing is ever prioritized or forgotten.</p>
         <div style="display:flex; flex-direction:column; gap:11px;">
@@ -461,7 +461,7 @@
           </sc-for>
         </div>
       </div>
-      <div style="padding:28px; border-radius:20px; background:rgba(25,205,255,0.06); border:1px solid rgba(25,205,255,0.28);">
+      <div style="padding:34px; border-radius:20px; background:rgba(25,205,255,0.06); border:1px solid rgba(25,205,255,0.28);">
         <div style="font-size:12.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#19cdff; margin-bottom:14px;">YourMemory</div>
         <p style="margin:0 0 18px; font-size:15px; line-height:1.6; color:#cdd9e8;">Facts that evolve. Knowledge that merges, decays, and connects across every session — so only what matters survives.</p>
         <div style="display:flex; flex-direction:column; gap:11px;">
@@ -499,7 +499,7 @@
     
 
     <!-- ✦ TEAM MEMORY NETWORK -->
-    <div style="margin: 44px 0 32px; padding: 28px 32px; border-radius: 24px; background: linear-gradient(135deg, #0a1424 0%, #0c1a30 55%, #0a1424 100%); border: 1px solid rgba(13,143,214,0.12); display: flex; flex-direction: column; align-items: center; gap: 12px;">
+    <div style="margin: 44px 0 32px; padding: 34px 32px; border-radius: 24px; background: linear-gradient(135deg, #0a1424 0%, #0c1a30 55%, #0a1424 100%); border: 1px solid rgba(13,143,214,0.12); display: flex; flex-direction: column; align-items: center; gap: 12px;">
       <div style="font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #19cdff; align-self: flex-start;">Team memory sharing</div>
       <svg width="100%" viewBox="0 0 820 300" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -587,8 +587,8 @@
         <text x="730" y="126" font-size="10" fill="#cdd9e8" font-family="Figtree,sans-serif">Private memory</text>
       </svg>
     </div>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 22px; margin-top: 0;">
-      <div style="padding: 28px; border-radius: 20px; background: rgba(251,113,133,0.05); border: 1px solid rgba(251,113,133,0.2);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin-top: 0;">
+      <div style="padding: 34px; border-radius: 20px; background: rgba(251,113,133,0.05); border: 1px solid rgba(251,113,133,0.2);">
         <div style="font-size: 12.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #fb7185; margin-bottom: 18px;">Without YourMemory</div>
         <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.6; color: #cdd9e8;">Engineer A spends two hours debugging a customer edge case. Session closes. The knowledge is gone — and Engineer B starts from scratch next week.</p>
         <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #e11d48; background: rgba(234,242,251,0.95); border: 1px solid rgba(255,255,255,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre;">// Session ended
@@ -596,7 +596,7 @@ context        = null
 customer_hist  = null
 team_knowledge = null</div>
       </div>
-      <div style="padding: 28px; border-radius: 20px; background: rgba(25,205,255,0.06); border: 1px solid rgba(25,205,255,0.28);">
+      <div style="padding: 34px; border-radius: 20px; background: rgba(25,205,255,0.06); border: 1px solid rgba(25,205,255,0.28);">
         <div style="font-size: 12.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #19cdff; margin-bottom: 18px;">With YourMemory Enterprise</div>
         <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.6; color: #cdd9e8;">Engineer A solves it once. The memory persists, shared with the org, and surfaces automatically when Engineer B opens a session — solved in minutes.</p>
         <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; color: #19cdff; background: rgba(234,242,251,0.95); border: 1px solid rgba(255,255,255,0.09); border-radius: 12px; padding: 14px 16px; white-space: pre;">// Session opened
@@ -606,16 +606,16 @@ recall("customer edge case")
       </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; margin-top: 22px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 30px; margin-top: 22px;">
       <sc-for list="{{ entFeatures }}" as="f" hint-placeholder-count="3">
-        <div style="padding: 26px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-5px); border-color: rgba(94,234,212,0.3);">
+        <div style="padding: 32px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-5px); border-color: rgba(94,234,212,0.3);">
           <h3 style="margin: 0 0 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 21px; letter-spacing: -0.2px;">{{ f.title }}</h3>
           <p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #cdd9e8;">{{ f.desc }}</p>
         </div>
       </sc-for>
     </div>
 
-    <div style="margin-top: 26px; padding: 36px; border-radius: 22px; text-align: center; background: linear-gradient(120deg, rgba(25,205,255,0.1), rgba(94,234,212,0.06)); border: 1px solid rgba(25,205,255,0.2);">
+    <div style="margin-top: 26px; padding: 44px; border-radius: 22px; text-align: center; background: linear-gradient(120deg, rgba(25,205,255,0.1), rgba(94,234,212,0.06)); border: 1px solid rgba(25,205,255,0.2);">
       <h3 style="margin: 0 0 8px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(22px, 2.6vw, 32px); letter-spacing: -0.4px;">Ready to give your team a shared brain?</h3>
       <p style="margin: 0 0 22px; font-size: 16px; color: #cdd9e8;">Enterprise is distributed as a private build. Reach out to get started.</p>
       <a href="mailto:mishrasachit1@gmail.com?subject=YourMemory%20Enterprise%20Pilot" style="display: inline-block; font-size: 16px; font-weight: 600; color: #ffffff; background: #19cdff; padding: 14px 28px; border-radius: 999px; box-shadow: 0 8px 30px rgba(25,205,255,0.3); transition: transform .2s;" style-hover="transform: translateY(-2px);">Talk to us about a pilot</a>
@@ -744,9 +744,9 @@ recall("customer edge case")
     </div>
 
     <!-- feature strip -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; margin-top: 22px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 30px; margin-top: 22px;">
       <sc-for list="{{ auditFeatures }}" as="f" hint-placeholder-count="3">
-        <div style="padding: 26px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-5px); border-color: rgba(25,205,255,0.3);">
+        <div style="padding: 32px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: transform .25s, border-color .25s;" style-hover="transform: translateY(-5px); border-color: rgba(25,205,255,0.3);">
           <h3 style="margin: 0 0 10px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 21px; letter-spacing: -0.2px;">{{ f.title }}</h3>
           <p style="margin: 0; font-size: 14.5px; line-height: 1.6; color: #cdd9e8;">{{ f.desc }}</p>
         </div>
@@ -758,7 +758,7 @@ recall("customer edge case")
   <section id="press" style="position: relative; padding: clamp(92px, 11vw, 168px) clamp(20px, 5vw, 72px); max-width: 1280px; margin: 0 auto;">
     <div style="font-size: 13px; font-weight: 600; letter-spacing: 2px; color: #19cdff; text-transform: uppercase; margin-bottom: 16px;">Read the thinking behind it</div>
     <h2 style="margin: 0 0 40px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(32px, 4.4vw, 58px); letter-spacing: -1px; line-height: 1.02;">Written about YourMemory.</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;">
       <sc-for list="{{ press }}" as="a" hint-placeholder-count="6">
         <a href="{{ a.url }}" style="display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: transform .25s, border-color .25s, background .25s;" style-hover="transform: translateY(-5px); border-color: rgba(25,205,255,0.35); background: rgba(25,205,255,0.04);">
           <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.5px; text-transform: uppercase; color: #19cdff;">{{ a.source }}</span>
@@ -796,7 +796,7 @@ recall("customer edge case")
       <h2 style="margin: 0 0 18px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: clamp(34px, 5vw, 64px); letter-spacing: -1px; line-height: 1.02;">Start in under <span style="color: #19cdff;">2 minutes.</span></h2>
       <p style="margin: 0 auto 38px; max-width: 520px; font-size: 18px; color: #cdd9e8; line-height: 1.55;">Free, open source, runs entirely on your machine. No API key. No data leaves your system.</p>
 
-      <div style="max-width: 540px; margin: 0 auto 28px; text-align: left; padding: 28px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.12);">
+      <div style="max-width: 540px; margin: 0 auto 28px; text-align: left; padding: 34px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.12);">
         <sc-if value="{{ isEmailStep }}" hint-placeholder-val="{{ true }}">
           <div>
             <h3 style="margin: 0 0 6px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px; letter-spacing: -0.3px;">Get your activation token.</h3>
@@ -852,7 +852,7 @@ recall("customer edge case")
       <img src="assets/logo.png" alt="YourMemory" style="width: 26px; height: 26px; border-radius: 8px;">
       <span style="font-size: 14px; color: #cdd9e8;">Infrastructure for the Agentic Era.</span>
     </div>
-    <div style="display: flex; gap: 22px; font-size: 14px; color: #cdd9e8;">
+    <div style="display: flex; gap: 30px; font-size: 14px; color: #cdd9e8;">
       <a href="https://github.com/sachitrafa/YourMemory" style-hover="color: #19cdff;">GitHub</a>
       <a href="https://discord.gg/TWCKjEThe" style-hover="color: #19cdff;">Discord</a>
       <span>© 2026 Sachit Misra</span>
