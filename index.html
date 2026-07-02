@@ -62,7 +62,7 @@
       <img src="assets/logo.png" alt="YourMemory" style="width: 30px; height: 30px; border-radius: 9px; box-shadow: 0 0 18px rgba(25,205,255,0.4);">
       <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 19px; letter-spacing: -0.6px;">Your<span style="color: #19cdff;">Memory</span></span>
     </a>
-    <div class="ym-navlinks" style="display: flex; align-items: center; gap: clamp(14px, 2.2vw, 34px); font-size: 14.5px; color: #44566e; font-weight: 500;">
+    <div class="ym-navlinks" style="display: flex; align-items: center; gap: clamp(14px, 2.2vw, 34px); font-size: 14.5px; color: #ffffff; font-weight: 500;">
       <a href="#how" style="transition: color .2s;" style-hover="color: #19cdff;">How it works</a>
       <a href="#engine" style="transition: color .2s;" style-hover="color: #19cdff;">Engine</a>
       <a href="#benchmarks" style="transition: color .2s;" style-hover="color: #19cdff;">Benchmarks</a>
@@ -1065,7 +1065,7 @@ class Component extends DCLogic {
     }));
     const mkTab = (id, label) => ({
       label, onClick: () => this.setState({ tab: id }),
-      fg: tab === id ? '#ffffff' : '#44566e',
+      fg: tab === id ? '#ffffff' : '#8294a8',
       bg: tab === id ? '#19cdff' : 'transparent'
     });
     const mkPreset = (label, days) => {
