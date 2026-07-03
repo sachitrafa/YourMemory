@@ -1,0 +1,74 @@
+name: Build binaries
+
+# Builds standalone, no-Python-needed binaries for macOS, Linux, and Windows
+# and attaches them to the GitHub Release. Trigger by pushing a tag like v1.4.83
+# (or run manually from the Actions tab).
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14      # Apple Silicon
+            label: macos-arm64
+            asset: yourmemory-macos-arm64
+          - os: macos-13      # Intel
+            label: macos-x86_64
+            asset: yourmemory-macos-x86_64
+          - os: ubuntu-latest
+            label: linux-x86_64
+            asset: yourmemory-linux-x86_64
+          - os: windows-latest
+            label: windows-x86_64
+            asset: yourmemory-windows-x86_64.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install app + PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pyinstaller
+
+      - name: Build binary
+        run: pyinstaller yourmemory.spec --noconfirm --clean
+
+      - name: Rename artifact
+        shell: bash
+        run: |
+          mkdir -p out
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            mv dist/yourmemory.exe "out/${{ matrix.asset }}"
+          else
+            mv dist/yourmemory "out/${{ matrix.asset }}"
+            chmod +x "out/${{ matrix.asset }}"
+          fi
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+          path: out/${{ matrix.asset }}
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/${{ matrix.asset }}

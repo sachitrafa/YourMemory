@@ -147,6 +147,27 @@ yourmemory-setup
 
 > **Optional — smarter local extraction:** YourMemory works out of the box with built-in heuristics. For higher-quality, fully-local fact extraction, install [Ollama](https://ollama.com) and `yourmemory-setup` pulls the model (`qwen2.5:7b`, ~4.7 GB) automatically. Prefer the cloud? Set `YOURMEMORY_EXTRACT_BACKEND=anthropic`.
 
+### Or install from a binary — no Python required
+
+Prefer not to touch pip? Grab the standalone binary for your platform from the [latest release](https://github.com/sachitrafa/YourMemory/releases/latest):
+
+| Platform | Asset |
+|----------|-------|
+| macOS (Apple Silicon) | `yourmemory-macos-arm64` |
+| macOS (Intel) | `yourmemory-macos-x86_64` |
+| Linux (x86-64) | `yourmemory-linux-x86_64` |
+| Windows (x86-64) | `yourmemory-windows-x86_64.exe` |
+
+```bash
+# macOS / Linux
+chmod +x yourmemory-macos-arm64
+./yourmemory-macos-arm64 register <your-token>
+./yourmemory-macos-arm64 setup
+./yourmemory-macos-arm64            # start the server
+```
+
+One executable handles every command: `register`, `setup`, `ask "<question>"`, `path`, and (with no args) starts the server. Building your own binary is a single command — `./build-binary.sh` — and multi-platform release binaries are produced automatically by the [build workflow](.github/workflows/build-binary.yml).
+
 ---
 
 ## 🧠 How Memory Works
