@@ -199,21 +199,11 @@ strength     = clamp(importance × e^(−effective_λ × active_days) × (1 + re
 Recall runs in two rounds so it surfaces both what you asked for *and* what you forgot to ask for:
 
 ```mermaid
-flowchart TB
-    Q["recall('Python backend')"] --> R1
-    subgraph R1 [Round 1 Hybrid search]
-        V["Vector similarity<br/>(cosine)"]
-        B["BM25 keyword"]
-        V & B --> H["score = 0.4·bm25 + 0.6·cosine"]
-    end
-    H --> SEEDS["top-k seeds"]
-    SEEDS --> R2
-    subgraph R2 [Round 2 Graph expansion]
-        BFS["BFS over entity /<br/>semantic edges"]
-    end
-    R2 --> SCORE["final score =<br/>similarity × decay strength"]
-    SCORE --> BOOST["+ spatial boost (path match)<br/>+ temporal boost (time query)"]
-    BOOST --> OUT["🎯 Ranked memories"]
+flowchart LR
+    Q["query"] --> R1["Vector + BM25<br/>hybrid search"]
+    R1 --> R2["Graph expansion<br/>(what you forgot to ask)"]
+    R2 --> S["rank by<br/>similarity × strength"]
+    S --> OUT["🎯 Ranked memories"]
     style OUT fill:#0a2540,stroke:#19cdff,color:#fff
 ```
 
@@ -390,19 +380,13 @@ OpenAI works identically via `base_url="http://localhost:3033/proxy/openai"`.
 ## 🏗️ Architecture & Stack
 
 ```mermaid
-flowchart TB
-    CLIENT["Claude · Cursor · Cline · Windsurf · any MCP client"]
-    CLIENT <--> API["YourMemory server :3033<br/>(MCP + HTTP + proxy)"]
-    API --> RECALL["recall · store · update"]
-    API --> POOLS["pools · audit · DSAR · compact"]
-    RECALL --> VEC[("Vector DB<br/>DuckDB / Postgres+pgvector")]
-    RECALL --> GRAPH[("Entity graph<br/>NetworkX / Neo4j")]
-    POOLS --> LEDGER[("Audit ledger<br/>hash-chained")]
-    VEC -.decay + consolidation.-> VEC
-    style API fill:#0a2540,stroke:#19cdff,color:#fff
-    style VEC fill:#0c1a2c,stroke:#5eead4,color:#fff
-    style GRAPH fill:#0c1a2c,stroke:#5eead4,color:#fff
-    style LEDGER fill:#0c1a2c,stroke:#5eead4,color:#fff
+flowchart LR
+    C["Your AI client<br/>Claude · Cursor · any MCP"] <--> Y["🧠 YourMemory"]
+    Y --> M[("Memory<br/>store")]
+    Y --> A[("Audit<br/>ledger")]
+    style Y fill:#0a2540,stroke:#19cdff,color:#fff
+    style M fill:#0c1a2c,stroke:#5eead4,color:#fff
+    style A fill:#0c1a2c,stroke:#5eead4,color:#fff
 ```
 
 | Component | Role |
