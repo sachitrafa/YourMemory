@@ -20,8 +20,10 @@ source .build-venv/bin/activate
 pip install --quiet --upgrade pip
 pip install --quiet -e .            # the app + all runtime deps
 pip install --quiet pyinstaller
+python -m spacy download en_core_web_sm   # bundled into the binary
 
-echo "==> Building binary (this takes a few minutes and needs a few GB free)"
+echo "==> Building binary (downloads the embedding model once, ~420 MB)"
+echo "    Result is large (~2 GB) — it bundles Python, all deps, AND both models."
 pyinstaller yourmemory.spec --noconfirm --clean
 
 deactivate

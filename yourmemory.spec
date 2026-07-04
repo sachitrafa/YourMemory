@@ -5,12 +5,12 @@ Build:  pyinstaller yourmemory.spec --noconfirm
 Output: dist/yourmemory   (single self-contained executable)
 
 The binary bundles Python + every dependency (torch, sentence-transformers,
-spaCy, DuckDB, FastAPI/uvicorn, MCP, …) plus the app's data files (hook
-templates and SQL schemas), so end users need no Python install.
+spaCy, DuckDB, FastAPI/uvicorn, MCP, …), the app's data files (hook templates
+and SQL schemas), AND both ML models (the embedding model + spaCy en_core_web_sm).
 
-Note: the embedding model (sentence-transformers) and optional spaCy model are
-downloaded on first run, exactly as with the pip install — they are not baked
-into the binary to keep its size manageable.
+It is therefore fully self-contained and works offline on first run — nothing is
+downloaded. The trade-off is size (~2 GB): the embedding model is ~420 MB and
+torch is the bulk of the rest.
 """
 import glob
 import os
@@ -57,6 +57,27 @@ for pkg in (
         hiddenimports += h
     except Exception as exc:  # a missing optional dep shouldn't abort the build
         print(f"[spec] skip collect_all({pkg}): {exc}")
+
+# --- Bundle the ML models so the binary is fully self-contained (no download) ---
+
+# spaCy model (en_core_web_sm) — used for extraction / dedup / entity graph.
+try:
+    d, b, h = collect_all("en_core_web_sm")
+    datas += d
+    binaries += b
+    hiddenimports += h
+except Exception as exc:
+    print(f"[spec] en_core_web_sm not collected (install it first): {exc}")
+
+# Embedding model (sentence-transformers) — download once into _bundled_models/
+# and ship it inside the binary. Loaded at runtime via YOURMEMORY_EMBED_MODEL.
+EMBED_MODEL = "multi-qa-mpnet-base-dot-v1"
+_model_dir = os.path.join("_bundled_models", EMBED_MODEL)
+if not os.path.isdir(_model_dir):
+    print(f"[spec] downloading embedding model {EMBED_MODEL} (~420 MB, one-time) ...")
+    from sentence_transformers import SentenceTransformer
+    SentenceTransformer(EMBED_MODEL).save(_model_dir)
+datas += [(_model_dir, os.path.join("_bundled_models", EMBED_MODEL))]
 
 # App data files (setup() loads these via importlib.resources).
 datas += [("src/hook_templates", "src/hook_templates")]

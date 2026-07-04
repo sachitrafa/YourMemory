@@ -13,7 +13,18 @@ users who don't have Python can run:
 It maps these verbs onto the existing functions in ``memory_mcp`` by rewriting
 ``sys.argv`` so each function sees the arguments it already expects.
 """
+import os
 import sys
+
+# When frozen by PyInstaller, the embedding + spaCy models are bundled inside the
+# binary — point the app at them and force offline so there is ZERO first-run
+# download. Must run before ``memory_mcp`` (and its embed module) is imported.
+if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+    _bundled_embed = os.path.join(sys._MEIPASS, "_bundled_models", "multi-qa-mpnet-base-dot-v1")
+    if os.path.isdir(_bundled_embed):
+        os.environ.setdefault("YOURMEMORY_EMBED_MODEL", _bundled_embed)
+    os.environ.setdefault("HF_HUB_OFFLINE", "1")
+    os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 
 
 def main() -> None:

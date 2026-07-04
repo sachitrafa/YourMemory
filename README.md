@@ -166,7 +166,9 @@ chmod +x yourmemory-macos-arm64
 ./yourmemory-macos-arm64            # start the server
 ```
 
-One executable handles every command: `register`, `setup`, `ask "<question>"`, `path`, and (with no args) starts the server. Building your own binary is a single command — `./build-binary.sh` — and multi-platform release binaries are produced automatically by the [build workflow](.github/workflows/build-binary.yml).
+One executable handles every command: `register`, `setup`, `ask "<question>"`, `path`, and (with no args) starts the server.
+
+**Fully self-contained & offline** — the binary bundles Python, every dependency, *and* both ML models (the embedding model + spaCy). Nothing is downloaded on first run. The trade-off is size (~2 GB). Build your own with a single command — `./build-binary.sh` — and multi-platform release binaries are produced automatically by the [build workflow](.github/workflows/build-binary.yml).
 
 ---
 
