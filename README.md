@@ -153,14 +153,14 @@ Prefer not to touch pip? Grab the standalone binary for your platform from the [
 
 | Platform | Asset |
 |----------|-------|
-| macOS (Apple Silicon) | `yourmemory-macos-arm64` |
-| macOS (Intel) | `yourmemory-macos-x86_64` |
-| Linux (x86-64) | `yourmemory-linux-x86_64` |
-| Windows (x86-64) | `yourmemory-windows-x86_64.exe` |
+| macOS (Apple Silicon) | `yourmemory-macos-arm64.tar.gz` |
+| macOS (Intel) | `yourmemory-macos-x86_64.tar.gz` |
+| Linux (x86-64) | `yourmemory-linux-x86_64.tar.gz` |
+| Windows (x86-64) | `yourmemory-windows-x86_64.exe.zip` |
 
 ```bash
-# macOS / Linux
-chmod +x yourmemory-macos-arm64
+# macOS / Linux — download, extract, run
+tar -xzf yourmemory-macos-arm64.tar.gz
 ./yourmemory-macos-arm64 register <your-token>
 ./yourmemory-macos-arm64 setup
 ./yourmemory-macos-arm64            # start the server

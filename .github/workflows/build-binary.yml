@@ -51,25 +51,28 @@ jobs:
       - name: Build binary (bundles all deps + models)
         run: pyinstaller yourmemory.spec --noconfirm --clean
 
-      - name: Rename artifact
+      - name: Package artifact (compress + preserve exec bit)
         shell: bash
         run: |
           mkdir -p out
           if [ "${{ runner.os }}" = "Windows" ]; then
-            mv dist/yourmemory.exe "out/${{ matrix.asset }}"
+            mv dist/yourmemory.exe "${{ matrix.asset }}"
+            7z a "out/${{ matrix.asset }}.zip" "${{ matrix.asset }}"
           else
-            mv dist/yourmemory "out/${{ matrix.asset }}"
-            chmod +x "out/${{ matrix.asset }}"
+            mv dist/yourmemory "${{ matrix.asset }}"
+            chmod +x "${{ matrix.asset }}"
+            # store exec bit inside the archive so downloads stay runnable
+            tar -czf "out/${{ matrix.asset }}.tar.gz" "${{ matrix.asset }}"
           fi
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset }}
-          path: out/${{ matrix.asset }}
+          path: out/*
 
       - name: Attach to release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: out/${{ matrix.asset }}
+          files: out/*
