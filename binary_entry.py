@@ -25,6 +25,8 @@ if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
         os.environ.setdefault("YOURMEMORY_EMBED_MODEL", _bundled_embed)
     os.environ.setdefault("HF_HUB_OFFLINE", "1")
     os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+    # Fall back to CPU if an Apple-Silicon MPS op fails, rather than crashing.
+    os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
 
 
 def main() -> None:

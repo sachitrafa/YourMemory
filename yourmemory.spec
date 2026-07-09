@@ -75,8 +75,11 @@ EMBED_MODEL = "multi-qa-mpnet-base-dot-v1"
 _model_dir = os.path.join("_bundled_models", EMBED_MODEL)
 if not os.path.isdir(_model_dir):
     print(f"[spec] downloading embedding model {EMBED_MODEL} (~420 MB, one-time) ...")
+    # Force CPU — this is a download/save only. On Apple-Silicon CI runners the
+    # default MPS (Metal) backend OOMs while just loading the model.
+    os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
     from sentence_transformers import SentenceTransformer
-    SentenceTransformer(EMBED_MODEL).save(_model_dir)
+    SentenceTransformer(EMBED_MODEL, device="cpu").save(_model_dir)
 datas += [(_model_dir, os.path.join("_bundled_models", EMBED_MODEL))]
 
 # App data files (setup() loads these via importlib.resources).
