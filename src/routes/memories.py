@@ -341,14 +341,30 @@ def update_memory(memory_id: int, req: UpdateMemoryRequest, userId: str = Query(
 # ── GET /memories ──────────────────────────────────────────────────────────────
 
 @router.get("/memories")
-# READ-ONLY — must never update recall_count or last_accessed_at.
-# Used by the /ui browser; bumping counts here would corrupt decay scores.
 def list_memories(
     userId: str = Query(..., description="User whose memories to list"),
     limit: int = Query(50, ge=1, le=500),
     category: Optional[str] = Query(None),
     agent_id: Optional[str] = Query(None, description="Filter by agent_id; 'user' for user-owned only"),
     audit: bool = Query(True, description="Log a read/list audit event. The dashboard passes false so its own render/refresh fetches don't pollute the audit trail."),
+):
+    """HTTP route. Thin wrapper so FastAPI resolves the query params to real values."""
+    return list_memories_core(userId, limit=limit, category=category,
+                              agent_id=agent_id, audit=audit)
+
+
+# READ-ONLY — must never update recall_count or last_accessed_at.
+# Used by the /ui browser; bumping counts here would corrupt decay scores.
+#
+# Call THIS (not the route above) from other Python code. Calling the route
+# function directly leaves un-passed params as FastAPI Query() sentinels, which
+# are truthy and get bound into SQL ("can't adapt type 'Query'").
+def list_memories_core(
+    userId: str,
+    limit: int = 50,
+    category: Optional[str] = None,
+    agent_id: Optional[str] = None,
+    audit: bool = True,
 ):
     userId = userId.strip().lower()
     backend = get_backend()

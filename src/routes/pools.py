@@ -271,8 +271,10 @@ def write_pool_memory(pool_id: str, req: PoolMemoryRequest):
 @router.get("/pools/{pool_id}/memories")
 def list_pool_memories(pool_id: str, memberId: str = Query(...), limit: int = Query(50, ge=1, le=500)):
     _require(pool_id, memberId, "read")
-    from src.routes.memories import list_memories
-    return list_memories(userId=_ns(pool_id), limit=limit)
+    from src.routes.memories import list_memories_core
+    # audit=False: the generic read/list event would record the pool namespace as
+    # the actor, not the member. Pool access is already gated by _require().
+    return list_memories_core(userId=_ns(pool_id), limit=limit, audit=False)
 
 
 class PoolRetrieveRequest(BaseModel):

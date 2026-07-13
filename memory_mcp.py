@@ -55,11 +55,13 @@ def _run_sse(port: int):
         return JSONResponse({"status": "ok"})
 
     async def handle_memories(request: Request):
-        from src.routes.memories import list_memories
+        from src.routes.memories import list_memories_core
         user_id = request.query_params.get("userId", "")
         limit   = int(request.query_params.get("limit", 500))
         category = request.query_params.get("category") or None
-        result  = list_memories(userId=user_id, limit=limit, category=category)
+        audit    = request.query_params.get("audit", "true").lower() != "false"
+        result  = list_memories_core(userId=user_id, limit=limit,
+                                     category=category, audit=audit)
         return JSONResponse(result)
 
     async def handle_graph_viz(request: Request):
