@@ -16,6 +16,10 @@ import math
 TEST_DB = "/tmp/yourmemory_test_features.duckdb"
 if os.path.exists(TEST_DB):
     os.remove(TEST_DB)
+# DATABASE_URL must be blanked FIRST: connection.py calls load_dotenv(), which
+# would otherwise pull a real postgres URL from .env and run these tests against
+# the PRODUCTION database. "" makes get_backend() fall back to DuckDB.
+os.environ["DATABASE_URL"] = ""
 os.environ["YOURMEMORY_DB"] = TEST_DB
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))

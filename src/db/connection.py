@@ -32,6 +32,13 @@ def get_backend() -> str:
 
 
 def _duckdb_path() -> str:
+    # YOURMEMORY_DB overrides the DuckDB file. Tests rely on this to stay off the
+    # real store — without it they silently write to ~/.yourmemory/memories.duckdb.
+    override = os.getenv("YOURMEMORY_DB")
+    if override:
+        path = Path(override).expanduser()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        return str(path)
     path = Path.home() / ".yourmemory" / "memories.duckdb"
     path.parent.mkdir(parents=True, exist_ok=True)
     return str(path)
