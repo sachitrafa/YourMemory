@@ -1,6 +1,8 @@
 import json
 from datetime import datetime, timezone
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+
+from src.services.auth import Caller, require_caller, effective_user
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from typing import Optional, List
@@ -62,7 +64,11 @@ def _exec(conn, cur, backend: str, sql_pg: str, sql_other: str, params):
 # ── POST /memories ─────────────────────────────────────────────────────────────
 
 @router.post("/memories")
-def add_memory(req: MemoryRequest):
+def add_memory(req: MemoryRequest, caller: Caller = Depends(require_caller)):
+    # When authenticated, the caller can only write to their OWN namespace.
+    # (effective_user is a no-op for the internal pool-write call, where `caller`
+    # is not a Caller and req.userId is already the pool namespace.)
+    req.userId = effective_user(caller, req.userId)
     if is_question(req.content):
         raise HTTPException(status_code=422, detail="Questions are not stored as memories.")
 
@@ -216,7 +222,9 @@ def add_memory(req: MemoryRequest):
 # ── PUT /memories/{id} ─────────────────────────────────────────────────────────
 
 @router.put("/memories/{memory_id}")
-def update_memory(memory_id: int, req: UpdateMemoryRequest, userId: str = Query(...)):
+def update_memory(memory_id: int, req: UpdateMemoryRequest, userId: str = Query(...),
+                  caller: Caller = Depends(require_caller)):
+    userId = effective_user(caller, userId)
     req.importance = max(0.0, min(1.0, req.importance))
     category  = categorize(req.content)
     embedding = embed(req.content)
@@ -347,8 +355,10 @@ def list_memories(
     category: Optional[str] = Query(None),
     agent_id: Optional[str] = Query(None, description="Filter by agent_id; 'user' for user-owned only"),
     audit: bool = Query(True, description="Log a read/list audit event. The dashboard passes false so its own render/refresh fetches don't pollute the audit trail."),
+    caller: Caller = Depends(require_caller),
 ):
     """HTTP route. Thin wrapper so FastAPI resolves the query params to real values."""
+    userId = effective_user(caller, userId)   # authenticated caller reads only their own
     return list_memories_core(userId, limit=limit, category=category,
                               agent_id=agent_id, audit=audit)
 
@@ -436,7 +446,9 @@ def list_memories_core(
 # ── DELETE /memories/{id} ──────────────────────────────────────────────────────
 
 @router.delete("/memories/{memory_id}")
-def delete_memory(memory_id: int, userId: str = Query(...)):
+def delete_memory(memory_id: int, userId: str = Query(...),
+                  caller: Caller = Depends(require_caller)):
+    userId = effective_user(caller, userId)
     backend = get_backend()
     conn    = get_conn()
     cur     = conn.cursor()

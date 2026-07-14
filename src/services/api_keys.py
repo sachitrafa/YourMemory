@@ -125,7 +125,13 @@ def validate_api_key(api_key: str) -> dict | None:
     cur.close()
     conn.close()
 
-    return _row_to_agent(row) if row else None
+    if not row:
+        return None
+    if backend == "postgres":
+        return _row_to_agent(row)          # RealDictCursor → already dict-like
+    # duckdb / sqlite return a positional tuple — map it to the selected columns.
+    cols = ("agent_id", "user_id", "can_read", "can_write", "description")
+    return _row_to_agent(dict(zip(cols, row)))
 
 
 def revoke_agent(agent_id: str, user_id: str) -> bool:
