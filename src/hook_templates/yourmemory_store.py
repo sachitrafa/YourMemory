@@ -85,22 +85,36 @@ def extract_all_exchanges(transcript_path):
         except Exception:
             pass
 
-    # Pair up user → assistant exchanges
+    # Pair up user → assistant exchanges.
+    #
+    # A tool-using turn emits SEVERAL assistant text blocks: a short preamble
+    # ("I'll fetch that repository..."), then tool_use, then the real answer.
+    # (Tool results are type "user" but carry no text blocks, so they were already
+    # dropped above.) Taking only messages[i+1] therefore captured the preamble and
+    # threw the answer away — every tool-using turn extracted zero facts. Join every
+    # assistant block up to the next real user message instead.
     exchanges = []
     i = 0
     while i < len(messages):
-        if messages[i][0] == "user":
-            user_text = messages[i][1]
-            if i + 1 < len(messages) and messages[i + 1][0] == "assistant":
-                assistant_text = messages[i + 1][1]
-                # Generous limits — pricing and the deliverable live in the longer
-                # assistant output; a tight cut used to truncate them before extraction.
-                exchanges.append((user_text[:2000], assistant_text[:4000]))
-                i += 2
-            else:
-                i += 1
-        else:
+        if messages[i][0] != "user":
             i += 1
+            continue
+
+        user_text = messages[i][1]
+        j = i + 1
+        reply_parts = []
+        while j < len(messages) and messages[j][0] == "assistant":
+            reply_parts.append(messages[j][1])
+            j += 1
+
+        if reply_parts:
+            # Generous limits — pricing and the deliverable live in the longer
+            # assistant output; a tight cut used to truncate them before extraction.
+            # Over budget we keep the TAIL: progress notes come first, the answer last.
+            assistant_text = "\n\n".join(reply_parts)
+            exchanges.append((user_text[:2000], assistant_text[-4000:]))
+
+        i = j if j > i + 1 else i + 1
 
     return exchanges
 
