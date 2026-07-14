@@ -23,7 +23,9 @@ Role → permissions:  reader = read · contributor = read+write · admin = read
 > RBAC will enforce.
 """
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+
+from src.services.auth import Caller, require_caller, effective_user
 from pydantic import BaseModel
 from typing import Optional, List
 
@@ -258,18 +260,22 @@ class PoolMemoryRequest(BaseModel):
 
 
 @router.post("/pools/{pool_id}/memories")
-def write_pool_memory(pool_id: str, req: PoolMemoryRequest):
-    _require(pool_id, req.memberId, "write")
+def write_pool_memory(pool_id: str, req: PoolMemoryRequest,
+                      caller: Caller = Depends(require_caller)):
+    member = effective_user(caller, req.memberId)   # trusted id when authenticated
+    _require(pool_id, member, "write")
     from src.routes.memories import add_memory, MemoryRequest
     result = add_memory(MemoryRequest(
         userId=_ns(pool_id), content=req.content, importance=req.importance))
-    log_event("write", "pool_store", req.memberId.strip().lower(),
+    log_event("write", "pool_store", (member or "").strip().lower(),
               detail={"pool_id": pool_id.strip().lower(), "id": result.get("id")})
     return {"pool_id": pool_id.strip().lower(), **result}
 
 
 @router.get("/pools/{pool_id}/memories")
-def list_pool_memories(pool_id: str, memberId: str = Query(...), limit: int = Query(50, ge=1, le=500)):
+def list_pool_memories(pool_id: str, memberId: str = Query(...), limit: int = Query(50, ge=1, le=500),
+                       caller: Caller = Depends(require_caller)):
+    memberId = effective_user(caller, memberId)   # trusted id when authenticated
     _require(pool_id, memberId, "read")
     from src.routes.memories import list_memories_core
     # audit=False: the generic read/list event would record the pool namespace as
@@ -284,11 +290,13 @@ class PoolRetrieveRequest(BaseModel):
 
 
 @router.post("/pools/{pool_id}/retrieve")
-def retrieve_pool(pool_id: str, req: PoolRetrieveRequest):
-    _require(pool_id, req.memberId, "read")
+def retrieve_pool(pool_id: str, req: PoolRetrieveRequest,
+                  caller: Caller = Depends(require_caller)):
+    member = effective_user(caller, req.memberId)   # trusted id when authenticated
+    _require(pool_id, member, "read")
     from src.services.retrieve import retrieve as _retrieve
     result = _retrieve(_ns(pool_id), req.query, req.topK)
-    log_event("read", "pool_retrieve", req.memberId.strip().lower(),
+    log_event("read", "pool_retrieve", (member or "").strip().lower(),
               detail={"pool_id": pool_id.strip().lower(),
                       "count": len(result.get("memories", []))})
     return result

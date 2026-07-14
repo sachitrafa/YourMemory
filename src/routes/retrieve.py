@@ -1,6 +1,8 @@
 from typing import Optional, List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from src.services.auth import Caller, require_caller, effective_user
 from pydantic import BaseModel, Field
 
 from src.services.retrieve import retrieve
@@ -26,7 +28,8 @@ class RetrieveRequest(BaseModel):
 
 
 @router.post("/retrieve")
-def retrieve_memories(req: RetrieveRequest):
+def retrieve_memories(req: RetrieveRequest, caller: Caller = Depends(require_caller)):
+    req.userId = effective_user(caller, req.userId)   # authed caller recalls only their own
     user_id = req.userId.strip().lower()
     want_pools = bool(req.pools) or req.autoPools
 

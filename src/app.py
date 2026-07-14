@@ -35,6 +35,16 @@ def _daily_jobs():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     migrate()
+    # setup COPIES the hooks into ~/.claude/hooks, so upgrading the package alone
+    # leaves users running old hooks (a stale Stop hook stores nothing, silently).
+    # The server always ships the current templates — refresh the copies from here.
+    try:
+        from src.services.hook_sync import sync_installed_hooks
+        refreshed = sync_installed_hooks()
+        if refreshed:
+            print(f"YourMemory: refreshed stale hooks — {', '.join(refreshed)}")
+    except Exception:
+        pass
     scheduler.add_job(_daily_jobs, "interval", hours=24, id="decay_job")
     scheduler.start()
     yield
