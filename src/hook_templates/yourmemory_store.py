@@ -32,6 +32,20 @@ STATE_DIR   = os.path.expanduser("~/.yourmemory/store_state")
 PENDING_DIR = os.path.join(STATE_DIR, "pending")
 
 
+
+def _ym_base():
+    import os
+    return os.getenv("YOURMEMORY_URL", "http://localhost:3033").rstrip("/")
+
+
+def _ym_headers():
+    import os
+    h = {"Content-Type": "application/json"}
+    k = os.getenv("YOURMEMORY_API_KEY", "").strip()
+    if k:
+        h["Authorization"] = "Bearer " + k
+    return h
+
 def resolve_user_id():
     """env → ~/.yourmemory/user_id → system login name, lowercased."""
     uid = os.getenv("YOURMEMORY_USER", "").strip()
@@ -148,9 +162,9 @@ def call_auto_store(exchange, user_id):
 
     try:
         req = urllib.request.Request(
-            "http://localhost:3033/auto-store",
+            _ym_base() + "/auto-store",
             data=payload,
-            headers={"Content-Type": "application/json"},
+            headers=_ym_headers(),
         )
         with urllib.request.urlopen(req, timeout=120) as resp:
             return json.loads(resp.read())
@@ -207,7 +221,7 @@ def main():
     # Check server is up (fast — milliseconds when running). If it's down, do nothing
     # rather than queue a worker that would only fail.
     try:
-        urllib.request.urlopen("http://localhost:3033/health", timeout=2)
+        urllib.request.urlopen(_ym_base() + "/health", timeout=2)
     except Exception:
         return
 

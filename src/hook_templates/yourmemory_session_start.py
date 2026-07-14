@@ -25,6 +25,15 @@ URL = os.getenv("YOURMEMORY_URL", "http://localhost:3033")
 N   = int(os.getenv("YOURMEMORY_SESSION_CONTEXT_N", "12"))
 
 
+
+def _ym_headers():
+    import os
+    h = {"Content-Type": "application/json"}
+    k = os.getenv("YOURMEMORY_API_KEY", "").strip()
+    if k:
+        h["Authorization"] = "Bearer " + k
+    return h
+
 def resolve_user_id() -> str:
     uid = os.getenv("YOURMEMORY_USER", "").strip()
     if not uid:
@@ -60,7 +69,8 @@ def main():
     user_id = resolve_user_id()
     try:
         url = f"{URL}/memories?userId={urllib.parse.quote(user_id)}&limit={N}"
-        with urllib.request.urlopen(url, timeout=5) as resp:
+        req = urllib.request.Request(url, headers=_ym_headers())
+        with urllib.request.urlopen(req, timeout=5) as resp:
             mems = json.loads(resp.read()).get("memories", [])
     except Exception:
         return

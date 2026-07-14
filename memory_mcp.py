@@ -965,7 +965,8 @@ def ask():
     import urllib.error
 
     DASHBOARD_PORT = int(os.getenv("YOURMEMORY_DASHBOARD_PORT", 3033))
-    SERVER_URL     = f"http://127.0.0.1:{DASHBOARD_PORT}"
+    # YOURMEMORY_URL lets a client point at a remote (possibly enforced) server.
+    SERVER_URL     = os.getenv("YOURMEMORY_URL", f"http://127.0.0.1:{DASHBOARD_PORT}").rstrip("/")
 
     args  = sys.argv[2:] if (len(sys.argv) > 1 and sys.argv[1] == "ask") else sys.argv[1:]
     query = " ".join(args).strip()
@@ -983,10 +984,14 @@ def ask():
 
     payload = json.dumps({"query": query, "user_id": user_id}).encode()
     try:
+        _h = {"Content-Type": "application/json"}
+        _key = os.getenv("YOURMEMORY_API_KEY", "").strip()
+        if _key:
+            _h["Authorization"] = "Bearer " + _key   # server with YOURMEMORY_AUTH=required
         req = urllib.request.Request(
             f"{SERVER_URL}/ask",
             data=payload,
-            headers={"Content-Type": "application/json"},
+            headers=_h,
             method="POST",
         )
         with urllib.request.urlopen(req, timeout=30) as resp:

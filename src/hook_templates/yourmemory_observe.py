@@ -16,6 +16,20 @@ CAPTURE_TOOLS = {"Read", "Bash", "Grep", "Glob", "WebFetch"}
 MIN_CHARS     = 800
 
 
+
+def _ym_base():
+    import os
+    return os.getenv("YOURMEMORY_URL", "http://localhost:3033").rstrip("/")
+
+
+def _ym_headers():
+    import os
+    h = {"Content-Type": "application/json"}
+    k = os.getenv("YOURMEMORY_API_KEY", "").strip()
+    if k:
+        h["Authorization"] = "Bearer " + k
+    return h
+
 def resolve_user_id():
     uid = os.getenv("YOURMEMORY_USER", "").strip()
     if not uid:
@@ -67,7 +81,7 @@ def main():
         src = (ti.get("file_path") or ti.get("command") or ti.get("pattern") or "")[:120]
 
     try:
-        urllib.request.urlopen("http://localhost:3033/health", timeout=2)
+        urllib.request.urlopen(_ym_base() + "/health", timeout=2)
     except Exception:
         return
 
@@ -77,8 +91,8 @@ def main():
         "source":  src,
     }).encode()
     try:
-        req = urllib.request.Request("http://localhost:3033/observe", data=payload,
-                                     headers={"Content-Type": "application/json"})
+        req = urllib.request.Request(_ym_base() + "/observe", data=payload,
+                                     headers=_ym_headers())
         urllib.request.urlopen(req, timeout=90)
     except Exception:
         pass
