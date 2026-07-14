@@ -314,6 +314,42 @@ Combined with the hash-chained audit trail and 90-day retention floor, these map
 
 ---
 
+## 🔐 Multi-user Enforcement
+
+By default YourMemory runs **local and single-user** — it binds to loopback and the OS user *is* the identity, so no keys are needed. To run it for **multiple users or a team of agents**, flip on enforcement:
+
+```bash
+# on the server
+export YOURMEMORY_AUTH=required
+```
+
+Now every request must carry a valid **agent API key**, and identity is taken from the key — a caller can no longer read another user's memory or write to a pool they lack access to (missing/invalid key → `401`).
+
+**Mint a key per user/agent** and grant pool access by role:
+
+```python
+from src.services.api_keys import register_agent
+register_agent(agent_id="coding-agent", user_id="alice")   # → ym_… (shown once)
+# add_member("coding", AddMemberRequest(member_id="alice", role="contributor"))
+```
+
+**Point a client (CLI, hooks, or your agent platform) at the enforced server:**
+
+```bash
+export YOURMEMORY_URL="https://memory.yourteam.com"   # remote server (default: localhost:3033)
+export YOURMEMORY_API_KEY="ym_…"                       # sent as Authorization: Bearer
+```
+
+The CLI, the recall/store hooks, and the API proxy all attach the key automatically when `YOURMEMORY_API_KEY` is set. Enforcement is enabled per role:
+
+| Role | read | write |
+|---|:---:|:---:|
+| `reader` | ✓ | ✗ |
+| `contributor` | ✓ | ✓ |
+| `admin` | ✓ | ✓ + manage |
+
+---
+
 ## 🎛️ Dashboards
 
 Two built-in browser UIs — no extra setup, they start automatically with the server.
